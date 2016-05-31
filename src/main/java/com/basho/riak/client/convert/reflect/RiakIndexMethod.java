@@ -13,12 +13,9 @@
  */
 package com.basho.riak.client.convert.reflect;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.Set;
-
 import com.basho.riak.client.convert.RiakIndex;
+
+import java.lang.reflect.Method;
 
 /**
  *
@@ -38,35 +35,6 @@ public class RiakIndexMethod
      */
     public RiakIndexMethod(final Method method)
     {
-        if (method == null || method.getAnnotation(RiakIndex.class) == null
-            || "".equals(method.getAnnotation(RiakIndex.class).name())
-            || (!method.getReturnType().equals(String.class)
-            && !method.getReturnType().equals(Integer.class)
-            && !method.getReturnType().equals(int.class))
-            && !method.getReturnType().equals(Long.class)
-            && !method.getReturnType().equals(long.class)
-            && !Set.class.isAssignableFrom(method.getReturnType()))
-        {
-            throw new IllegalArgumentException(method.getReturnType().toString());
-        }
-
-        if (Set.class.isAssignableFrom(method.getReturnType()))
-        {
-            // Verify it's a Set<String> or Set<Integer>
-            final Type t = method.getGenericReturnType();
-            if (t instanceof ParameterizedType)
-            {
-                final Class<?> genericType = (Class<?>) ((ParameterizedType) t).getActualTypeArguments()[0];
-                if (!genericType.equals(String.class) && !genericType.equals(Integer.class) && !genericType.equals(Long.class))
-                {
-                    throw new IllegalArgumentException(method.getReturnType().toString());
-                }
-            }
-            else
-            {
-                throw new IllegalArgumentException(method.getReturnType().toString());
-            }
-        }
         this.method = method;
         this.indexName = method.getAnnotation(RiakIndex.class).name();
         this.type = method.getReturnType();

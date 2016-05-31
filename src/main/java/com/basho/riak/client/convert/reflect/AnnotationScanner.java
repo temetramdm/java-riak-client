@@ -16,8 +16,11 @@ package com.basho.riak.client.convert.reflect;
 import com.basho.riak.client.cap.VClock;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Callable;
 
 import com.basho.riak.client.convert.RiakIndex;
@@ -31,9 +34,9 @@ import com.basho.riak.client.convert.UsermetaField;
 /**
  * A {@link Callable} that loops over a classes fields and pulls out the fields
  * for {@link RiakUsermeta} and {@link RiakKey}
- * 
+ *
  * @author russell
- * 
+ *
  */
 public class AnnotationScanner implements Callable<AnnotationInfo> {
 
@@ -86,14 +89,14 @@ public class AnnotationScanner implements Callable<AnnotationInfo> {
                 }
 
                 if (riakTombstoneField == null && field.isAnnotationPresent(RiakTombstone.class)) {
-                    
+
                     // restrict the field to boolean
                     if (!field.getType().equals(Boolean.TYPE)) {
                         throw new IllegalArgumentException(field.getType().toString());
                     }
                     riakTombstoneField = ClassUtil.checkAndFixAccess(field);
                 }
-                
+
                 if (field.isAnnotationPresent(RiakUsermeta.class)) {
                     RiakUsermeta a = field.getAnnotation(RiakUsermeta.class);
                     String key = a.key();
@@ -116,26 +119,48 @@ public class AnnotationScanner implements Callable<AnnotationInfo> {
             }
             currentClass = currentClass.getSuperclass();
         }
-        
+
         final Method[] methods = classToScan.getMethods();
         for (Method method : methods) {
             if (method.isAnnotationPresent(RiakIndex.class)) {
+                if (method == null || method.getAnnotation(RiakIndex.class) == null
+                        || "".equals(method.getAnnotation(RiakIndex.class).name())
+                        || (!method.getReturnType().equals(String.class)
+                        && !method.getReturnType().equals(Integer.class)
+                        && !method.getReturnType().equals(int.class))
+                        && !method.getReturnType().equals(Long.class)
+                        && !method.getReturnType().equals(long.class)
+                        && !Set.class.isAssignableFrom(method.getReturnType())) {
+                    continue;
+                }
+                if (Set.class.isAssignableFrom(method.getReturnType())) {
+                    // Verify it's a Set<String> or Set<Integer>
+                    final Type t = method.getGenericReturnType();
+                    if (t instanceof ParameterizedType) {
+                        final Class<?> genericType = (Class<?>) ((ParameterizedType) t).getActualTypeArguments()[0];
+                        if (!genericType.equals(String.class) && !genericType.equals(Integer.class) && !genericType.equals(Long.class)) {
+                            continue;
+                        }
+                    } else {
+                        continue;
+                    }
+                }
                 indexMethods.add(new RiakIndexMethod(ClassUtil.checkAndFixAccess(method)));
             }
             else if (method.isAnnotationPresent(RiakKey.class))
             {
                 if (method.getReturnType().equals(String.class)) {
                     riakKeyGetterMethod = ClassUtil.checkAndFixAccess(method);
-                } else if (method.getReturnType().equals(Void.TYPE) && 
-                            (method.getParameterTypes().length == 1 && 
+                } else if (method.getReturnType().equals(Void.TYPE) &&
+                            (method.getParameterTypes().length == 1 &&
                              method.getParameterTypes()[0].equals(String.class))) {
                     riakKeySetterMethod = ClassUtil.checkAndFixAccess(method);
                 }
             }
         }
-        
-        return new AnnotationInfo(riakKeyField, riakKeyGetterMethod, riakKeySetterMethod, 
-                                  usermetaItemFields, usermetaMapField, 
+
+        return new AnnotationInfo(riakKeyField, riakKeyGetterMethod, riakKeySetterMethod,
+                                  usermetaItemFields, usermetaMapField,
                                   indexFields, indexMethods, linksField, riakVClockField,
                                   riakTombstoneField);
     }
