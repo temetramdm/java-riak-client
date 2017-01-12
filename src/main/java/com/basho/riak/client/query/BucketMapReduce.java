@@ -50,7 +50,7 @@ public class BucketMapReduce extends MapReduce implements Iterable<KeyFilter> {
     public BucketMapReduce(final RawClient client, String bucket) {
         super(client);
         this.bucket = bucket;
-        this.keyFilters = new LinkedList<KeyFilter>();
+        this.keyFilters = new LinkedList<>();
     }
 
     /**
@@ -67,13 +67,13 @@ public class BucketMapReduce extends MapReduce implements Iterable<KeyFilter> {
      * BucketInput state.
      */
     public Iterator<KeyFilter> iterator() {
-        final Collection<KeyFilter> copyFilters = new LinkedList<KeyFilter>();
+        final Collection<KeyFilter> copyFilters = new LinkedList<>();
 
         synchronized (keyFiltersLock) {
             copyFilters.addAll(keyFilters);
         }
 
-        return new UnmodifiableIterator<KeyFilter>( copyFilters.iterator() );
+        return new UnmodifiableIterator<>(copyFilters.iterator());
     }
 
     /**
@@ -120,7 +120,7 @@ public class BucketMapReduce extends MapReduce implements Iterable<KeyFilter> {
      * @return the {@link KeyFilter}s copied into a collection as Object[] arrays
      */
     private Collection<Object[]> getKeyFilters() {
-        final Collection<Object[]> filters = new LinkedList<Object[]>();
+        final Collection<Object[]> filters = new LinkedList<>();
 
         for (KeyFilter filter : this) {
             filters.add(filter.asArray());

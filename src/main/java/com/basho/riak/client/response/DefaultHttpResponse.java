@@ -55,7 +55,7 @@ public class DefaultHttpResponse implements HttpResponse {
     public DefaultHttpResponse(String bucket, String key, int status, Map<String, String> headers, byte[] body,
             InputStream stream, org.apache.http.HttpResponse httpResponse, HttpRequestBase httpMethod) {
         if (headers == null) {
-            headers = new HashMap<String, String>();
+            headers = new HashMap<>();
         }
 
         this.bucket = bucket;

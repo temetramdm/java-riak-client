@@ -43,11 +43,11 @@ import com.basho.riak.client.http.response.StoreResponse;
  * @see com.basho.riak.client.Hosts#RIAK_URL
  */
 public class ITestMapReduceSearch {
-    public static enum Digit {
+    public enum Digit {
         ZERO, ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE
-    };
+    }
 
-    public static String SEARCH_BUCKET_NAME = "mr_stest_java";
+  public static String SEARCH_BUCKET_NAME = "mr_stest_java";
     public static int TEST_ITEMS = 200;
 
     @BeforeClass public static void setup() {

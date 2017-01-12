@@ -71,7 +71,7 @@ public class RiakBeanSerializerModifierTest {
     @SuppressWarnings("unused") private static final class RiakAnnotatedClass {
         @RiakKey private String keyField = "key";
         @RiakUsermeta(key = "metaKey1") private String metaValueField = "ONE";
-        @RiakUsermeta private Map<String, String> usermeta = new HashMap<String, String>();
+        @RiakUsermeta private Map<String, String> usermeta = new HashMap<>();
 
         private String someField = "TWO";
         private String someOtherField = "THREE";
@@ -104,7 +104,7 @@ public class RiakBeanSerializerModifierTest {
     @SuppressWarnings("unused") private static final class RiakAnnotatedClassWithPublicFields {
         @RiakKey public String keyField = "key";
         @RiakUsermeta(key = "metaKey1") public String metaValueField = "ONE";
-        @RiakUsermeta public Map<String, String> usermeta = new HashMap<String, String>();
+        @RiakUsermeta public Map<String, String> usermeta = new HashMap<>();
 
         public String someField = "TWO";
         public String someOtherField = "THREE";
@@ -115,7 +115,7 @@ public class RiakBeanSerializerModifierTest {
 		@RiakKey private String keyField = "key";
         @JsonProperty
 		@RiakUsermeta(key = "metaKey1") public String metaValueField = "ONE";
-        @RiakUsermeta public Map<String, String> usermeta = new HashMap<String, String>();
+        @RiakUsermeta public Map<String, String> usermeta = new HashMap<>();
 
         public String someField = "TWO";
         public String someOtherField = "THREE";

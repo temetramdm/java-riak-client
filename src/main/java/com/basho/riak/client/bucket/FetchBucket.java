@@ -69,11 +69,7 @@ public class FetchBucket implements RiakOperation<Bucket> {
     public Bucket execute() throws RiakRetryFailedException {
         BucketProperties properties;
         if (!lazyLoadProperties) {
-            properties = retrier.attempt(new Callable<BucketProperties>() {
-                public BucketProperties call() throws Exception {
-                    return client.fetchBucket(bucket);
-                }
-            });
+            properties = retrier.attempt(() -> client.fetchBucket(bucket));
         }
         else
         {

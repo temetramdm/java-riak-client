@@ -17,8 +17,8 @@ public class BucketProperties {
 	private Boolean allowMult;
 	private Integer nValue;
     private Boolean lastWriteWins;
-    private List<CommitHook> precommitHooks = new ArrayList<CommitHook>();
-    private List<CommitHook> postcommitHooks = new ArrayList<CommitHook>();
+    private List<CommitHook> precommitHooks = new ArrayList<>();
+    private List<CommitHook> postcommitHooks = new ArrayList<>();
     private ModuleFunction cHashFun;
     private ModuleFunction linkFun;
     private Long oldVClock;
@@ -42,10 +42,10 @@ public class BucketProperties {
 			
 			RpbBucketProps props = resp.getProps();
 			if (props.hasAllowMult()) {
-				allowMult = Boolean.valueOf(props.getAllowMult());
+				allowMult = props.getAllowMult();
 			}
 			if (props.hasNVal()) {
-				nValue = new Integer(props.getNVal());
+				nValue = props.getNVal();
 			}
             
             if (props.hasLastWriteWins()) {
@@ -134,7 +134,7 @@ public class BucketProperties {
     }
     
     private List<CommitHook> parseHooks(List<RpbCommitHook> hooks) {
-        List<CommitHook> list = new ArrayList<CommitHook>(hooks.size());
+        List<CommitHook> list = new ArrayList<>(hooks.size());
         for ( RpbCommitHook hook : hooks) {
             if (hook.hasName()) {
                 CommitHook ph = new CommitHook(hook.getName().toStringUtf8());
@@ -149,7 +149,7 @@ public class BucketProperties {
     }
     
     private List<RpbCommitHook> convertHooks(List<CommitHook> hookList) {
-        List<RpbCommitHook> pbHookList = new ArrayList<RpbCommitHook>(hookList.size());
+        List<RpbCommitHook> pbHookList = new ArrayList<>(hookList.size());
         RpbCommitHook.Builder builder = RpbCommitHook.newBuilder();
         RpbModFun.Builder mfBuilder = RpbModFun.newBuilder();
         for (CommitHook hook : hookList) {

@@ -21,10 +21,10 @@ import org.json.JSONObject;
  */
 public interface MapReduceFunction {
    
-   public static enum Types {
+   enum Types {
       ANONYMOUS,
       NAMED
    }
    
-   public JSONObject toJson();
+   JSONObject toJson();
 }

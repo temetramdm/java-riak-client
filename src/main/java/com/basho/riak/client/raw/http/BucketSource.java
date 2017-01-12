@@ -21,11 +21,9 @@ import com.basho.riak.client.query.RiakStreamingRuntimeException;
 import com.basho.riak.client.query.StreamingOperation;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -106,7 +104,7 @@ public class BucketSource implements StreamingOperation<String>
 
     public List<String> getAll() 
     {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         while (hasNext()) {
             list.add(next());
         }
@@ -135,7 +133,7 @@ public class BucketSource implements StreamingOperation<String>
 
         ReaperTask(Object holder, ListBucketsResponse conn) {
             this.bucketResponse = conn;
-            this.ref = new WeakReference<Object>(holder);
+            this.ref = new WeakReference<>(holder);
             BucketSource.timer.scheduleAtFixedRate(this, 500, 500);
         }
 

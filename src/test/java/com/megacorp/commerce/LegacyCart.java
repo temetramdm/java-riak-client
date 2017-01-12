@@ -23,7 +23,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 public class LegacyCart {
 
     private String userId;
-    private Set<String> cartItems = new CopyOnWriteArraySet<String>();
+    private Set<String> cartItems = new CopyOnWriteArraySet<>();
 
     /**
      * @return the userId

@@ -60,7 +60,7 @@ public class RiakBeanSerializerModifier extends BeanSerializerModifier {
                                                                BeanDescription beanDesc,
                                                                List<BeanPropertyWriter> beanProperties) {
 
-        List<BeanPropertyWriter> keptProperties = new LinkedList<BeanPropertyWriter>();
+        List<BeanPropertyWriter> keptProperties = new LinkedList<>();
 
         for (BeanPropertyWriter w : beanProperties) {
             if (keepProperty(w)) {

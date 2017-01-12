@@ -30,7 +30,7 @@ import com.basho.riak.client.util.CharsetUtils;
 public class TestCollectionWrapper {
 
     final static int MAX_ELS = 10;
-    List<String> els = new ArrayList<String>();
+    List<String> els = new ArrayList<>();
     CollectionWrapper<String> impl;
     
     @Before public void setup() {

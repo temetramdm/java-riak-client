@@ -85,7 +85,7 @@ public class StoreObject<T> implements RiakOperation<T> {
         this.object = object;
         this.client = client;
         this.retrier = retrier;
-        fetchObject = new FetchObject<T>(client, bucket, key, retrier);
+        fetchObject = new FetchObject<>(client, bucket, key, retrier);
         hasKey = key != null;
     }
 
@@ -145,13 +145,9 @@ public class StoreObject<T> implements RiakOperation<T> {
 
         final boolean hasMutated = !(mutation instanceof ConditionalStoreMutation<?>) || ((ConditionalStoreMutation<T>) mutation).hasMutated();
         if (hasMutated) {
-            final RiakResponse stored = retrier.attempt(new Callable<RiakResponse>() {
-                public RiakResponse call() throws Exception {
-                    return client.store(o, storeMeta);
-                }
-            });
+            final RiakResponse stored = retrier.attempt(() -> client.store(o, storeMeta));
         
-            final Collection<T> storedSiblings = new ArrayList<T>(stored.numberOfValues());
+            final Collection<T> storedSiblings = new ArrayList<>(stored.numberOfValues());
 
             // both HTTP and Protocol buffers will return tombstone siblings on a 
             // returnbody=true. There is no 'deletedvclock' option in RpbPutReq and
@@ -165,8 +161,7 @@ public class StoreObject<T> implements RiakOperation<T> {
                 storedSiblings.add(converter.toDomain(s));
             } 
             
-            return resolver.resolve(storedSiblings);
-            
+            return storedSiblings.size() <= 1 ? mutated : resolver.resolve(storedSiblings);
         } else {
             return mutated;
         }
@@ -531,7 +526,7 @@ public class StoreObject<T> implements RiakOperation<T> {
      * @return this StoreObject
      */
     public StoreObject<T> withValue(final T value) {
-        this.mutation = new ClobberMutation<T>(value);
+        this.mutation = new ClobberMutation<>(value);
         return this;
     }
     

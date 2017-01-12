@@ -23,7 +23,7 @@ import java.util.LinkedList;
  */
 public class LogicalFilterGroup implements LogicalFilter {
 
-    private final Collection<Object[]> filters = new LinkedList<Object[]>();
+    private final Collection<Object[]> filters = new LinkedList<>();
 
     public LogicalFilterGroup(KeyFilter... filters) {
         synchronized (this.filters) {

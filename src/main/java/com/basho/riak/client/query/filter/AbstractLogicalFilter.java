@@ -24,7 +24,7 @@ import java.util.LinkedList;
 public abstract class AbstractLogicalFilter implements LogicalFilter {
 
 
-    private final Collection<Object[]> filters = new LinkedList<Object[]>();
+    private final Collection<Object[]> filters = new LinkedList<>();
 
     public AbstractLogicalFilter(KeyFilter... filters) {
         synchronized (this.filters) {

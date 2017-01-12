@@ -26,21 +26,21 @@ public interface MapReducePhase {
     /**
      * Possible phase typess.
      */
-    public enum PhaseType {
+    enum PhaseType {
         LINK("link"), MAP("map"), REDUCE("reduce");
 
         private final String phaseName;
 
-        private PhaseType(String phaseName) {
+        PhaseType(String phaseName) {
             this.phaseName = phaseName;
         }
 
         public String toString() {
             return this.phaseName;
         }
-    };
+    }
 
-    /**
+  /**
      * Is this phase's output to be returned or only passed as input to the next phase.
      * @return true if the results are returned, false otherwise.
      */

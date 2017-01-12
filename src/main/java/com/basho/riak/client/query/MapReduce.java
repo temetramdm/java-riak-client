@@ -47,7 +47,7 @@ public abstract class MapReduce implements RiakOperation<MapReduceResult> {
 
     private final RawClient client;
 
-    private Collection<MapReducePhase> phases = new LinkedList<MapReducePhase>();
+    private Collection<MapReducePhase> phases = new LinkedList<>();
     private Long timeout;
 
     /**

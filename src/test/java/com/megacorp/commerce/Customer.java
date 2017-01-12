@@ -40,7 +40,7 @@ public class Customer {
 
     @RiakUsermeta(key = "language-pref") private String languageCode;
 
-    @RiakUsermeta private final Map<String, String> preferences = new HashMap<String, String>();
+    @RiakUsermeta private final Map<String, String> preferences = new HashMap<>();
 
     /**
      * @param userId

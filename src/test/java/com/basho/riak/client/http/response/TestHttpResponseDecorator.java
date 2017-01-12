@@ -35,7 +35,7 @@ public class TestHttpResponseDecorator {
         final String KEY = "key";
         final byte[] BODY = utf8StringToBytes("body");
         final int STATUS_CODE = 1;
-        final Map<String, String> HTTP_HEADERS = new HashMap<String, String>();
+        final Map<String, String> HTTP_HEADERS = new HashMap<>();
         final HttpRequestBase HTTP_METHOD = mock(HttpRequestBase.class);
         final boolean IS_SUCCESS = true;
         final boolean IS_ERROR = true;

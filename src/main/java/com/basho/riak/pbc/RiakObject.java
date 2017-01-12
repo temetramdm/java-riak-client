@@ -47,12 +47,12 @@ public class RiakObject {
 	private String contentType;
 	private List<RiakLink> links = Collections.synchronizedList(new ArrayList<RiakLink>());
     private final Object indexLock = new Object();
-    @SuppressWarnings("rawtypes") private List<RiakIndex> indexes = new ArrayList<RiakIndex>();
+    @SuppressWarnings("rawtypes") private List<RiakIndex> indexes = new ArrayList<>();
 	private String vtag;
 	private String contentEncoding;
 	private String charset;
 	private Object userMetaDataLock = new Object();
-	private Map<String,String> userMetaData = new LinkedHashMap<String, String>();
+	private Map<String,String> userMetaData = new LinkedHashMap<>();
 	private Integer lastModified;
 	private Integer lastModifiedUsec;
 	
@@ -72,12 +72,12 @@ public class RiakObject {
 			: Collections.synchronizedList(RiakLink.decode(content.getLinksList()));
 		
 		if (content.hasLastMod()) {
-			this.lastModified = new Integer(content.getLastMod());
-			this.lastModifiedUsec = new Integer(content.getLastModUsecs());
+			this.lastModified = content.getLastMod();
+			this.lastModifiedUsec = content.getLastModUsecs();
 		}
 
 		if (content.getUsermetaCount() > 0) {
-			Map<String, String> tmpUserMetaData = new LinkedHashMap<String, String>();
+			Map<String, String> tmpUserMetaData = new LinkedHashMap<>();
 			for (int i = 0; i < content.getUsermetaCount(); i++) {
 				RpbPair um = content.getUsermeta(i);
 				tmpUserMetaData.put(um.getKey().toStringUtf8(),
@@ -90,7 +90,7 @@ public class RiakObject {
 		}
 
         if (content.getIndexesCount() > 0) {
-            @SuppressWarnings("rawtypes") List<RiakIndex> indexes = new ArrayList<RiakIndex>();
+            @SuppressWarnings("rawtypes") List<RiakIndex> indexes = new ArrayList<>();
 
             for (RpbPair p : content.getIndexesList()) {
                 String name = p.getKey().toStringUtf8();
@@ -213,7 +213,7 @@ public class RiakObject {
 			b.setLastModUsecs(lastModifiedUsec);
 		}
 		
-		final Map<String, String> tmpUserMetaData = new LinkedHashMap<String, String>();
+		final Map<String, String> tmpUserMetaData = new LinkedHashMap<>();
 
 		synchronized (userMetaDataLock) {
 		    tmpUserMetaData.putAll(userMetaData);
@@ -275,7 +275,7 @@ public class RiakObject {
      */
     public Map<String, String> getUsermeta() {
         synchronized (userMetaDataLock) {
-            return new LinkedHashMap<String, String>(userMetaData);
+            return new LinkedHashMap<>(userMetaData);
         }
     }
 
@@ -321,7 +321,7 @@ public class RiakObject {
      */
     @SuppressWarnings("rawtypes") public List<RiakIndex> getIndexes() {
         synchronized (indexLock) {
-            return new ArrayList<RiakIndex>(indexes);
+            return new ArrayList<>(indexes);
         }
     }
 

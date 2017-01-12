@@ -69,8 +69,8 @@ public class StoreObjectTest {
     @Before public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         retrier = new DefaultRetrier(1);
-        conflictResolver = new DefaultResolver<String>();
-        store = new StoreObject<String>(rawClient, BUCKET, null, KEY, retrier);
+        conflictResolver = new DefaultResolver<>();
+        store = new StoreObject<>(rawClient, BUCKET, null, KEY, retrier);
     }
 
     /**

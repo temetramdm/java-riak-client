@@ -22,7 +22,6 @@ import com.basho.riak.client.cap.ClientId;
 import com.basho.riak.client.query.*;
 import com.basho.riak.client.query.indexes.FetchIndex;
 import com.basho.riak.client.raw.RawClient;
-import com.basho.riak.client.query.StreamingOperation;
 import com.basho.riak.client.raw.Transport;
 import com.basho.riak.client.raw.query.indexes.IndexQuery;
 

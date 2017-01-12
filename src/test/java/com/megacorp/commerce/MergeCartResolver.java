@@ -17,7 +17,7 @@ public final class MergeCartResolver implements ConflictResolver<ShoppingCart> {
 
     public ShoppingCart resolve(Collection<ShoppingCart> siblings) {
         String userId = null;
-        final Collection<String> items = new HashSet<String>();
+        final Collection<String> items = new HashSet<>();
 
         for (ShoppingCart c : siblings) {
             userId = c.getUserId();

@@ -45,15 +45,7 @@ public class LazyBucketProperties implements BucketProperties {
      * @param bucketName - Name of the Riak bucket 
      */
     public LazyBucketProperties(final RawClient client, final Retrier retrier, final String bucket) {
-        future = new FutureTask<BucketProperties>(new Callable<BucketProperties>() {
-            public BucketProperties call() throws Exception {
-                return retrier.attempt(new Callable<BucketProperties>() {
-                    public BucketProperties call() throws Exception {
-                        return client.fetchBucket(bucket);
-                    }
-                });
-            }
-        });
+        future = new FutureTask<>(() -> retrier.attempt(() -> client.fetchBucket(bucket)));
     }
 
     /**

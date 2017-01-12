@@ -69,7 +69,7 @@ public class RiakBucketInfo {
         if (keys != null) {
             this.keys = keys;
         } else {
-            this.keys = new ArrayList<String>();
+            this.keys = new ArrayList<>();
         }
     }
 

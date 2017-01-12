@@ -45,15 +45,15 @@ public class RequestMeta implements IRequestMeta {
 	public void preparePut(com.basho.riak.protobuf.RiakKvPB.RpbPutReq.Builder builder) {
 
 		if (returnBody != null) {
-			builder.setReturnBody(returnBody.booleanValue());
+			builder.setReturnBody(returnBody);
 		}
 		
 		if (writeQuorum != null) {
-			builder.setW(writeQuorum.intValue());
+			builder.setW(writeQuorum);
 		}
 		
 		if (durableWriteQuorum != null) {
-			builder.setDw(durableWriteQuorum.intValue());
+			builder.setDw(durableWriteQuorum);
 		}
 
         if (pw != null) {
@@ -69,11 +69,11 @@ public class RequestMeta implements IRequestMeta {
         }
 
         if (returnHead != null) {
-            builder.setReturnHead(returnHead.booleanValue());
+            builder.setReturnHead(returnHead);
         }
         
         if (asis != null) {
-            builder.setAsis(asis.booleanValue());
+            builder.setAsis(asis);
         }
         
         if (timeout != null) {
@@ -84,15 +84,15 @@ public class RequestMeta implements IRequestMeta {
     public void prepareCounter(com.basho.riak.protobuf.RiakKvPB.RpbCounterUpdateReq.Builder builder)
     {
         if (returnBody != null) {
-			builder.setReturnvalue(returnBody.booleanValue());
+			builder.setReturnvalue(returnBody);
 		}
 		
 		if (writeQuorum != null) {
-			builder.setW(writeQuorum.intValue());
+			builder.setW(writeQuorum);
 		}
 		
 		if (durableWriteQuorum != null) {
-			builder.setDw(durableWriteQuorum.intValue());
+			builder.setDw(durableWriteQuorum);
 		}
 
         if (pw != null) {
@@ -104,7 +104,7 @@ public class RequestMeta implements IRequestMeta {
 	 * @see com.trifork.riak.IRequestMeta#returnBody(boolean)
 	 */
 	public IRequestMeta returnBody(boolean ret) {
-		returnBody = Boolean.valueOf(ret);
+		returnBody = ret;
 		return this;
 	}
 
@@ -112,7 +112,7 @@ public class RequestMeta implements IRequestMeta {
 	 * @see com.trifork.riak.IRequestMeta#w(int)
 	 */
 	public IRequestMeta w(int w) {
-	    writeQuorum = new Integer(w);
+	    writeQuorum = w;
 		return this;
 	}
 
@@ -120,7 +120,7 @@ public class RequestMeta implements IRequestMeta {
 	 * @see com.trifork.riak.IRequestMeta#dw(int)
 	 */
 	public IRequestMeta dw(int dw) {
-	    durableWriteQuorum = new Integer(dw);
+	    durableWriteQuorum = dw;
 		return this;
 	}
 	

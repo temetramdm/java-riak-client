@@ -52,6 +52,6 @@ public interface StreamHandler {
      *            return.
      * @return true if the object was processed; false otherwise
      */
-    public boolean process(String bucket, String key, int status, Map<String, String> headers, InputStream in,
-                           HttpResponse httpMethod);
+    boolean process(String bucket, String key, int status, Map<String, String> headers, InputStream in,
+                    HttpResponse httpMethod);
 }

@@ -36,7 +36,7 @@ public class IndexResponseV2
     public IndexResponseV2(IndexRequest request, HttpResponse r) throws JSONException
     {
         this.request = request;
-        entries = new ArrayList<IndexEntry>();
+        entries = new ArrayList<>();
         
         if (r != null && r.isSuccess())
         {

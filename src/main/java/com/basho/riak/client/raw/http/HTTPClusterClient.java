@@ -65,7 +65,7 @@ public class HTTPClusterClient extends ClusterClient<HTTPClientConfig> {
      * .raw.config.ClusterConfig)
      */
     @Override protected RawClient[] fromConfig(ClusterConfig<HTTPClientConfig> clusterConfig) throws IOException {
-        List<RawClient> clients = new ArrayList<RawClient>();
+        List<RawClient> clients = new ArrayList<>();
         int maxTotal = clusterConfig.getTotalMaximumConnections();
 
         // IE limitless

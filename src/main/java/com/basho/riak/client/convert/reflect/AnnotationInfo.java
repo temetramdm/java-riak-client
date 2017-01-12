@@ -216,7 +216,7 @@ public class AnnotationInfo {
     }
     
     @SuppressWarnings({ "unchecked", "rawtypes" }) public <T> Map<String, String> getUsermetaData(T obj) {
-        final Map<String, String> usermetaData = new LinkedHashMap<String, String>();
+        final Map<String, String> usermetaData = new LinkedHashMap<>();
         Map<String, String> objectMetaMap = null;
 
         for (UsermetaField f : usermetaItemFields) {
@@ -241,7 +241,7 @@ public class AnnotationInfo {
 
     public <T> void setUsermetaData(final Map<String, String> usermetaData, T obj) {
         // copy as we will modify
-        final Map<String, String> localMetaCopy = new HashMap<String, String>(usermetaData);
+        final Map<String, String> localMetaCopy = new HashMap<>(usermetaData);
 
         // set any individual annotated fields
         for (UsermetaField f : usermetaItemFields) {
@@ -277,7 +277,7 @@ public class AnnotationInfo {
                     } else if (Integer.class.equals(genericType)) {
                         // Supporting Integer as legacy. All new code should use Long
                         Set<Integer> iSet = (Set<Integer>) getFieldValue(f.getField(), obj);
-                        Set<Long> lSet = new HashSet<Long>();
+                        Set<Long> lSet = new HashSet<>();
                         for (Integer i : iSet) {
                             lSet.add(i.longValue());
                         }
@@ -314,7 +314,7 @@ public class AnnotationInfo {
                         } else if (Integer.class.equals(genericType)) {
                             // Supporting Integer as legacy. All new code should use Long
                             Set<Integer> iSet = (Set<Integer>) val;
-                            Set<Long> lSet = new HashSet<Long>();
+                            Set<Long> lSet = new HashSet<>();
                             for (Integer i : iSet) {
                                 lSet.add(i.longValue());
                             }
@@ -369,7 +369,7 @@ public class AnnotationInfo {
                 if (Integer.class.equals(f.getType()) || int.class.equals(f.getType())) {
                     // Support Integer / int for legacy. New code should use Long / long
                     Set<Long> lSet = indexes.getIntIndex(f.getIndexName());
-                    Set<Integer> iSet = new HashSet<Integer>();
+                    Set<Integer> iSet = new HashSet<>();
                     for (Long l : lSet ) {
                         iSet.add(l.intValue());
                     }
@@ -388,7 +388,7 @@ public class AnnotationInfo {
     }
 
     @SuppressWarnings("unchecked") public <T> Collection<RiakLink> getLinks(T obj) {
-        final Collection<RiakLink> links = new ArrayList<RiakLink>();
+        final Collection<RiakLink> links = new ArrayList<>();
         if (riakLinksField != null) {
             Object o = getFieldValue(riakLinksField, obj);
             if (o != null && o instanceof Collection) {

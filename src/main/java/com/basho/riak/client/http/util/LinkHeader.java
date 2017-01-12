@@ -64,8 +64,8 @@ public class LinkHeader {
      *         Link header, each Map in the List represents a set of parameters)
      */
     public static Map<String, List<Map<String, String>>> parse(String header) {
-        Map<String, List<Map<String, String>>> out = 
-            new LinkedHashMap<String, List<Map<String, String>>>();
+        Map<String, List<Map<String, String>>> out =
+           new LinkedHashMap<>();
 
         if (header == null || header.length() == 0)
             return out;
@@ -75,7 +75,7 @@ public class LinkHeader {
             String link = m.group().trim();
             String[] urlandparams = link.split(">", 2);
             String url = urlandparams[0].substring(1);
-            Map<String, String> parsedLink = new HashMap<String, String>();
+            Map<String, String> parsedLink = new HashMap<>();
 
             if (urlandparams.length > 1) {
                 String params = urlandparams[1];
@@ -88,15 +88,10 @@ public class LinkHeader {
                     }
                 }
             }
-            
-            List<Map<String, String>> existing = out.get(url);
-            
-            if (existing == null) {
-                existing = new LinkedList<Map<String,String>>();
-                out.put(url, existing);
-            }
-                
-            existing.add(parsedLink);
+
+          List<Map<String, String>> existing = out.computeIfAbsent(url, k -> new LinkedList<>());
+
+          existing.add(parsedLink);
             
         }
 
@@ -105,7 +100,7 @@ public class LinkHeader {
 
     private static List<String> splitParams(String s) {
 
-        List<String> items = new ArrayList<String>();
+        List<String> items = new ArrayList<>();
         if (s == null || s.length() == 0)
             return items;
 

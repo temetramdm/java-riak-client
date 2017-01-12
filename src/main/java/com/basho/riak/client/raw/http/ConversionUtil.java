@@ -74,7 +74,6 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.databind.type.TypeFactory;
 
 /**
  * Static methods used internally by {@link HTTPClientAdapter} for converting
@@ -109,7 +108,7 @@ public final class ConversionUtil {
      *         <code>siblings</code>
      */
     static IRiakObject[] convert(Collection<com.basho.riak.client.http.RiakObject> siblings) {
-        final Collection<IRiakObject> results = new ArrayList<IRiakObject>();
+        final Collection<IRiakObject> results = new ArrayList<>();
 
         for (com.basho.riak.client.http.RiakObject object : siblings) {
             results.add(convert(object));
@@ -141,7 +140,7 @@ public final class ConversionUtil {
             builder.withLastModified(lastModDate.getTime());
         }
 
-        final Collection<RiakLink> links = new ArrayList<RiakLink>();
+        final Collection<RiakLink> links = new ArrayList<>();
 
         for (com.basho.riak.client.http.RiakLink link : o.iterableLinks()) {
             links.add(convert(link));
@@ -162,7 +161,7 @@ public final class ConversionUtil {
 
         builder.withContentType(o.getContentType());
 
-        final Map<String, String> userMetaData = new HashMap<String, String>();
+        final Map<String, String> userMetaData = new HashMap<>();
 
         for (String key : o.usermetaKeys()) {
             userMetaData.put(key, o.getUsermetaItem(key));
@@ -252,7 +251,7 @@ public final class ConversionUtil {
         final List<com.basho.riak.client.http.RiakIndex<Long>> intIndexes = convertIntIndexes(object.allIntIndexesV2());
         final List<com.basho.riak.client.http.RiakIndex<String>> binIndexes = convertBinIndexes(object.allBinIndexes());
 
-        @SuppressWarnings("rawtypes") final List<com.basho.riak.client.http.RiakIndex> allIndexes = new ArrayList<com.basho.riak.client.http.RiakIndex>(intIndexes);
+        @SuppressWarnings("rawtypes") final List<com.basho.riak.client.http.RiakIndex> allIndexes = new ArrayList<>(intIndexes);
         allIndexes.addAll(binIndexes);
 
         com.basho.riak.client.http.RiakObject riakObject = new com.basho.riak.client.http.RiakObject(
@@ -275,7 +274,7 @@ public final class ConversionUtil {
      * @return
      */
     private static List<com.basho.riak.client.http.RiakIndex<String>> convertBinIndexes(Map<BinIndex, Set<String>> binIndexes) {
-        final List<com.basho.riak.client.http.RiakIndex<String>> converted = new ArrayList<com.basho.riak.client.http.RiakIndex<String>>();
+        final List<com.basho.riak.client.http.RiakIndex<String>> converted = new ArrayList<>();
 
         for (Map.Entry<BinIndex, Set<String>> index : binIndexes.entrySet()) {
             String name = index.getKey().getFullname();
@@ -291,7 +290,7 @@ public final class ConversionUtil {
      * @return
      */
     private static List<com.basho.riak.client.http.RiakIndex<Long>> convertIntIndexes(Map<IntIndex, Set<Long>> intIndexes) {
-        final List<com.basho.riak.client.http.RiakIndex<Long>> converted = new ArrayList<com.basho.riak.client.http.RiakIndex<Long>>();
+        final List<com.basho.riak.client.http.RiakIndex<Long>> converted = new ArrayList<>();
 
         for (Map.Entry<IntIndex, Set<Long>> index : intIndexes.entrySet()) {
             String name = index.getKey().getFullname();
@@ -320,7 +319,7 @@ public final class ConversionUtil {
      * @return the map of user meta (may be empty, won't be null)
      */
     static Map<String, String> getUserMetaData(IRiakObject object) {
-        final Map<String, String> userMetaData = new HashMap<String, String>();
+        final Map<String, String> userMetaData = new HashMap<>();
 
         for (Entry<String, String> entry : object.userMetaEntries()) {
             userMetaData.put(entry.getKey(), entry.getValue());
@@ -339,7 +338,7 @@ public final class ConversionUtil {
      */
     static List<com.basho.riak.client.http.RiakLink> getLinks(IRiakObject object) {
 
-        final List<com.basho.riak.client.http.RiakLink> links = new ArrayList<com.basho.riak.client.http.RiakLink>();
+        final List<com.basho.riak.client.http.RiakLink> links = new ArrayList<>();
 
         for (RiakLink link : object) {
             links.add(convert(link));
@@ -647,21 +646,17 @@ public final class ConversionUtil {
      * @return a new {@link WalkResult}
      */
     static WalkResult convert(WalkResponse walkResponse) {
-       final Collection<Collection<IRiakObject>> convertedSteps = new LinkedList<Collection<IRiakObject>>();
+       final Collection<Collection<IRiakObject>> convertedSteps = new LinkedList<>();
 
        for(List<com.basho.riak.client.http.RiakObject> step : walkResponse.getSteps()) {
-            final LinkedList<IRiakObject> objects = new LinkedList<IRiakObject>();
+            final LinkedList<IRiakObject> objects = new LinkedList<>();
             for(com.basho.riak.client.http.RiakObject o : step) {
                 objects.add(convert(o));
             }
             convertedSteps.add(objects);
         }
 
-       return new WalkResult() {
-            public Iterator<Collection<IRiakObject>> iterator() {
-                return  new UnmodifiableIterator<Collection<IRiakObject>>( convertedSteps.iterator() );
-            }
-        };
+       return () -> new UnmodifiableIterator<>(convertedSteps.iterator());
     }
 
     /**

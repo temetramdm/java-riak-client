@@ -56,7 +56,7 @@ public class ClusterConfigTest {
         List<PBClientConfig> clientConfigs = clusterConfig.getClients();
         assertEquals("Expected 3 client configs", 3, clientConfigs.size());
 
-        List<String> clientHosts = new ArrayList<String>();
+        List<String> clientHosts = new ArrayList<>();
 
         for (PBClientConfig pbc : clusterConfig.getClients()) {
             clientHosts.add(pbc.getHost());
@@ -83,7 +83,7 @@ public class ClusterConfigTest {
         List<PBClientConfig> clientConfigs = clusterConfig.getClients();
         assertEquals("Expected 3 client configs", 3, clientConfigs.size());
 
-        List<String> clientHosts = new ArrayList<String>();
+        List<String> clientHosts = new ArrayList<>();
 
         for (PBClientConfig pbc : clusterConfig.getClients()) {
             clientHosts.add(pbc.getHost());

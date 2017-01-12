@@ -492,6 +492,6 @@ public class DomainBucket<T> {
      * @return a DomainBucketBuilder for the wrapped bucket
      */
     public static <T> DomainBucketBuilder<T> builder(Bucket b, Class<T> clazz) {
-        return new DomainBucketBuilder<T>(b, clazz);
+        return new DomainBucketBuilder<>(b, clazz);
     }
 }

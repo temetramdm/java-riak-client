@@ -224,7 +224,7 @@ public class RiakObject {
 
         setLinks(object.links);
 
-        userMetaData = new HashMap<String, String>();
+        userMetaData = new HashMap<>();
         if (object.userMetaData != null) {
             userMetaData.putAll(object.userMetaData);
         }
@@ -396,17 +396,17 @@ public class RiakObject {
 
     private void safeSetLinks(final List<RiakLink> links) {
         if (links == null) {
-            this.links = new CopyOnWriteArrayList<RiakLink>();
+            this.links = new CopyOnWriteArrayList<>();
         } else {
-            this.links = new CopyOnWriteArrayList<RiakLink>(deepCopy(links));
+            this.links = new CopyOnWriteArrayList<>(deepCopy(links));
         }
     }
 
     @SuppressWarnings("rawtypes") private void safeSetIndexes(final List<RiakIndex> indexes) {
         if (indexes == null) {
-            this.indexes = new ArrayList<RiakIndex>();
+            this.indexes = new ArrayList<>();
         } else {
-            this.indexes = new ArrayList<RiakIndex>(indexes);
+            this.indexes = new ArrayList<>(indexes);
         }
     }
 
@@ -417,7 +417,7 @@ public class RiakObject {
      * @return a deep copy of List.
      */
     private List<RiakLink> deepCopy(List<RiakLink> links) {
-        final ArrayList<RiakLink> copyLinks = new ArrayList<RiakLink>();
+        final ArrayList<RiakLink> copyLinks = new ArrayList<>();
 
         for(RiakLink link : links) {
             copyLinks.add(new RiakLink(link));
@@ -482,9 +482,9 @@ public class RiakObject {
 
     private void safeSetUsermetaData(final Map<String, String> userMetaData) {
         if (userMetaData == null) {
-            this.userMetaData = new ConcurrentHashMap<String, String>();
+            this.userMetaData = new ConcurrentHashMap<>();
         } else {
-            this.userMetaData = new ConcurrentHashMap<String, String>(userMetaData);
+            this.userMetaData = new ConcurrentHashMap<>(userMetaData);
         }
     }
 
@@ -543,7 +543,7 @@ public class RiakObject {
      */
     @SuppressWarnings("rawtypes") public List<RiakIndex> getIndexes() {
         synchronized (indexLock) {
-            return new ArrayList<RiakIndex>(indexes);
+            return new ArrayList<>(indexes);
         }
     }
 
@@ -942,10 +942,6 @@ public class RiakObject {
      * @see com.basho.riak.client.HttpRiakObject#iterableLinks()
      */
     public Iterable<RiakLink> iterableLinks() {
-        return new Iterable<RiakLink>() {
-            public Iterator<RiakLink> iterator() {
-                return links.iterator();
-            }
-        };
+        return () -> links.iterator();
     }
 }

@@ -228,7 +228,7 @@ public abstract class ITestORM extends ITestBucket {
 
         final Bucket maps = client.createBucket(bucketName).allowSiblings(true).execute();
 
-        final Map<String, String> myMap = new HashMap<String, String>();
+        final Map<String, String> myMap = new HashMap<>();
         myMap.put("size", "s");
         myMap.put("colour", "red");
         myMap.put("style", "short-sleeve");
@@ -247,7 +247,7 @@ public abstract class ITestORM extends ITestBucket {
 
         final Bucket lists = client.createBucket(bucketName).allowSiblings(true).execute();
 
-        final Collection<String> myList = new ArrayList<String>();
+        final Collection<String> myList = new ArrayList<>();
         myList.add("red");
         myList.add("yellow");
         myList.add("pink");
@@ -269,7 +269,7 @@ public abstract class ITestORM extends ITestBucket {
         Department dept = new Department(deptId);
         dept.setName(name);
 
-        Collection<RiakLink> employees = new ArrayList<RiakLink>();
+        Collection<RiakLink> employees = new ArrayList<>();
         employees.add(new RiakLink("employees", "123", "manager"));
         employees.add(new RiakLink("employees", "124", "staff"));
         employees.add(new RiakLink("employees", "125", "staff"));

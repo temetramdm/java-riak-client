@@ -70,12 +70,7 @@ public class FetchIndex<T> implements RiakOperation<List<String>> {
         }
         final IndexQuery indexQuery = makeIndexQuery();
 
-        List<String> keys = retrier.attempt(new Callable<List<String>>() {
-            public List<String> call() throws Exception {
-                return client.fetchIndex(indexQuery);
-            }
-
-        });
+        List<String> keys = retrier.attempt(() -> client.fetchIndex(indexQuery));
 
         return keys;
     }

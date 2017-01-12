@@ -21,12 +21,10 @@ import com.basho.riak.client.RiakRetryFailedException;
 import com.basho.riak.client.builders.BucketPropertiesBuilder;
 import com.basho.riak.client.cap.Quora;
 import com.basho.riak.client.cap.Retrier;
-import com.basho.riak.client.http.util.Constants;
 import com.basho.riak.client.operations.RiakOperation;
 import com.basho.riak.client.query.functions.NamedErlangFunction;
 import com.basho.riak.client.query.functions.NamedFunction;
 import com.basho.riak.client.raw.RawClient;
-import com.basho.riak.client.raw.Transport;
 
 /**
  * A {@link RiakOperation} for creating/updating a {@link Bucket}.
@@ -101,21 +99,15 @@ public class WriteBucket implements RiakOperation<Bucket> {
     public Bucket execute() throws RiakRetryFailedException {
         final BucketProperties propsToStore = builder.precommitHooks(precommitHooks).postcommitHooks(postcommitHooks).build();
 
-        retrier.attempt(new Callable<Void>() {
-            public Void call() throws Exception {
-                client.updateBucket(name, propsToStore);
-                return null;
-            }
+        retrier.attempt((Callable<Void>) () -> {
+            client.updateBucket(name, propsToStore);
+            return null;
         });
 
         BucketProperties properties;
         
         if (!lazyLoadProperties) {
-            properties = retrier.attempt(new Callable<BucketProperties>() {
-                public BucketProperties call() throws Exception {
-                    return client.fetchBucket(name);
-                }
-            });
+            properties = retrier.attempt(() -> client.fetchBucket(name));
         } else {
             properties = new LazyBucketProperties(client, retrier, name);
         }
@@ -182,7 +174,7 @@ public class WriteBucket implements RiakOperation<Bucket> {
     public WriteBucket addPrecommitHook(NamedFunction preCommitHook) {
         if(preCommitHook != null) {
             if(precommitHooks == null) {
-                precommitHooks = new ArrayList<NamedFunction>();
+                precommitHooks = new ArrayList<>();
             }
             precommitHooks.add(preCommitHook);
         }
@@ -209,7 +201,7 @@ public class WriteBucket implements RiakOperation<Bucket> {
     public WriteBucket addPostcommitHook(NamedErlangFunction postcommitHook) {
         if(postcommitHook != null) {
             if(postcommitHooks == null) {
-                postcommitHooks = new ArrayList<NamedErlangFunction>();
+                postcommitHooks = new ArrayList<>();
             }
             postcommitHooks.add(postcommitHook);
         }

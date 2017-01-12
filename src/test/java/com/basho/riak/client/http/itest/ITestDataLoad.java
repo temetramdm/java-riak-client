@@ -62,22 +62,19 @@ public class ITestDataLoad {
         final AtomicInteger idx = new AtomicInteger(0);
         
         for (int i = 0; i < threads.length; i++) {
-            threads[i] = new Thread(new Runnable() {
-                
-                public void run() {
-                    RiakClient riak = new RiakClient(RIAK_URL);
-                    Random rnd = new Random();
-                    for (int i = 0; i < NUM_OBJECTS / NUM_THREADS; i++) {
-                        String key = "data-load-" + idx.getAndIncrement();
-                        String value = CharsetUtils.asUTF8String(data[rnd.nextInt(NUM_VALUES)]);
-                        RiakObject o = riak.fetch(BUCKET, key).getObject();
-                        if (o == null) {
-                            o = new RiakObject(riak, BUCKET, key, CharsetUtils.utf8StringToBytes(value));
-                        } else {
-                            o.setValue(value);
-                        }
-                        Utils.assertSuccess(o.store());
+            threads[i] = new Thread(() -> {
+                RiakClient riak = new RiakClient(RIAK_URL);
+                Random rnd = new Random();
+                for (int i1 = 0; i1 < NUM_OBJECTS / NUM_THREADS; i1++) {
+                    String key = "data-load-" + idx.getAndIncrement();
+                    String value = CharsetUtils.asUTF8String(data[rnd.nextInt(NUM_VALUES)]);
+                    RiakObject o = riak.fetch(BUCKET, key).getObject();
+                    if (o == null) {
+                        o = new RiakObject(riak, BUCKET, key, CharsetUtils.utf8StringToBytes(value));
+                    } else {
+                        o.setValue(value);
                     }
+                    Utils.assertSuccess(o.store());
                 }
             });
             threads[i].start();

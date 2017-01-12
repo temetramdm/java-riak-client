@@ -39,7 +39,7 @@ public class IndexResponse extends HttpResponseDecorator implements HttpResponse
     public IndexResponse(HttpResponse r) throws JSONException {
         super(r);
 
-        keys = new ArrayList<String>();
+        keys = new ArrayList<>();
 
         if (r != null && r.isSuccess()) {
             Collection<String> b;

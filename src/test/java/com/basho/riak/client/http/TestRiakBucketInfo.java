@@ -29,7 +29,7 @@ public class TestRiakBucketInfo {
 
     RiakBucketInfo impl;
     JSONObject schema = new JSONObject();
-    List<String> keys = new ArrayList<String>();
+    List<String> keys = new ArrayList<>();
 
     @Test public void constructor_schema_and_keys_returned_by_accessors() {
         final String KEY = "key";

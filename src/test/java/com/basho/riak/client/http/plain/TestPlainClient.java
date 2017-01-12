@@ -133,10 +133,9 @@ public class TestPlainClient {
             try {
                 impl.setBucketSchema(bucket, bucketInfo, meta);
                 threw = false;
-            } catch (RiakIOException e) {
-            } catch (RiakResponseException e) {
+            } catch (RiakIOException | RiakResponseException e) {
             }
-            assertTrue("Wrong behavior for status " + i, throwsForAllStatusesExcept(new int[] { 204 }, i, threw));
+          assertTrue("Wrong behavior for status " + i, throwsForAllStatusesExcept(new int[] { 204 }, i, threw));
         }
     }
 
@@ -149,10 +148,9 @@ public class TestPlainClient {
             try {
                 impl.listBucket(bucket, meta);
                 threw = false;
-            } catch (RiakIOException e) {
-            } catch (RiakResponseException e) {
+            } catch (RiakIOException | RiakResponseException e) {
             }
-            assertTrue("Wrong behavior for status " + i, throwsForAllStatusesExcept(new int[] { 200 }, i, threw));
+          assertTrue("Wrong behavior for status " + i, throwsForAllStatusesExcept(new int[] { 200 }, i, threw));
         }
     }
 
@@ -165,10 +163,9 @@ public class TestPlainClient {
             try {
                 impl.store(object, meta);
                 threw = false;
-            } catch (RiakIOException e) {
-            } catch (RiakResponseException e) {
+            } catch (RiakIOException | RiakResponseException e) {
             }
-            assertTrue("Wrong behavior for status " + i, throwsForAllStatusesExcept(new int[] { 200, 204 }, i, threw));
+          assertTrue("Wrong behavior for status " + i, throwsForAllStatusesExcept(new int[] { 200, 204 }, i, threw));
         }
     }
 
@@ -182,10 +179,9 @@ public class TestPlainClient {
             try {
                 impl.fetchMeta(bucket, key, meta);
                 threw = false;
-            } catch (RiakIOException e) {
-            } catch (RiakResponseException e) {
+            } catch (RiakIOException | RiakResponseException e) {
             }
-            assertTrue("Wrong behavior for status " + i, throwsForAllStatusesExcept(new int[] { 200, 304, 404 }, i, threw));
+          assertTrue("Wrong behavior for status " + i, throwsForAllStatusesExcept(new int[] { 200, 304, 404 }, i, threw));
         }
     }
 
@@ -218,10 +214,9 @@ public class TestPlainClient {
             try {
                 impl.fetch(bucket, key, meta);
                 threw = false;
-            } catch (RiakIOException e) {
-            } catch (RiakResponseException e) {
+            } catch (RiakIOException | RiakResponseException e) {
             }
-            assertTrue("Wrong behavior for status " + i, throwsForAllStatusesExcept(new int[] { 200, 304, 404 }, i, threw));
+          assertTrue("Wrong behavior for status " + i, throwsForAllStatusesExcept(new int[] { 200, 304, 404 }, i, threw));
         }
     }
     
@@ -254,10 +249,9 @@ public class TestPlainClient {
             try {
                 impl.fetchAll(bucket, key, meta);
                 threw = false;
-            } catch (RiakIOException e) {
-            } catch (RiakResponseException e) {
+            } catch (RiakIOException | RiakResponseException e) {
             }
-            assertTrue("Wrong behavior for status " + i, throwsForAllStatusesExcept(new int[] { 200, 304, 404 }, i, threw));
+          assertTrue("Wrong behavior for status " + i, throwsForAllStatusesExcept(new int[] { 200, 304, 404 }, i, threw));
         }
     }
     
@@ -272,15 +266,11 @@ public class TestPlainClient {
 
     @Test public void fetchAll_returns_siblings_if_exists() throws RiakIOException, RiakResponseException {
         final FetchResponse mockResponse = mock(FetchResponse.class);
-        final List<RiakObject> siblings = new ArrayList<RiakObject>();
+        final List<RiakObject> siblings = new ArrayList<>();
 
         when(mockResponse.getStatusCode()).thenReturn(200);
         when(mockResponse.hasSiblings()).thenReturn(true);
-        when(mockResponse.getSiblings()).thenAnswer(new Answer<List<? extends RiakObject>>() {
-            public List<? extends RiakObject> answer(InvocationOnMock invocation) throws Throwable {
-                return siblings; 
-            }
-        });
+        when(mockResponse.getSiblings()).thenAnswer(invocation -> siblings);
         when(mockRiakClient.fetch(bucket, key, meta)).thenReturn(mockResponse);
 
         assertSame(siblings, impl.fetchAll(bucket, key, meta));
@@ -320,10 +310,9 @@ public class TestPlainClient {
             try {
                 impl.delete(bucket, key, meta);
                 threw = false;
-            } catch (RiakIOException e) {
-            } catch (RiakResponseException e) {
+            } catch (RiakIOException | RiakResponseException e) {
             }
-            assertTrue("Wrong behavior for status " + i, throwsForAllStatusesExcept(new int[] { 204, 404 }, i, threw));
+          assertTrue("Wrong behavior for status " + i, throwsForAllStatusesExcept(new int[] { 204, 404 }, i, threw));
         }
     }
 
@@ -337,10 +326,9 @@ public class TestPlainClient {
             try {
                 impl.walk(bucket, key, walkSpec, meta);
                 threw = false;
-            } catch (RiakIOException e) {
-            } catch (RiakResponseException e) {
+            } catch (RiakIOException | RiakResponseException e) {
             }
-            assertTrue("Wrong behavior for status " + i, throwsForAllStatusesExcept(new int[] { 200, 404 }, i, threw));
+          assertTrue("Wrong behavior for status " + i, throwsForAllStatusesExcept(new int[] { 200, 404 }, i, threw));
         }
     }
 

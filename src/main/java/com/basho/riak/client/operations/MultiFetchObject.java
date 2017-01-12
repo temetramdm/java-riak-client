@@ -19,7 +19,6 @@ import com.basho.riak.client.cap.ConflictResolver;
 import com.basho.riak.client.cap.Quora;
 import com.basho.riak.client.cap.Quorum;
 import com.basho.riak.client.cap.Retrier;
-import com.basho.riak.client.cap.VClock;
 import com.basho.riak.client.convert.Converter;
 import com.basho.riak.client.query.MultiFetchFuture;
 import com.basho.riak.client.raw.FetchMeta;
@@ -107,7 +106,7 @@ public class MultiFetchObject<T> implements RiakOperation<List<MultiFetchFuture<
      */
     public static final int DEFAULT_POOL_MAX_SIZE = Runtime.getRuntime().availableProcessors() * 2;
     
-    private static final LinkedBlockingQueue<Runnable> workQueue = new LinkedBlockingQueue<Runnable>();
+    private static final LinkedBlockingQueue<Runnable> workQueue = new LinkedBlockingQueue<>();
     private static final ThreadPoolExecutor threadPool = 
         new ThreadPoolExecutor(DEFAULT_POOL_MAX_SIZE, DEFAULT_POOL_MAX_SIZE, 5, TimeUnit.SECONDS, workQueue);
     
@@ -158,7 +157,7 @@ public class MultiFetchObject<T> implements RiakOperation<List<MultiFetchFuture<
      */
     public List<MultiFetchFuture<T>> execute() 
     {
-        List<MultiFetchFuture<T>> futureList = new ArrayList<MultiFetchFuture<T>>(keys.size());
+        List<MultiFetchFuture<T>> futureList = new ArrayList<>(keys.size());
         FetchMeta fetchMeta = builder.build();
         for (String key : keys)
         {
@@ -166,7 +165,7 @@ public class MultiFetchObject<T> implements RiakOperation<List<MultiFetchFuture<
                                                 .withConverter(converter)
                                                 .withResolver(resolver);
             
-            MultiFetchCallable<T> callable = new MultiFetchCallable<T>(fetchObject);
+            MultiFetchCallable<T> callable = new MultiFetchCallable<>(fetchObject);
             MultiFetchFuture<T> task = new MultiFetchFuture(key, callable);
             futureList.add(task);
             threadPool.execute(task);

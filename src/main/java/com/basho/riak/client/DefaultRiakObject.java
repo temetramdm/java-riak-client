@@ -125,9 +125,9 @@ public class DefaultRiakObject implements IRiakObject {
         Map<String, String> copy;
 
         if (userMeta == null) {
-            copy = new HashMap<String, String>();
+            copy = new HashMap<>();
         } else {
-            copy = new HashMap<String, String>(userMeta);
+            copy = new HashMap<>(userMeta);
         }
 
         return copy;
@@ -142,9 +142,9 @@ public class DefaultRiakObject implements IRiakObject {
     private <T> Collection<T> copy(Collection<T> l) {
         Collection<T> copy;
         if (l == null) {
-            copy = new ArrayList<T>();
+            copy = new ArrayList<>();
         } else {
-            copy = new ArrayList<T>(l);
+            copy = new ArrayList<>(l);
         }
         return copy;
     }
@@ -214,7 +214,7 @@ public class DefaultRiakObject implements IRiakObject {
      * @see com.basho.riak.client.IRiakObject#getMeta()
      */
     public Map<String, String> getMeta() {
-        return new HashMap<String, String>(userMeta);
+        return new HashMap<>(userMeta);
     }
 
     /**
@@ -254,7 +254,7 @@ public class DefaultRiakObject implements IRiakObject {
      * an {@link UnmodifiableIterator} view on the RiakLinks
      */
     public Iterator<RiakLink> iterator() {
-        return new UnmodifiableIterator<RiakLink>(getLinks().iterator());
+        return new UnmodifiableIterator<>(getLinks().iterator());
     }
 
     /* (non-Javadoc)
@@ -302,7 +302,7 @@ public class DefaultRiakObject implements IRiakObject {
      */
     public List<RiakLink> getLinks() {
         synchronized (linksLock) {
-            return new ArrayList<RiakLink>(links);
+            return new ArrayList<>(links);
         }
     }
 
@@ -415,10 +415,10 @@ public class DefaultRiakObject implements IRiakObject {
     @Deprecated
     public Map<IntIndex, Set<Integer>> allIntIndexes() {
         Map<IntIndex, Set<Long>> longMap = indexes.getIntIndexes();
-        Map<IntIndex, Set<Integer>> intMap = new HashMap<IntIndex, Set<Integer>>(longMap.size());
+        Map<IntIndex, Set<Integer>> intMap = new HashMap<>(longMap.size());
         for (Map.Entry<IntIndex, Set<Long>> e : longMap.entrySet()) {
             Set<Long> longSet = e.getValue();
-            Set<Integer> intSet = new HashSet<Integer>(longSet.size());
+            Set<Integer> intSet = new HashSet<>(longSet.size());
             for (Long l : longSet) {
                 intSet.add(l.intValue());
             }
@@ -443,7 +443,7 @@ public class DefaultRiakObject implements IRiakObject {
     @Deprecated
     public Set<Integer> getIntIndex(String name) {
         Set<Long> longSet = indexes.getIntIndex(name);
-        Set<Integer> intSet = new HashSet<Integer>(longSet.size());
+        Set<Integer> intSet = new HashSet<>(longSet.size());
         for (Long l : longSet) {
             intSet.add(l.intValue());
         }

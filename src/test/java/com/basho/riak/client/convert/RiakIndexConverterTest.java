@@ -32,16 +32,16 @@ public class RiakIndexConverterTest
     @Before 
     public void setUp()
     {
-        this.converter = new RiakIndexConverter<DomainObject>();
+        this.converter = new RiakIndexConverter<>();
     }
     
     @Test
     public void setGetPopulatedIndexes()
     {
         final String[] languages = {"c","erlang","java"};
-        final HashSet<String> langSet = new HashSet<String>(Arrays.asList(languages));
+        final HashSet<String> langSet = new HashSet<>(Arrays.asList(languages));
         final Integer[] numbers = {1,2,7};
-        final HashSet<Integer> luckySet = new HashSet<Integer>(Arrays.asList(numbers));
+        final HashSet<Integer> luckySet = new HashSet<>(Arrays.asList(numbers));
         
         
         RiakIndexes rIndexes = new RiakIndexes();
@@ -94,7 +94,7 @@ public class RiakIndexConverterTest
 
         @RiakIndex(name = "calculated_longs")
         public Set<Long> getCalculatedLongs() {
-          final Set<Long> calculatedLongs = new HashSet<Long>();
+          final Set<Long> calculatedLongs = new HashSet<>();
           for (long i = 0; i < CALCULATIONS_COUNT; i++) {
                 calculatedLongs.add(i);
           }
@@ -103,7 +103,7 @@ public class RiakIndexConverterTest
 
         @RiakIndex(name = "calculated_integers")
         public Set<Integer> getCalculatedIntegers() {
-            final Set<Integer> calculatedIntegers = new HashSet<Integer>();
+            final Set<Integer> calculatedIntegers = new HashSet<>();
             for (int i = 0; i < CALCULATIONS_COUNT; i++) {
                 calculatedIntegers.add(i);
             }
@@ -112,7 +112,7 @@ public class RiakIndexConverterTest
 
         @RiakIndex(name = "calculated_strings") 
         public Set<String> getCalculatedStrings() {
-            final Set<String> calculatedStrings = new HashSet<String>();
+            final Set<String> calculatedStrings = new HashSet<>();
             for (int i = 0; i < CALCULATIONS_COUNT; i++) {
                 calculatedStrings.add(String.valueOf(i));
             }

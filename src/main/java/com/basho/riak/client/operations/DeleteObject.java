@@ -83,11 +83,9 @@ public class DeleteObject implements RiakOperation<Void> {
      */
     public Void execute() throws RiakException {
         if(fetchBeforeDelete) {
-            Callable<RiakResponse> fetch = new Callable<RiakResponse>() {
-                public RiakResponse call() throws Exception {
-                    RiakResponse response = client.head(bucket, key, fetchMetaBuilder.build());
-                    return response;
-                }
+            Callable<RiakResponse> fetch = () -> {
+                RiakResponse response = client.head(bucket, key, fetchMetaBuilder.build());
+                return response;
             };
                 
             RiakResponse response = retrier.attempt(fetch);
@@ -101,11 +99,9 @@ public class DeleteObject implements RiakOperation<Void> {
             deleteMetaBuilder.vclock(response.getVclock());
         }
 
-        Callable<Void> command = new Callable<Void>() {
-            public Void call() throws Exception {
-                client.delete(bucket, key, deleteMetaBuilder.build());
-                return null;
-            }
+        Callable<Void> command = () -> {
+            client.delete(bucket, key, deleteMetaBuilder.build());
+            return null;
         };
 
         retrier.attempt(command);

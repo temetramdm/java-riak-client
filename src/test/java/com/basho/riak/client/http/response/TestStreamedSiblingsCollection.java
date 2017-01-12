@@ -41,8 +41,8 @@ public class TestStreamedSiblingsCollection {
     @Mock Multipart.Part mockPart;
     final String BUCKET = "bucket"; 
     final String KEY = "key"; 
-    final Map<String, String> headers = new HashMap<String, String>();
-    final Map<String, String> partHeaders = new HashMap<String, String>();
+    final Map<String, String> headers = new HashMap<>();
+    final Map<String, String> partHeaders = new HashMap<>();
 
     StreamedSiblingsCollection impl;
     

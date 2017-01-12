@@ -104,7 +104,7 @@ public class MapReduceResponseSource extends
 	 * @throws IOException
 	 */
 	public static JSONArray readAllResults(final MapReduceResponseSource response) throws IOException {
-	    Map<Integer, JSONArray> phases = new LinkedHashMap<Integer, JSONArray>();
+	    Map<Integer, JSONArray> phases = new LinkedHashMap<>();
         MapReduceResponse mrr;
         JSONArray latest;
         int phase = 0;

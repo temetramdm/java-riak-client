@@ -46,13 +46,13 @@ public class AnnotationScannerTest {
         @RiakVClock
         private byte[] vClock = "clock".getBytes();
         @RiakUsermeta
-        private Map<String, String> usermetaData = new HashMap<String, String>();
+        private Map<String, String> usermetaData = new HashMap<>();
         @RiakIndex(name="myBinIndex")
         private String stringIndex = "indexValue";
         @RiakIndex(name="myIntIndex")
         private int intIndex = 3;
         @RiakLinks
-        private Collection<RiakLink> links = new HashSet<RiakLink>();
+        private Collection<RiakLink> links = new HashSet<>();
 
         public BasicClass() {
             usermetaData.put("foo", "bar");

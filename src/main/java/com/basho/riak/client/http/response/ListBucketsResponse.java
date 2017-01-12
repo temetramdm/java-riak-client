@@ -59,7 +59,7 @@ public class ListBucketsResponse extends HttpResponseDecorator implements HttpRe
                 buckets = new StreamedBucketsCollection(tokens);
             }
         } else {
-            buckets = new HashSet<String>();
+            buckets = new HashSet<>();
         }
     }
 
@@ -69,7 +69,7 @@ public class ListBucketsResponse extends HttpResponseDecorator implements HttpRe
      * @return the buckets
      */
     public Set<String> getBuckets() {
-        return new HashSet<String>(buckets);
+        return new HashSet<>(buckets);
     }
 
 }

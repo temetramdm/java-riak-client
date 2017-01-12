@@ -203,5 +203,5 @@ public interface BucketProperties {
      * Is search enabled on this bucket
      * @return true/false
      */
-    public boolean isSearchEnabled();
+    boolean isSearchEnabled();
 }

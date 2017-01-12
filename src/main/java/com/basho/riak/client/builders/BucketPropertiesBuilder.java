@@ -70,8 +70,8 @@ public final class BucketPropertiesBuilder {
         b.bigVClock = p.getBigVClock();
         b.youngVClock = p.getYoungVClock();
         b.oldVClock = p.getOldVClock();
-        b.precommitHooks = p.getPrecommitHooks() == null ? null : new ArrayList<NamedFunction>(p.getPrecommitHooks());
-        b.postcommitHooks = p.getPostcommitHooks() == null ? null : new ArrayList<NamedErlangFunction>(p.getPostcommitHooks());
+        b.precommitHooks = p.getPrecommitHooks() == null ? null : new ArrayList<>(p.getPrecommitHooks());
+        b.postcommitHooks = p.getPostcommitHooks() == null ? null : new ArrayList<>(p.getPostcommitHooks());
         b.r = p.getR();
         b.w = p.getW();
         b.dw = p.getDW();
@@ -108,14 +108,14 @@ public final class BucketPropertiesBuilder {
 
     public BucketPropertiesBuilder precommitHooks(Collection<NamedFunction> precommitHooks) {
         if(precommitHooks != null) {
-            this.precommitHooks = new ArrayList<NamedFunction>(precommitHooks);
+            this.precommitHooks = new ArrayList<>(precommitHooks);
         }
         return this;
     }
 
     public BucketPropertiesBuilder addPrecommitHook(NamedFunction preCommitHook) {
         if (this.precommitHooks == null) {
-            this.precommitHooks = new ArrayList<NamedFunction>();
+            this.precommitHooks = new ArrayList<>();
         }
         this.precommitHooks.add(preCommitHook);
         return this;
@@ -123,14 +123,14 @@ public final class BucketPropertiesBuilder {
 
     public BucketPropertiesBuilder postcommitHooks(Collection<NamedErlangFunction> postCommitHooks) {
         if(postCommitHooks != null) {
-            this.postcommitHooks = new ArrayList<NamedErlangFunction>(postCommitHooks);
+            this.postcommitHooks = new ArrayList<>(postCommitHooks);
         }
         return this;
     }
 
     public BucketPropertiesBuilder addPostcommitHook(NamedErlangFunction postcommitHook) {
         if (this.postcommitHooks == null) {
-            this.postcommitHooks = new ArrayList<NamedErlangFunction>();
+            this.postcommitHooks = new ArrayList<>();
         }
         this.postcommitHooks.add(postcommitHook);
         return this;

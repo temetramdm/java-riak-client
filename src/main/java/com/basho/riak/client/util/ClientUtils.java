@@ -242,7 +242,7 @@ public class ClientUtils {
      * @return Map of the header names to values
      */
     public static Map<String, String> asHeaderMap(Header[] headers) {
-        Map<String, String> m = new HashMap<String, String>();
+        Map<String, String> m = new HashMap<>();
         if (headers != null) {
             for (Header header : headers) {
                 m.put(header.getName().toLowerCase(), header.getValue());
@@ -262,7 +262,7 @@ public class ClientUtils {
         if (json == null)
             return null;
 
-        Map<String, String> m = new HashMap<String, String>();
+        Map<String, String> m = new HashMap<>();
         for (Iterator iter = json.keys(); iter.hasNext();) {
             Object obj = iter.next();
             if (obj != null) {
@@ -284,7 +284,7 @@ public class ClientUtils {
         if (json == null)
             return null;
 
-        List<String> l = new ArrayList<String>();
+        List<String> l = new ArrayList<>();
         for (int i = 0; i < json.length(); i++) {
             l.add(json.optString(i));
         }
@@ -337,7 +337,7 @@ public class ClientUtils {
      *         header in order.
      */
     public static List<RiakLink> parseLinkHeader(String header) {
-        List<RiakLink> links = new ArrayList<RiakLink>();
+        List<RiakLink> links = new ArrayList<>();
         Map<String, Map<String, String>> parsedLinks = LinkHeader.parse(header);
         for (Entry<String, Map<String, String>> e: parsedLinks.entrySet()) {
             String url = e.getKey();
@@ -380,7 +380,7 @@ public class ClientUtils {
      *         removed.
      */
     public static Map<String, String> parseUsermeta(Map<String, String> headers) {
-        Map<String, String> usermeta = new HashMap<String, String>();
+        Map<String, String> usermeta = new HashMap<>();
         if (headers != null) {
             for (Entry<String, String> e : headers.entrySet()) {
                 String header = e.getKey();
@@ -422,7 +422,7 @@ public class ClientUtils {
         }
 
         List<Multipart.Part> parts = Multipart.parse(docHeaders, docBody);
-        List<RiakObject> objects = new ArrayList<RiakObject>();
+        List<RiakObject> objects = new ArrayList<>();
         if (parts != null) {
             for (Multipart.Part part : parts) {
                 Map<String, String> headers = part.getHeaders();

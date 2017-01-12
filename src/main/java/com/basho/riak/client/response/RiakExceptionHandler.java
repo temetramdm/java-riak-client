@@ -34,9 +34,9 @@ package com.basho.riak.client.response;
 public interface RiakExceptionHandler {
 
     /** Handle exceptions caused by communication errors with the sever */
-    public void handle(RiakIORuntimeException e);
+    void handle(RiakIORuntimeException e);
 
     /** Handle exceptions caused by malformed responses from the sever */
-    public void handle(RiakResponseRuntimeException e);
+    void handle(RiakResponseRuntimeException e);
 
 }

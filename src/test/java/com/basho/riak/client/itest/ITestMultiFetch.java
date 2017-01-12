@@ -105,7 +105,7 @@ public abstract class ITestMultiFetch
     @Test public void multiFetchPojoKeys() throws RiakRetryFailedException, InterruptedException, ExecutionException
     {
         Bucket b = client.fetchBucket(bucketName).execute();
-        List<MyPojo> list = new ArrayList<MyPojo>(20);
+        List<MyPojo> list = new ArrayList<>(20);
         for (int i = 0; i < 20; i++)
         {
             MyPojo mp = new MyPojo();

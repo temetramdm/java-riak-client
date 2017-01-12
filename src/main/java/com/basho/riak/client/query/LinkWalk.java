@@ -36,7 +36,7 @@ public class LinkWalk implements RiakOperation<WalkResult> {
     private final RawClient client;
     private final String startBucket;
     private final String startKey;
-    private final LinkedList<LinkWalkStep> steps = new LinkedList<LinkWalkStep>();
+    private final LinkedList<LinkWalkStep> steps = new LinkedList<>();
 
     /**
      * Create a Link Walk operation that will be executed with

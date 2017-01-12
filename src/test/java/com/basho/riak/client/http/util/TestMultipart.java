@@ -30,14 +30,14 @@ import static org.junit.Assert.assertNull;
 public class TestMultipart {
 
     @Test public void null_result_if_not_multipart_message() {
-        Map<String, String> headers = new HashMap<String, String>();
+        Map<String, String> headers = new HashMap<>();
         headers.put("content-type", "text/plain");
         String body = "abc";
         assertNull(Multipart.parse(headers, utf8StringToBytes(body)));
     }
 
     @Test public void null_result_if_not_content_type_missing_boundary_parameter() {
-        Map<String, String> headers = new HashMap<String, String>();
+        Map<String, String> headers = new HashMap<>();
         headers.put("content-type", "multipart/mixed");
         String body = "\r\n--boundary\r\n" + "Content-Type: text/plain\r\n" + "\r\n" + "subpart\r\n" + "--boundary--";
 
@@ -45,7 +45,7 @@ public class TestMultipart {
     }
 
     @Test public void parses_multipart_with_1_empty_part() {
-        Map<String, String> headers = new HashMap<String, String>();
+        Map<String, String> headers = new HashMap<>();
         headers.put("content-type", "multipart/mixed; boundary=boundary");
         String body = "\r\n--boundary\r\n" + "\r\n" + "--boundary--";
 
@@ -56,7 +56,7 @@ public class TestMultipart {
     }
 
     @Test public void parses_multipart_with_1_part() {
-        Map<String, String> headers = new HashMap<String, String>();
+        Map<String, String> headers = new HashMap<>();
         headers.put("content-type", "multipart/mixed; boundary=boundary");
         String body = "\r\n--boundary\r\n" + "Content-Type: text/plain\r\n" + "\r\n" + "subpart\r\n" + "--boundary--";
 
@@ -68,7 +68,7 @@ public class TestMultipart {
     }
 
     @Test public void parses_multipart_with_invalid_utf8_binary_part() {
-        Map<String, String> headers = new HashMap<String, String>();
+        Map<String, String> headers = new HashMap<>();
         headers.put("content-type", "multipart/mixed; boundary=boundary");
 
         /* 00000000  0d 0a 2d 2d 62 6f 75 6e  64 61 72 79 0d 0a 43 6f |..--boundary..Co|
@@ -95,7 +95,7 @@ public class TestMultipart {
     }
 
     @Test public void parses_multipart_with_multiple_parts() {
-        Map<String, String> headers = new HashMap<String, String>();
+        Map<String, String> headers = new HashMap<>();
         headers.put("content-type", "multipart/mixed; boundary=boundary");
         String body = "\r\n--boundary\r\n" + "Content-Type: text/plain\r\n" + "\r\n" + "part1\r\n" + "--boundary\r\n" + "\r\n"
                       + "part2\r\n" + "--boundary--";
@@ -107,7 +107,7 @@ public class TestMultipart {
     }
 
     @Test public void parses_multipart_subpart() {
-        Map<String, String> headers = new HashMap<String, String>();
+        Map<String, String> headers = new HashMap<>();
         headers.put("content-type", "multipart/mixed; boundary=boundary");
         String body = "\r\n--boundary\r\n" + "Content-Type: multipart/mixed; boundary=5hgaasMxj1NIcoxJBpWd4j9IuaW\r\n" + "\r\n"
                       + "--5hgaasMxj1NIcoxJBpWd4j9IuaW\r\n" + "Content-Type: application/octet-stream\r\n" + "\r\n"
@@ -124,7 +124,7 @@ public class TestMultipart {
     }
 
     @Test public void parses_subpart_headers_and_body() {
-        Map<String, String> headers = new HashMap<String, String>();
+        Map<String, String> headers = new HashMap<>();
         headers.put("content-type", "multipart/mixed; boundary=\"boundary\"");
         String PART_BODY = "this part has multiple" + "lines of text\r\n";
         String body = "\r\n--boundary\r\n" + "X-Riak-Vclock: a85hYGBgzGDKBVIsLOLmazKYEhnzWBkmzFt4hC8LAA==\r\n" +
@@ -141,7 +141,7 @@ public class TestMultipart {
     }
 
     @Test public void handles_quoted_boundary() {
-        Map<String, String> headers = new HashMap<String, String>();
+        Map<String, String> headers = new HashMap<>();
         headers.put("content-type", "multipart/mixed; boundary=\"\\\\\\x\\\"\""); // boundary
                                                                                   // is
                                                                                   // the

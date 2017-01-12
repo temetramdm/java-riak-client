@@ -104,7 +104,7 @@ public class Multipart {
 
         // While this parsing could be more efficiently done in one pass with a
         // hand written FSM, hopefully this method is more readable/intuitive.
-        List<Part> parts = new ArrayList<Part>();
+        List<Part> parts = new ArrayList<>();
         int pos = indexOf(body, boundaryBytes, 0);
         if (pos != -1) {
             while (pos < body.length) {
@@ -173,7 +173,7 @@ public class Multipart {
         s.replaceAll("\r\n\\s+", " ");
 
         String[] headers = s.split("\r\n");
-        Map<String, String> parsedHeaders = new HashMap<String, String>();
+        Map<String, String> parsedHeaders = new HashMap<>();
         for (String header : headers) {
             // Split header line into name and value
             String[] nv = header.split("\\s*:\\s*", 2);

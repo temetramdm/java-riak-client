@@ -21,7 +21,6 @@ import java.util.Map;
 import com.basho.riak.client.RiakException;
 import com.basho.riak.client.raw.query.MapReduceTimeoutException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.TypeFactory;
 
 /**
  * Exceptions come back from Riak as JSON, parses exceptions, and throws the

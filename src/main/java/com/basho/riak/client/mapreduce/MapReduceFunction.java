@@ -29,10 +29,10 @@ import org.json.JSONObject;
 @Deprecated
 public interface MapReduceFunction {
    
-   public static enum Types {
+   enum Types {
       ANONYMOUS,
       NAMED
    }
    
-   public JSONObject toJson();
+   JSONObject toJson();
 }

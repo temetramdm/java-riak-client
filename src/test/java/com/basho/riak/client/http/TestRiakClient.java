@@ -14,7 +14,6 @@
 package com.basho.riak.client.http;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
@@ -62,7 +61,7 @@ public class TestRiakClient {
 
     @Before public void setup() {
         MockitoAnnotations.initMocks(this);
-        when(mockHttpResponse.getHttpHeaders()).thenReturn(new HashMap<String, String>());
+        when(mockHttpResponse.getHttpHeaders()).thenReturn(new HashMap<>());
         impl = new RiakClient(mockHelper);
     }
     
@@ -203,13 +202,11 @@ public class TestRiakClient {
     @Test public void setBucketSchema_puts_schema_in_props_field() {
         final JSONObject mockJSONObject = mock(JSONObject.class);
         
-        when(mockHelper.setBucketSchema(eq(bucket), any(JSONObject.class), same(meta))).thenAnswer(new Answer<HttpResponse>() {
-            public HttpResponse answer(InvocationOnMock invocation) throws Throwable {
-                assertSame(mockJSONObject,
-                           ((JSONObject) invocation.getArguments()[1])      // second argument is "schema"
-                               .getJSONObject(Constants.FL_SCHEMA));
-                return null;
-            } 
+        when(mockHelper.setBucketSchema(eq(bucket), any(JSONObject.class), same(meta))).thenAnswer(invocation -> {
+            assertSame(mockJSONObject,
+                       ((JSONObject) invocation.getArguments()[1])      // second argument is "schema"
+                           .getJSONObject(Constants.FL_SCHEMA));
+            return null;
         });
         when(bucketInfo.getSchema()).thenReturn(mockJSONObject);
         

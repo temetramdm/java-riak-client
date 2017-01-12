@@ -40,7 +40,7 @@ public class UnmodifiableIteratorTest {
      */
     @Before public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        iterator = new UnmodifiableIterator<String>(mockerator);
+        iterator = new UnmodifiableIterator<>(mockerator);
     }
 
     /**

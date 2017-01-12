@@ -51,7 +51,7 @@ public class PBClusterClient extends ClusterClient<PBClientConfig> {
      * .raw.config.ClusterConfig)
      */
     @Override protected RawClient[] fromConfig(ClusterConfig<PBClientConfig> clusterConfig) throws IOException {
-        final List<PBClientAdapter> clients = new ArrayList<PBClientAdapter>();
+        final List<PBClientAdapter> clients = new ArrayList<>();
 
         int totalMaxConnections = clusterConfig.getTotalMaximumConnections();
         Semaphore clusterSemaphore = null;

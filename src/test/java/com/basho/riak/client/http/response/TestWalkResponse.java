@@ -35,7 +35,7 @@ public class TestWalkResponse {
 
     final String BUCKET = "bucket";
     final String KEY = "key";
-    final Map<String, String> HEADERS = new HashMap<String, String>();
+    final Map<String, String> HEADERS = new HashMap<>();
 
     @Mock HttpResponse mockHttpResponse;
     @Mock RiakClient mockRiakClient;

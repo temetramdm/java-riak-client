@@ -35,7 +35,7 @@ public class UsermetaConverterTest {
     private UsermetaConverter<DomainObject> converter;
 
     @Before public void setUp() {
-        this.converter = new UsermetaConverter<DomainObject>();
+        this.converter = new UsermetaConverter<>();
     }
 
     /**
@@ -69,7 +69,7 @@ public class UsermetaConverterTest {
      * @return
      */
     private Map<String, String> makeMap(String[] keys, String[] values) {
-        final Map<String, String> map = new LinkedHashMap<String, String>();
+        final Map<String, String> map = new LinkedHashMap<>();
         for (int i = 0; i < keys.length; i++) {
             if (values.length >= i) {
                 map.put(keys[i], values[i]);
@@ -100,7 +100,7 @@ public class UsermetaConverterTest {
         final Map<String, String> usermetaData = makeMap(vargs(META_KEY_ONE, "key2", "key3", "key4"),
                                                          vargs(userMetaItemOne, "val2", "val3", "val4"));
 
-        final Map<String, String> expected = new HashMap<String, String>(usermetaData);
+        final Map<String, String> expected = new HashMap<>(usermetaData);
         expected.remove(META_KEY_ONE);
 
         DomainObject obj = new DomainObject();

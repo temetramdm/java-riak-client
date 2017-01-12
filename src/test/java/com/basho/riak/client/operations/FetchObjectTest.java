@@ -66,8 +66,8 @@ public class FetchObjectTest {
     @Before public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         retrier = new DefaultRetrier(1);
-        conflictResolver = new DefaultResolver<String>();
-        fetch = new FetchObject<String>(rawClient, BUCKET, KEY, retrier);
+        conflictResolver = new DefaultResolver<>();
+        fetch = new FetchObject<>(rawClient, BUCKET, KEY, retrier);
     }
 
     @Test public void fetch() throws Exception {

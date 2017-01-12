@@ -19,7 +19,7 @@ import java.util.List;
 @Deprecated
 public abstract class CollectionWrapper<T> implements Collection<T> {
 
-    List<T> cache = new ArrayList<T>();
+    List<T> cache = new ArrayList<>();
 
     /**
      * Cache one or more objects from the backend by calling cache(T)

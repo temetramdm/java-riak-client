@@ -35,7 +35,7 @@ public interface RiakClientFactory {
      * @return true if this factory can create a {@link RawClient} for the
      *         <code>configClass</code> false otherwise
      */
-    public boolean accepts(Class<? extends Configuration> configClass);
+    boolean accepts(Class<? extends Configuration> configClass);
 
     /**
      * Create a new {@link RawClient} instance configured by <code>config</code>
@@ -44,5 +44,5 @@ public interface RiakClientFactory {
      *            a specific implementation of {@link Configuration}
      * @return the configured RawClient
      */
-    public RawClient newClient(Configuration config) throws IOException;
+    RawClient newClient(Configuration config) throws IOException;
 }

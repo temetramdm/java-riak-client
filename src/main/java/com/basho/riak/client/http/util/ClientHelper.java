@@ -511,7 +511,7 @@ public class ClientHelper {
             if (!queryParams.isEmpty()) {
                 URI originalURI = httpMethod.getURI();
                 List<NameValuePair> currentQuery = URLEncodedUtils.parse(originalURI, CharsetUtils.UTF_8.name());
-                List<NameValuePair> newQuery = new LinkedList<NameValuePair>(currentQuery);
+                List<NameValuePair> newQuery = new LinkedList<>(currentQuery);
 
                 for(Map.Entry<String, String> qp : queryParams.entrySet()) {
                     newQuery.add(new BasicNameValuePair(qp.getKey(), qp.getValue()));

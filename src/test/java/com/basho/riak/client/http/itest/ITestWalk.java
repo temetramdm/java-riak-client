@@ -84,7 +84,7 @@ public class ITestWalk {
         
         // Verify expected only linked to objects are returned
         List<? extends List<RiakObject>> steps = walkresp.getSteps();
-        List<String> keys = new ArrayList<String>();
+        List<String> keys = new ArrayList<>();
         for (List<RiakObject> step : steps) {
             for (RiakObject object : step) {
                 keys.add(object.getKey());

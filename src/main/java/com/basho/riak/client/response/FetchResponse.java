@@ -43,7 +43,7 @@ import com.basho.riak.client.util.StreamedMultipart;
 public class FetchResponse extends HttpResponseDecorator implements WithBodyResponse {
 
     private RiakObject object = null;
-    private Collection<RiakObject> siblings = new ArrayList<RiakObject>();
+    private Collection<RiakObject> siblings = new ArrayList<>();
 
     /**
      * On a 2xx response, parse the HTTP response from Riak into a

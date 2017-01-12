@@ -59,7 +59,7 @@ public class ITestStreaming {
         BucketResponse r = c.streamBucket(BUCKET);
         assertSuccess(r);
 
-        List<String> keys = new ArrayList<String>();
+        List<String> keys = new ArrayList<>();
         for (String key : r.getBucketInfo().getKeys()) {
             keys.add(key);
         }
@@ -141,16 +141,15 @@ public class ITestStreaming {
         assertNotNull(r.getStream());
         
         assertTrue(r.hasSiblings());
-        for (Iterator<RiakObject> i = r.getSiblings().iterator(); i.hasNext(); ) {
-            RiakObject o = i.next();
+        for (RiakObject o : r.getSiblings()) {
             ByteArrayOutputStream os = new ByteArrayOutputStream(512);
             ClientUtils.copyStream(o.getValueStream(), os);
             byte[] out = os.toByteArray();
             boolean found = false;
-            for (int j = 0; j < bytes.length; j++) {
+            for (byte[] aByte : bytes) {
                 found = true;
-                for (int k = 0; k < bytes[j].length; k++) {
-                    if (bytes[j][k] != out[k]) {
+                for (int k = 0; k < aByte.length; k++) {
+                    if (aByte[k] != out[k]) {
                         found = false;
                         break;
                     }

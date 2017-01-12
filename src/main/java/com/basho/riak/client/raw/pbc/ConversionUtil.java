@@ -58,7 +58,6 @@ import com.basho.riak.pbc.FetchResponse;
 import com.basho.riak.pbc.MapReduceResponseSource;
 import com.basho.riak.pbc.ModuleFunction;
 import com.basho.riak.pbc.RequestMeta;
-import com.basho.riak.pbc.RiakObject;
 import com.google.protobuf.ByteString;
 
 /**
@@ -128,7 +127,7 @@ public final class ConversionUtil {
             builder.withLastModified(lastModified.getTime());
         }
 
-        final Collection<RiakLink> links = new ArrayList<RiakLink>();
+        final Collection<RiakLink> links = new ArrayList<>();
 
         for (com.basho.riak.pbc.RiakLink link : o.getLinks()) {
             links.add(convert(link));
@@ -156,7 +155,7 @@ public final class ConversionUtil {
             builder.withContentType(ctype + CHARSET + charset);
         }
 
-        final Map<String, String> userMetaData = new HashMap<String, String>(o.getUsermeta());
+        final Map<String, String> userMetaData = new HashMap<>(o.getUsermeta());
 
         builder.withUsermeta(userMetaData);
 
@@ -340,7 +339,7 @@ public final class ConversionUtil {
             .searchEnabled(p.getSearch());
         
         if (p.getPrecommitHooks() != null) {
-            List<CommitHook> hooklist = new ArrayList<CommitHook>();
+            List<CommitHook> hooklist = new ArrayList<>();
             for (NamedFunction f : p.getPrecommitHooks()) {
                 if (f instanceof NamedJSFunction) {
                     hooklist.add(new CommitHook(((NamedJSFunction) f).getFunction()));
@@ -353,7 +352,7 @@ public final class ConversionUtil {
         }
             
         if (p.getPostcommitHooks() != null) {
-            List<CommitHook> hooklist = new ArrayList<CommitHook>();
+            List<CommitHook> hooklist = new ArrayList<>();
             for (NamedErlangFunction f : p.getPostcommitHooks()) {
                 hooklist.add(new CommitHook(f.getMod(), f.getFun()));
             }
@@ -478,18 +477,13 @@ public final class ConversionUtil {
      * @throws IOException
      */
     @SuppressWarnings({ "rawtypes" }) static WalkResult convert(MapReduceResult secondPhaseResult) throws IOException {
-        final SortedMap<Integer, Collection<IRiakObject>> steps = new TreeMap<Integer, Collection<IRiakObject>>();
+        final SortedMap<Integer, Collection<IRiakObject>> steps = new TreeMap<>();
 
         try {
             Collection<Map> results = secondPhaseResult.getResult(Map.class);
             for (Map o : results) {
                 final int step = Integer.parseInt((String) o.get("step"));
-                Collection<IRiakObject> stepAccumulator = steps.get(step);
-
-                if (stepAccumulator == null) {
-                    stepAccumulator = new ArrayList<IRiakObject>();
-                    steps.put(step, stepAccumulator);
-                }
+                Collection<IRiakObject> stepAccumulator = steps.computeIfAbsent(step, k -> new ArrayList<>());
 
                 final Map data = (Map) o.get("v");
 
@@ -499,11 +493,7 @@ public final class ConversionUtil {
             throw new IOException(e.getMessage());
         }
         // create a result instance
-        return new WalkResult() {
-            public Iterator<Collection<IRiakObject>> iterator() {
-                return new UnmodifiableIterator<Collection<IRiakObject>>(steps.values().iterator());
-            }
-        };
+        return () -> new UnmodifiableIterator<>(steps.values().iterator());
     }
 
     /**

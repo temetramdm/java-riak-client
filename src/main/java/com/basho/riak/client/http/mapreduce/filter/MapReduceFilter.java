@@ -21,11 +21,11 @@ import org.json.JSONArray;
  */
 public interface MapReduceFilter {
 
-    public static enum Types {
+    enum Types {
         LOGICAL,
         TRANSFORM,
         FILTER
     }
     
-    public JSONArray toJson();
+    JSONArray toJson();
 }

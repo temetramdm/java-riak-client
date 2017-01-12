@@ -87,9 +87,9 @@ public class JSONConverter<T> implements Converter<T> {
         this.clazz = clazz;
         this.bucket = bucket;
         this.defaultKey = defaultKey;
-        this.usermetaConverter = new UsermetaConverter<T>();
-        this.riakIndexConverter = new RiakIndexConverter<T>();
-        this.riakLinksConverter = new RiakLinksConverter<T>();
+        this.usermetaConverter = new UsermetaConverter<>();
+        this.riakIndexConverter = new RiakIndexConverter<>();
+        this.riakLinksConverter = new RiakLinksConverter<>();
     }
 
     /**
@@ -118,8 +118,6 @@ public class JSONConverter<T> implements Converter<T> {
                 .withLinks(links)
                 .withContentType(Constants.CTYPE_JSON_UTF8)
                 .build();
-        } catch (JsonProcessingException e) {
-            throw new ConversionException(e);
         } catch (IOException e) {
             throw new ConversionException(e);
         }
@@ -160,8 +158,6 @@ public class JSONConverter<T> implements Converter<T> {
                 riakIndexConverter.populateIndexes(new RiakIndexes(riakObject.allBinIndexes(), riakObject.allIntIndexesV2()), domainObject);
                 riakLinksConverter.populateLinks(riakObject.getLinks(), domainObject);
                 return domainObject;
-            } catch (JsonProcessingException e) {
-                throw new ConversionException(e);
             } catch (IOException e) {
                 throw new ConversionException(e);
             }

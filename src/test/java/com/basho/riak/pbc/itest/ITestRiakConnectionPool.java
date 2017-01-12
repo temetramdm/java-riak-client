@@ -192,16 +192,11 @@ public class ITestRiakConnectionPool {
      * @return
      */
     private Collection<Callable<PublicRiakConnection>> makeTasks(int numTasks, final RiakConnectionPool pool) {
-        Collection<Callable<PublicRiakConnection>> tasks = new ArrayList<Callable<PublicRiakConnection>>();
+        Collection<Callable<PublicRiakConnection>> tasks = new ArrayList<>();
         final byte[] clientId = new byte[] { 12, 12, 12, 12 };
         for (int i = 0; i < numTasks; i++) {
 
-            tasks.add(new Callable<PublicRiakConnection>() {
-
-                public PublicRiakConnection call() throws Exception {
-                    return new PublicRiakConnection(pool.getConnection(clientId));
-                }
-            });
+            tasks.add(() -> new PublicRiakConnection(pool.getConnection(clientId)));
 
         }
 

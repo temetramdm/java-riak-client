@@ -57,7 +57,7 @@ public class ITestMapReduce {
           object.setValue(Integer.toString(i));
           if (i < TEST_ITEMS - 1) {
              RiakLink link = new RiakLink(BUCKET_NAME, "java_" + Integer.toString(i + 1), "test");
-             List<RiakLink> links = new ArrayList<RiakLink>(1);
+             List<RiakLink> links = new ArrayList<>(1);
              links.add(link);
              object.setLinks(links);
           }

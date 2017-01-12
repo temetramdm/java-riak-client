@@ -76,7 +76,7 @@ public class ITestDataLoad {
         Random rnd = new Random();
         for (int i = 0; i < NUM_OBJECTS; i++) {
             String key = "data-load-" + idx;
-            String value = CharsetUtils.asString(data[rnd.nextInt(NUM_VALUES)], CharsetUtils.ISO_8859_1);;
+            String value = CharsetUtils.asString(data[rnd.nextInt(NUM_VALUES)], CharsetUtils.ISO_8859_1);
             RiakObject o = new RiakObject(bucket, key, value);
             objects[i] = o;
             idx++;
@@ -112,36 +112,33 @@ public class ITestDataLoad {
         final RiakClient riak = new RiakClient(RIAK_HOST, RIAK_PORT);
 
         for (int i = 0; i < threads.length; i++) {
-            threads[i] = new Thread(new Runnable() {
+            threads[i] = new Thread(() -> {
+                try {
+                    startLatch.await();
 
-                public void run() {
-                    try {
-                        startLatch.await();
-
-                        Random rnd = new Random();
-                        for (int i = 0; i < NUM_OBJECTS / NUM_THREADS; i++) {
-                            String key = "data-load-" + idx.getAndIncrement();
-                            String value = CharsetUtils.asString(data[rnd.nextInt(NUM_VALUES)], CharsetUtils.ISO_8859_1);
-                            RiakObject[] objects = riak.fetch(BUCKET, key);
-                            RiakObject o = null;
-                            if (objects.length == 0) {
-                                o = new RiakObject(BUCKET, key, value);
-                            } else {
-                                o = new RiakObject(objects[0].getVclock(), objects[0].getBucketBS(),
-                                                   objects[0].getKeyBS(), copyFromUtf8(value));
-                            }
-
-                            RiakObject result = riak.store(o, new RequestMeta().w(2).returnBody(true))[0];
-                            assertEquals(o.getBucket(), result.getBucket());
-                            assertEquals(o.getKey(), result.getKey());
-                            assertEquals(o.getValue(), result.getValue());
+                    Random rnd = new Random();
+                    for (int i1 = 0; i1 < NUM_OBJECTS / NUM_THREADS; i1++) {
+                        String key = "data-load-" + idx.getAndIncrement();
+                        String value = CharsetUtils.asString(data[rnd.nextInt(NUM_VALUES)], CharsetUtils.ISO_8859_1);
+                        RiakObject[] objects = riak.fetch(BUCKET, key);
+                        RiakObject o = null;
+                        if (objects.length == 0) {
+                            o = new RiakObject(BUCKET, key, value);
+                        } else {
+                            o = new RiakObject(objects[0].getVclock(), objects[0].getBucketBS(),
+                                               objects[0].getKeyBS(), copyFromUtf8(value));
                         }
 
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    } finally {
-                        endLatch.countDown();
+                        RiakObject result = riak.store(o, new RequestMeta().w(2).returnBody(true))[0];
+                        assertEquals(o.getBucket(), result.getBucket());
+                        assertEquals(o.getKey(), result.getKey());
+                        assertEquals(o.getValue(), result.getValue());
                     }
+
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                } finally {
+                    endLatch.countDown();
                 }
             });
             threads[i].start();

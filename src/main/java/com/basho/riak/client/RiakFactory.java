@@ -64,7 +64,7 @@ import com.basho.riak.pbc.RiakClient;
 public class RiakFactory {
 
     private static final ConcurrentHashMap<Class<? extends Configuration>, RiakClientFactory> REGISTRY =
-            new ConcurrentHashMap<Class<? extends Configuration>, RiakClientFactory>(3);
+       new ConcurrentHashMap<>(3);
 
     // TODO this will change to expose a registry of
     // Configuration implementation type -> factory to complete the SPI

@@ -29,8 +29,8 @@ import com.basho.riak.client.http.util.Constants;
  */
 public class RequestMeta {
 
-    private Map<String, String> queryParams = new LinkedHashMap<String, String>();
-    private Map<String, String> headers = new HashMap<String, String>();
+    private Map<String, String> queryParams = new LinkedHashMap<>();
+    private Map<String, String> headers = new HashMap<>();
 
     /**
      * Use the given r parameter for fetchMeta, fetch, or stream operations
@@ -209,7 +209,7 @@ public class RequestMeta {
      *         read/write through)
      */
     public Map<String, String> getQueryParamMap() {
-        return new LinkedHashMap<String, String>(queryParams);
+        return new LinkedHashMap<>(queryParams);
     }
 
     /** Convenience method for the X-Riak-ClientId HTTP header */

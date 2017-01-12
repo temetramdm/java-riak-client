@@ -13,8 +13,6 @@
  */
 package com.basho.riak.client.bucket;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
@@ -24,7 +22,6 @@ import org.mockito.MockitoAnnotations;
 
 import com.basho.riak.client.cap.Quora;
 import com.basho.riak.client.cap.Retrier;
-import com.basho.riak.client.http.util.Constants;
 import com.basho.riak.client.raw.RawClient;
 import com.basho.riak.client.raw.Transport;
 

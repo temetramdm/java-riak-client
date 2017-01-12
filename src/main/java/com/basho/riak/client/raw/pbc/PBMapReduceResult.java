@@ -64,12 +64,9 @@ public class PBMapReduceResult implements MapReduceResult {
         this.objectMapper = new ObjectMapper();
 
         // Getting the actual result from PB stream must be run once only
-        rawResultTask = new FutureTask<String>(new Callable<String>() {
-
-            public String call() throws Exception {
-                JSONArray results = MapReduceResponseSource.readAllResults(response);
-                return results.toString();
-            }
+        rawResultTask = new FutureTask<>(() -> {
+          JSONArray results = MapReduceResponseSource.readAllResults(response);
+          return results.toString();
         });
     }
 

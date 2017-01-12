@@ -135,11 +135,7 @@ public abstract class ITestDomainBucket {
         final Bucket b = client.fetchBucket(bucketName).execute();
 
         return DomainBucket.builder(b, ShoppingCart.class)
-            .mutationProducer(new MutationProducer<ShoppingCart>() {
-                public Mutation<ShoppingCart> produce(ShoppingCart o) {
-                    return new CartMerger(o);
-                }
-            })
+            .mutationProducer(CartMerger::new)
             .withResolver(new MergeCartResolver())
             .returnBody(true)
             .retrier(DefaultRetrier.attempts(3))

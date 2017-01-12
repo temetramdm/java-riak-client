@@ -20,5 +20,5 @@ package com.basho.riak.client.raw;
  *
  */
 public enum Transport {
-    HTTP, PB;
+    HTTP, PB
 }

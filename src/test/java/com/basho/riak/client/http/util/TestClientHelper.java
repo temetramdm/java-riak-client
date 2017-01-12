@@ -14,7 +14,6 @@
 package com.basho.riak.client.http.util;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.io.ByteArrayInputStream;
@@ -139,7 +138,7 @@ public class TestClientHelper {
         stubResponse(true);
         impl.listBuckets(false);
         ArgumentCaptor<RequestMeta> metaCaptor = ArgumentCaptor.forClass(RequestMeta.class);
-        verify(impl).executeMethod(eq((String) null), eq((String) null), any(HttpGet.class), metaCaptor.capture(), eq(false));
+        verify(impl).executeMethod(eq(null), eq(null), any(HttpGet.class), metaCaptor.capture(), eq(false));
 
         RequestMeta capturedMeta = metaCaptor.getValue();
         assertEquals(capturedMeta.getQueryParam(Constants.QP_BUCKETS), Constants.LIST_BUCKETS);
@@ -358,12 +357,10 @@ public class TestClientHelper {
     }
 
     private Answer<org.apache.http.HttpResponse> pathVerifier(final String pathSuffix) {
-        return new Answer<org.apache.http.HttpResponse>() {
-            public org.apache.http.HttpResponse answer(InvocationOnMock invocation) throws Throwable {
-                String path = ((HttpRequestBase) invocation.getArguments()[0]).getURI().getPath();
-                assertTrue("URL path should end with " + pathSuffix + " but was '" + path + "'", path.endsWith(pathSuffix) || path.endsWith(pathSuffix + "?"));
-                return mockHttpResponse;
-            }
+        return invocation -> {
+            String path = ((HttpRequestBase) invocation.getArguments()[0]).getURI().getPath();
+            assertTrue("URL path should end with " + pathSuffix + " but was '" + path + "'", path.endsWith(pathSuffix) || path.endsWith(pathSuffix + "?"));
+            return mockHttpResponse;
         };
     }
 

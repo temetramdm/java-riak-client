@@ -33,7 +33,7 @@ public class TestStoreResponse {
     
     @Test public void parses_meta_headers() {
         final FetchResponse mockFetchResponse = mock(FetchResponse.class);
-        final Map<String, String> HTTP_HEADERS = new HashMap<String, String>();
+        final Map<String, String> HTTP_HEADERS = new HashMap<>();
         HTTP_HEADERS.put("X-Riak-Vclock".toLowerCase(), "a85hYGBgzGDKBVIsDPKZOzKYEhnzWBlaJyw9wpcFAA==");
         HTTP_HEADERS.put("Last-Modified".toLowerCase(), "Tue, 22 Dec 2009 18:48:37 GMT");
         HTTP_HEADERS.put("ETag".toLowerCase(), "4d5y9wqQK2Do0RK5ezwCJD");

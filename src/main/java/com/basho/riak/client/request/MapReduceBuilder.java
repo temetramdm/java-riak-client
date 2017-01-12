@@ -13,15 +13,7 @@
  */
 package com.basho.riak.client.request;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -51,14 +43,14 @@ import com.basho.riak.client.response.RiakResponseRuntimeException;
 @Deprecated
 public class MapReduceBuilder {
 
-    private static enum Types {
+    private enum Types {
         MAP, REDUCE, LINK
     }
 
     private String bucket = null;
-    private Map<String, Set<String>> objects = new LinkedHashMap<String, Set<String>>();
-    private List<MapReduceFilter> keyFilters = new ArrayList<MapReduceFilter>();
-    private List<MapReducePhase> phases = new LinkedList<MapReducePhase>();
+    private Map<String, Set<String>> objects = new LinkedHashMap<>();
+    private List<MapReduceFilter> keyFilters = new ArrayList<>();
+    private List<MapReducePhase> phases = new LinkedList<>();
     private int timeout = -1;
     private RiakClient riak = null;
 
@@ -114,11 +106,7 @@ public class MapReduceBuilder {
     public void addRiakObject(String bucket, String key) {
         if (this.bucket != null)
             throw new IllegalStateException("Cannot map/reduce over buckets and objects");
-        Set<String> keys = objects.get(bucket);
-        if (keys == null) {
-            keys = new LinkedHashSet<String>();
-            objects.put(bucket, keys);
-        }
+        Set<String> keys = objects.computeIfAbsent(bucket, k -> new LinkedHashSet<>());
         keys.add(key);
     }
 
@@ -139,7 +127,7 @@ public class MapReduceBuilder {
      * Returns a copy of the Riak objects on the input list for a map/reduce job
      */
     public Map<String, Set<String>> getRiakObjects() {
-        return new HashMap<String, Set<String>>(objects);
+        return new HashMap<>(objects);
     }
 
     /**
@@ -156,7 +144,7 @@ public class MapReduceBuilder {
         if (objects == null) {
             clearRiakObjects();
         } else {
-            this.objects = new HashMap<String, Set<String>>(objects);
+            this.objects = new HashMap<>(objects);
         }
 
         return this;
@@ -210,9 +198,7 @@ public class MapReduceBuilder {
      *         StringBuffer
      */
     public MapReduceBuilder keyFilter(MapReduceFilter... filters) {
-       for(MapReduceFilter filter: filters) {
-          this.keyFilters.add(filter);
-       }
+      Collections.addAll(this.keyFilters, filters);
        return this;
     }
 

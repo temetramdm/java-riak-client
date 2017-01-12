@@ -29,7 +29,7 @@ public class UnresolvedConflictException extends RuntimeException {
      */
     private static final long serialVersionUID = -219858468775752064L;
 
-    private final Collection<? extends Object> siblings;
+    private final Collection<?> siblings;
 
     /**
      * For when a collection of siblings cannot be whittled down to one.
@@ -41,7 +41,7 @@ public class UnresolvedConflictException extends RuntimeException {
      * @param siblings
      *            the collection of siblings
      */
-    public UnresolvedConflictException(Throwable cause, String message, Collection<? extends Object> siblings) {
+    public UnresolvedConflictException(Throwable cause, String message, Collection<?> siblings) {
         super(message, cause);
         this.siblings = siblings;
     }
@@ -54,7 +54,7 @@ public class UnresolvedConflictException extends RuntimeException {
      * @param siblings
      *            the collection of siblings
      */
-    public UnresolvedConflictException(String message, Collection<? extends Object> siblings) {
+    public UnresolvedConflictException(String message, Collection<?> siblings) {
         super(message);
         this.siblings = siblings;
     }
@@ -63,7 +63,7 @@ public class UnresolvedConflictException extends RuntimeException {
      * Get the siblings that could not be resolved.
      * @return the siblings
      */
-    public Collection<? extends Object> getSiblings() {
+    public Collection<?> getSiblings() {
         return siblings;
     }
 }

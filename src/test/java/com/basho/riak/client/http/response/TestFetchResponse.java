@@ -44,9 +44,9 @@ public class TestFetchResponse {
 
     final String BUCKET = "bucket";
     final String KEY = "key";
-    final Map<String, String> SINGLE_HEADERS = new HashMap<String, String>();
+    final Map<String, String> SINGLE_HEADERS = new HashMap<>();
     final String SINGLE_BODY = "foo";
-    final Map<String, String> SIBLING_HEADERS = new HashMap<String, String>();
+    final Map<String, String> SIBLING_HEADERS = new HashMap<>();
     
     final String CONTENT_LENGTH = "3";
     
@@ -175,7 +175,7 @@ public class TestFetchResponse {
     }
     
     @Test public void stores_value_stream_on_2xx_if_httpresponse_body_is_null() throws IOException {
-        final Long contentLength = new Long(100);
+        final Long contentLength = 100L;
         final InputStream mockInputStream = mock(InputStream.class);
         
         SINGLE_HEADERS.put(Constants.HDR_CONTENT_LENGTH, contentLength.toString());

@@ -52,7 +52,7 @@ public class LinkWalkSpec implements Iterable<LinkWalkStep> {
      * @see IRiakClient#walk(com.basho.riak.client.IRiakObject)
      */
     public LinkWalkSpec(final LinkedList<LinkWalkStep> steps, String startBucket, String startKey) {
-        this.steps = new LinkedList<LinkWalkStep>(steps);
+        this.steps = new LinkedList<>(steps);
         this.startBucket = startBucket;
         this.startKey = startKey;
     }
@@ -80,7 +80,7 @@ public class LinkWalkSpec implements Iterable<LinkWalkStep> {
      */
     public Iterator<LinkWalkStep> iterator() {
         final Iterator<LinkWalkStep> it = steps.iterator();
-        return new UnmodifiableIterator<LinkWalkStep>(it);
+        return new UnmodifiableIterator<>(it);
     }
 
     /**

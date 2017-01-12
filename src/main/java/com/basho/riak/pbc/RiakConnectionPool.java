@@ -28,8 +28,6 @@ import com.basho.riak.protobuf.RiakKvPB.RpbSetClientIdReq;
 import com.google.protobuf.ByteString;
 import java.util.Iterator;
 import java.util.concurrent.LinkedBlockingDeque;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * A bounded or boundless pool of {@link RiakConnection}s to be reused by {@link RiakClient}
@@ -218,8 +216,8 @@ public class RiakConnectionPool {
             long connectionWaitTimeoutMillis, int bufferSizeKb, long idleConnectionTTLMillis,
             int requestTimeoutMillis) throws IOException {
         this.permits = poolSemaphore;
-        this.available = new LinkedBlockingDeque<RiakConnection>();
-        this.inUse = new ConcurrentLinkedQueue<RiakConnection>();
+        this.available = new LinkedBlockingDeque<>();
+        this.inUse = new ConcurrentLinkedQueue<>();
         this.bufferSizeKb = bufferSizeKb;
         this.host = host;
         this.port = port;
@@ -242,33 +240,31 @@ public class RiakConnectionPool {
 
     private synchronized void doStart() {
         if (idleConnectionTTLNanos > 0) {
-            idleReaper.scheduleWithFixedDelay(new Runnable() {
-                public void run() {
-                    // Note this will not throw a ConncurrentModificationException
-                    // and if hasNext() returns true you are guaranteed that
-                    // the next() will return a value (even if it has already
-                    // been removed from the Deque between those calls). 
-                    Iterator<RiakConnection> i = available.descendingIterator();
-                    while (i.hasNext()) {
-                        RiakConnection c = i.next();
-                        long connIdleStartNanos = c.getIdleStartTimeNanos();
-                        if (connIdleStartNanos + idleConnectionTTLNanos < System.nanoTime()) {
-                            if (c.getIdleStartTimeNanos() == connIdleStartNanos) {
-                                // still a small window, but better than locking
-                                // the whole pool
-                                boolean removed = available.remove(c);
-                                if (removed) {
-                                    c.close();
-                                }
+            idleReaper.scheduleWithFixedDelay(() -> {
+                // Note this will not throw a ConncurrentModificationException
+                // and if hasNext() returns true you are guaranteed that
+                // the next() will return a value (even if it has already
+                // been removed from the Deque between those calls).
+                Iterator<RiakConnection> i = available.descendingIterator();
+                while (i.hasNext()) {
+                    RiakConnection c = i.next();
+                    long connIdleStartNanos = c.getIdleStartTimeNanos();
+                    if (connIdleStartNanos + idleConnectionTTLNanos < System.nanoTime()) {
+                        if (c.getIdleStartTimeNanos() == connIdleStartNanos) {
+                            // still a small window, but better than locking
+                            // the whole pool
+                            boolean removed = available.remove(c);
+                            if (removed) {
+                                c.close();
                             }
-                        } else {
-                            // Since we are descending and this is a LIFO, 
-                            // if the current connection hasn't been idle beyond 
-                            // the threshold, there's no reason to descend further
-                            break;
                         }
-                        
+                    } else {
+                        // Since we are descending and this is a LIFO,
+                        // if the current connection hasn't been idle beyond
+                        // the threshold, there's no reason to descend further
+                        break;
                     }
+
                 }
             }, idleConnectionTTLNanos, idleConnectionTTLNanos, TimeUnit.NANOSECONDS);
         }
@@ -481,14 +477,12 @@ public class RiakConnectionPool {
             c = available.poll();
         }
 
-        shutdownExecutor.scheduleWithFixedDelay(new Runnable() {
-            public void run() {
-                // when all connections are returned, and the available pool is empty
-                if(inUse.isEmpty() && available.isEmpty()) {
-                    state = State.SHUTDOWN;
-                    shutdownExecutor.shutdown();
-                    idleReaper.shutdown();
-                }
+        shutdownExecutor.scheduleWithFixedDelay(() -> {
+            // when all connections are returned, and the available pool is empty
+            if(inUse.isEmpty() && available.isEmpty()) {
+                state = State.SHUTDOWN;
+                shutdownExecutor.shutdown();
+                idleReaper.shutdown();
             }
         }, 0, 1, TimeUnit.SECONDS);
     }

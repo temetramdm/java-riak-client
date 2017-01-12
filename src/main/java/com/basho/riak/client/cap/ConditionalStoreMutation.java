@@ -46,5 +46,5 @@ package com.basho.riak.client.cap;
  */
 public interface ConditionalStoreMutation<T> extends Mutation<T>
 {
-    public boolean hasMutated();
+    boolean hasMutated();
 }

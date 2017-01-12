@@ -14,9 +14,7 @@
 package com.basho.riak.client.http.plain;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 import com.basho.riak.client.http.RiakBucketInfo;
 import com.basho.riak.client.http.RiakClient;
@@ -217,7 +215,7 @@ public class PlainClient {
 
         if (r.hasSiblings())
             return r.getSiblings();
-        return Arrays.asList(r.getObject());
+        return Collections.singletonList(r.getObject());
     }
 
     public Collection<? extends RiakObject> fetchAll(String bucket, String key) throws RiakIOException,

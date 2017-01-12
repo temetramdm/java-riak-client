@@ -23,10 +23,8 @@ import com.basho.riak.client.http.response.BucketResponse;
 import com.basho.riak.client.query.RiakStreamingRuntimeException;
 import com.basho.riak.client.query.StreamingOperation;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Set;
 
 /**
  * Wraps the stream of keys from BucketResponse.getBucketInfo.getKeys in an
@@ -97,7 +95,7 @@ public class KeySource implements StreamingOperation<String> {
 
     public List<String> getAll() 
     {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         while (hasNext()) {
             list.add(next());
         }
@@ -132,7 +130,7 @@ public class KeySource implements StreamingOperation<String> {
 
         ReaperTask(Object holder, BucketResponse conn) {
             this.bucketResponse = conn;
-            this.ref = new WeakReference<Object>(holder);
+            this.ref = new WeakReference<>(holder);
             KeySource.timer.scheduleAtFixedRate(this, 500, 500);
         }
 

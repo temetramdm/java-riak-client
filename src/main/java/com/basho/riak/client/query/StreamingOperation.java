@@ -18,7 +18,6 @@ package com.basho.riak.client.query;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Encapsulates a streaming Riak operation.

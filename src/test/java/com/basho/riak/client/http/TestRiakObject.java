@@ -17,7 +17,6 @@ import static com.basho.riak.client.util.CharsetUtils.*;
 
 import static org.junit.Assert.*;
 
-import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.io.ByteArrayInputStream;
@@ -65,7 +64,7 @@ public class TestRiakObject {
         impl = new RiakObject("b", "k", null, null, null, null, null, null, null);
         assertNotNull(impl.getLinks());
 
-        impl.setLinks((List<RiakLink>) null);
+        impl.setLinks(null);
         assertNotNull(impl.getLinks());
 
         impl.copyData(new RiakObject(null, null));
@@ -76,7 +75,7 @@ public class TestRiakObject {
         impl = new RiakObject("b", "k", null, null, null, null, null, null, null);
         assertNotNull(impl.getUsermeta());
 
-        impl.setUsermeta((Map<String, String>) null);
+        impl.setUsermeta(null);
         assertNotNull(impl.getUsermeta());
 
         impl.copyData(new RiakObject(null, null));
@@ -88,8 +87,8 @@ public class TestRiakObject {
         final InputStream valueStream = mock(InputStream.class);
         final long valueStreamLength = 10;
         final String ctype = Constants.CTYPE_JSON_UTF8;
-        final List<RiakLink> links = new ArrayList<RiakLink>();
-        final Map<String, String> usermeta = new HashMap<String, String>();
+        final List<RiakLink> links = new ArrayList<>();
+        final Map<String, String> usermeta = new HashMap<>();
         usermeta.put("testKey", "testValue");
         final String vclock = "vclock";
         final String lastmod = "lastmod";
@@ -153,8 +152,8 @@ public class TestRiakObject {
     @Test public void copyData_copies_null_data() {
         final String value = "value";
         final String ctype = Constants.CTYPE_JSON_UTF8;
-        final List<RiakLink> links = new ArrayList<RiakLink>();
-        final Map<String, String> usermeta = new HashMap<String, String>();
+        final List<RiakLink> links = new ArrayList<>();
+        final Map<String, String> usermeta = new HashMap<>();
         final String vclock = "vclock";
         final String lastmod = "lastmod";
         final String vtag = "vtag";
@@ -398,11 +397,9 @@ public class TestRiakObject {
         final HttpEntityEnclosingRequestBase mockHttpMethod = mock(HttpEntityEnclosingRequestBase.class);
 
         when(mockHttpMethod.getURI()).thenReturn(new URI("http://host:9999/path/to/object"));
-        doAnswer(new Answer() {
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                ((HttpEntity) invocation.getArguments()[0]).writeTo(os);
-                return null;
-            }
+        doAnswer(invocation -> {
+            ((HttpEntity) invocation.getArguments()[0]).writeTo(os);
+            return null;
         }).when(mockHttpMethod).setEntity(any(HttpEntity.class));
 
         impl.setValue(value);
@@ -517,7 +514,7 @@ public class TestRiakObject {
         final List<RiakLink> links = Arrays.asList(new RiakLink("b", "l", "t"), new RiakLink("b", "e", "c"),
                                                    new RiakLink("g", "c", "s"), new RiakLink("q", "p", "c"));
 
-        final RiakObject riakObject = new RiakObject("b", "k", utf8StringToBytes("v"), "", links, (Map<String, String>) null, "", "", "");
+        final RiakObject riakObject = new RiakObject("b", "k", utf8StringToBytes("v"), "", links, null, "", "", "");
 
         assertEquals(links.size(), riakObject.numLinks());
         assertTrue(riakObject.hasLinks());
@@ -577,7 +574,7 @@ public class TestRiakObject {
      * Encapsulated user meta
      */
     @Test public void userMetaEncapsulationIsAsGoodAsDirectAccess() {
-        final Map<String, String> userMeta = new HashMap<String, String>();
+        final Map<String, String> userMeta = new HashMap<>();
         userMeta.put("acl", "admin");
         userMeta.put("my-meta", "my-value");
 
@@ -622,24 +619,21 @@ public class TestRiakObject {
         Thread[] threads = new Thread[cnt];
 
         for (int i = 0; i < cnt; i++) {
-            threads[i] = new Thread(new Runnable() {
-
-                public void run() {
-                    String bucket = UUID.randomUUID().toString();
-                    String key = UUID.randomUUID().toString();
-                    String tag = UUID.randomUUID().toString();
-                    int cnt = 0;
-                    while (true) {
-                        riakObject.addLink(new RiakLink(bucket + cnt, key + cnt, tag + cnt));
-                        cnt++;
-                        try {
-                            Thread.sleep(10);
-                        } catch (InterruptedException e) {
-                            Thread.currentThread().interrupt();
-                        }
+            threads[i] = new Thread(() -> {
+                String bucket = UUID.randomUUID().toString();
+                String key = UUID.randomUUID().toString();
+                String tag = UUID.randomUUID().toString();
+                int cnt1 = 0;
+                while (true) {
+                    riakObject.addLink(new RiakLink(bucket + cnt1, key + cnt1, tag + cnt1));
+                    cnt1++;
+                    try {
+                        Thread.sleep(10);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
                     }
-
                 }
+
             });
             threads[i].setDaemon(true);
             threads[i].start();
@@ -660,23 +654,20 @@ public class TestRiakObject {
         Thread[] threads = new Thread[cnt];
 
         for (int i = 0; i < cnt; i++) {
-            threads[i] = new Thread(new Runnable() {
-
-                public void run() {
-                    String key = UUID.randomUUID().toString();
-                    String tag = UUID.randomUUID().toString();
-                    int cnt = 0;
-                    while (true) {
-                        riakObject.addUsermetaItem(key + cnt, tag + cnt);
-                        cnt++;
-                        try {
-                            Thread.sleep(10);
-                        } catch (InterruptedException e) {
-                            Thread.currentThread().interrupt();
-                        }
+            threads[i] = new Thread(() -> {
+                String key = UUID.randomUUID().toString();
+                String tag = UUID.randomUUID().toString();
+                int cnt1 = 0;
+                while (true) {
+                    riakObject.addUsermetaItem(key + cnt1, tag + cnt1);
+                    cnt1++;
+                    try {
+                        Thread.sleep(10);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
                     }
-
                 }
+
             });
             threads[i].setDaemon(true);
             threads[i].start();

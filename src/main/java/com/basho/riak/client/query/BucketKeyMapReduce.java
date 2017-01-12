@@ -33,7 +33,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 public class BucketKeyMapReduce extends MapReduce implements Iterable<String[]> {
 
     private final Object inputsLock = new Object();
-    private final Collection<String[]> inputs = new LinkedList<String[]>();
+    private final Collection<String[]> inputs = new LinkedList<>();
 
     /**
      * The {@link RawClient} to execute the Map/Reduce query
@@ -79,13 +79,13 @@ public class BucketKeyMapReduce extends MapReduce implements Iterable<String[]> 
     * An {@link UnmodifiableIterator} view of the inputs for this Map/Reduce job.
     */
     public Iterator<String[]> iterator() {
-        final Collection<String[]> inputsCopy = new LinkedList<String[]>();
+        final Collection<String[]> inputsCopy = new LinkedList<>();
 
         synchronized (inputsLock) {
             inputsCopy.addAll(inputs);
         }
 
-        return  new UnmodifiableIterator<String[]>(inputsCopy.iterator());
+        return new UnmodifiableIterator<>(inputsCopy.iterator());
     }
 
     /* (non-Javadoc)

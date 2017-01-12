@@ -26,81 +26,81 @@ package com.basho.riak.client.util;
 public interface Constants {
 
     // Default URL path prefixes Riak HTTP interface
-    public static String RIAK_URL_PREFIX = "/riak";
+    String RIAK_URL_PREFIX = "/riak";
 
     // JSON fields used by Riak
-    public static String FL_NAME = "name";
-    public static String FL_KEYS = "keys";
-    public static String FL_SCHEMA = "props";
-    public static String FL_SCHEMA_ALLOW_MULT = "allow_mult";
-    public static String FL_SCHEMA_CHASHFUN = "chash_keyfun";
-    public static String FL_SCHEMA_CHASHFUN_MOD = "mod";
-    public static String FL_SCHEMA_CHASHFUN_FUN = "fun";
-    public static String FL_SCHEMA_LINKFUN = "linkfun";
-    public static String FL_SCHEMA_LINKFUN_MOD = "mod";
-    public static String FL_SCHEMA_LINKFUN_FUN = "fun";
-    public static String FL_SCHEMA_NVAL = "n_val";
+    String FL_NAME = "name";
+    String FL_KEYS = "keys";
+    String FL_SCHEMA = "props";
+    String FL_SCHEMA_ALLOW_MULT = "allow_mult";
+    String FL_SCHEMA_CHASHFUN = "chash_keyfun";
+    String FL_SCHEMA_CHASHFUN_MOD = "mod";
+    String FL_SCHEMA_CHASHFUN_FUN = "fun";
+    String FL_SCHEMA_LINKFUN = "linkfun";
+    String FL_SCHEMA_LINKFUN_MOD = "mod";
+    String FL_SCHEMA_LINKFUN_FUN = "fun";
+    String FL_SCHEMA_NVAL = "n_val";
 
     // Header directives used by Riak
-    public static String LINK_TAG = "riaktag";
+    String LINK_TAG = "riaktag";
 
     // HTTP headers used in Riak
-    public static String HDR_ACCEPT = "accept";
-    public static String HDR_CLIENT_ID = "x-riak-clientid";
-    public static String HDR_CONNECTION = "connection";
-    public static String HDR_CONTENT_LENGTH = "content-length";
-    public static String HDR_CONTENT_TYPE = "content-type";
-    public static String HDR_ETAG = "etag";
-    public static String HDR_IF_MATCH = "if-match";
-    public static String HDR_IF_MODIFIED_SINCE = "if-modified-since";
-    public static String HDR_IF_UNMODIFIED_SINCE = "if-unmodified-since";
-    public static String HDR_IF_NONE_MATCH = "if-none-match";
-    public static String HDR_LAST_MODIFIED = "last-modified";
-    public static String HDR_LINK = "link";
-    public static String HDR_LOCATION = "location";
-    public static String HDR_VCLOCK = "x-riak-vclock";
+    String HDR_ACCEPT = "accept";
+    String HDR_CLIENT_ID = "x-riak-clientid";
+    String HDR_CONNECTION = "connection";
+    String HDR_CONTENT_LENGTH = "content-length";
+    String HDR_CONTENT_TYPE = "content-type";
+    String HDR_ETAG = "etag";
+    String HDR_IF_MATCH = "if-match";
+    String HDR_IF_MODIFIED_SINCE = "if-modified-since";
+    String HDR_IF_UNMODIFIED_SINCE = "if-unmodified-since";
+    String HDR_IF_NONE_MATCH = "if-none-match";
+    String HDR_LAST_MODIFIED = "last-modified";
+    String HDR_LINK = "link";
+    String HDR_LOCATION = "location";
+    String HDR_VCLOCK = "x-riak-vclock";
     // Declared twice because of Erlang has bizarre HTTP header case handling.
     // If a header name is 21 chars or shorteer, it is auto-capitalized between
     // dashes. Otherwise, it is passed as is. Therefore, we just make sure this
     // headers prefix is correctly capitalized in requests.
-    public static String HDR_USERMETA_PREFIX = "x-riak-meta-";
-    public static String HDR_USERMETA_REQ_PREFIX = "X-Riak-Meta-";
+    String HDR_USERMETA_PREFIX = "x-riak-meta-";
+    String HDR_USERMETA_REQ_PREFIX = "X-Riak-Meta-";
 
     // Content types used in Riak
-    public static String CTYPE_ANY = "*/*";
-    public static String CTYPE_JSON = "application/json";
-    public static String CTYPE_OCTET_STREAM = "application/octet-stream";
-    public static String CTYPE_MULTIPART_MIXED = "multipart/mixed";
-    public static String CTYPE_TEXT = "text/plain";
+    String CTYPE_ANY = "*/*";
+    String CTYPE_JSON = "application/json";
+    String CTYPE_OCTET_STREAM = "application/octet-stream";
+    String CTYPE_MULTIPART_MIXED = "multipart/mixed";
+    String CTYPE_TEXT = "text/plain";
 
     // Default r, w, and dw values to use when not specified
-    public static Integer DEFAULT_R = 2;
-    public static Integer DEFAULT_W = null;
-    public static Integer DEFAULT_DW = null;
+    Integer DEFAULT_R = 2;
+    Integer DEFAULT_W = null;
+    Integer DEFAULT_DW = null;
     
     // Values for the "keys" query parameter
-    public static String NO_KEYS = "false";
-    public static String INCLUDE_KEYS = "true";
-    public static String STREAM_KEYS = "stream";
+    String NO_KEYS = "false";
+    String INCLUDE_KEYS = "true";
+    String STREAM_KEYS = "stream";
 
     // Query parameters used in Riak
-    public static String QP_RETURN_BODY = "returnbody";
-    public static String QP_R = "r";
-    public static String QP_W = "w";
-    public static String QP_DW = "dw";
-    public static String QP_RW = "rw";
-    public static String QP_KEYS = "keys";
-    public static String QP_BUCKETS = "buckets";
+    String QP_RETURN_BODY = "returnbody";
+    String QP_R = "r";
+    String QP_W = "w";
+    String QP_DW = "dw";
+    String QP_RW = "rw";
+    String QP_KEYS = "keys";
+    String QP_BUCKETS = "buckets";
 
     // HTTP method names
-    public static String HTTP_HEAD_METHOD = "HEAD";
-    public static String HTTP_GET_METHOD = "GET";
-    public static String HTTP_PUT_METHOD = "PUT";
-    public static String HTTP_DELETE_METHOD = "DELETE";
+    String HTTP_HEAD_METHOD = "HEAD";
+    String HTTP_GET_METHOD = "GET";
+    String HTTP_PUT_METHOD = "PUT";
+    String HTTP_DELETE_METHOD = "DELETE";
 
     // Riak magic numbers
-    public static int RIAK_CLIENT_ID_LENGTH = 4;
+    int RIAK_CLIENT_ID_LENGTH = 4;
 
     // List bucket operation parameters
-    public static String LIST_BUCKETS = "true";
+    String LIST_BUCKETS = "true";
 }

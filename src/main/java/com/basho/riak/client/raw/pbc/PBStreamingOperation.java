@@ -40,7 +40,7 @@ public abstract class PBStreamingOperation<S,T> implements StreamingOperation<T>
     
     public List<T> getAll() 
     {
-        List<T> list = new ArrayList<T>();
+        List<T> list = new ArrayList<>();
         while (hasNext())
         {
             list.add(next());

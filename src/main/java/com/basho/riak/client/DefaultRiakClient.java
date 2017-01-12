@@ -22,8 +22,6 @@ import com.basho.riak.client.raw.Transport;
 import com.basho.riak.client.raw.http.HTTPClientAdapter;
 import com.basho.riak.client.raw.pbc.PBClientAdapter;
 import com.basho.riak.client.raw.query.indexes.IndexQuery;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * The default implementation of IRiakClient.
@@ -144,11 +142,9 @@ public final class DefaultRiakClient implements IRiakClient {
             throw new IllegalArgumentException("Client Id must be 4 bytes long");
         }
         final byte[] cloned = clientId.clone();
-        retrier.attempt(new Callable<Void>() {
-            public Void call() throws Exception {
-                rawClient.setClientId(cloned);
-                return null;
-            }
+        retrier.attempt((Callable<Void>) () -> {
+            rawClient.setClientId(cloned);
+            return null;
         });
 
         return this;
@@ -158,11 +154,7 @@ public final class DefaultRiakClient implements IRiakClient {
      * @see com.basho.riak.client.IRiakClient#generateAndSetClientId()
      */
     public byte[] generateAndSetClientId() throws RiakException {
-        final byte[] clientId = retrier.attempt(new Callable<byte[]>() {
-            public byte[] call() throws Exception {
-                return rawClient.generateAndSetClientId();
-            }
-        });
+        final byte[] clientId = retrier.attempt(rawClient::generateAndSetClientId);
 
         return clientId;
     }
@@ -171,11 +163,7 @@ public final class DefaultRiakClient implements IRiakClient {
      * @see com.basho.riak.client.IRiakClient#getClientId()
      */
     public byte[] getClientId() throws RiakException {
-        final byte[] clientId = retrier.attempt(new Callable<byte[]>() {
-            public byte[] call() throws Exception {
-                return rawClient.getClientId();
-            }
-        });
+        final byte[] clientId = retrier.attempt(rawClient::getClientId);
 
         return clientId;
     }

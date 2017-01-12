@@ -16,7 +16,6 @@ package com.basho.riak.client.itest;
 import static com.basho.riak.client.AllTests.emptyBucket;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -152,7 +151,7 @@ public abstract class ITestClientBasic {
 
         // Streaming
         StreamingOperation<String> sOperation = client.listBucketsStreaming();
-        buckets = new HashSet<String>();
+        buckets = new HashSet<>();
         while (sOperation.hasNext()) {
             buckets.add(sOperation.next());
         }
@@ -214,53 +213,45 @@ public abstract class ITestClientBasic {
 
         final CountDownLatch endLatch = new CountDownLatch(1);
 
-        final Runnable putter = new Runnable() {
-
-            public void run() {
-                int cnt = 0;
-                while (!Thread.currentThread().isInterrupted()) {
-                    try {
-                        b.store(key, String.valueOf(cnt)).execute();
-                    } catch (RiakException e) {
-                        // no-op, keep going
-                    }
+        final Runnable putter = () -> {
+            int cnt = 0;
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    b.store(key, String.valueOf(cnt)).execute();
+                } catch (RiakException e) {
+                    // no-op, keep going
                 }
             }
         };
 
         final Thread putterThread = new Thread(putter);
 
-        final Runnable deleter = new Runnable() {
-
-            public void run() {
-                while (!Thread.currentThread().isInterrupted()) {
-                    try {
-                        b.delete(key).execute();
-                    } catch (RiakException e) {
-                        // no-op, keep going
-                    }
+        final Runnable deleter = () -> {
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    b.delete(key).execute();
+                } catch (RiakException e) {
+                    // no-op, keep going
                 }
             }
         };
 
         final Thread deleterThread = new Thread(deleter);
 
-        final Runnable getter = new Runnable() {
-            public void run() {
-                while (!Thread.currentThread().isInterrupted()) {
-                    try {
-                        FetchObject<IRiakObject> fo = b.fetch(key).returnDeletedVClock(true);
-                        IRiakObject o = fo.execute();
+        final Runnable getter = () -> {
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    FetchObject<IRiakObject> fo = b.fetch(key).returnDeletedVClock(true);
+                    IRiakObject o = fo.execute();
 
-                        if (o != null && o.isDeleted()) {
-                            endLatch.countDown();
-                            Thread.currentThread().interrupt();
-                            putterThread.interrupt();
-                            deleterThread.interrupt();
-                        }
-                    } catch (RiakException e) {
-                        // no-op, keep going
+                    if (o != null && o.isDeleted()) {
+                        endLatch.countDown();
+                        Thread.currentThread().interrupt();
+                        putterThread.interrupt();
+                        deleterThread.interrupt();
                     }
+                } catch (RiakException e) {
+                    // no-op, keep going
                 }
             }
         };

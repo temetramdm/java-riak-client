@@ -26,13 +26,13 @@ import com.basho.riak.client.http.RiakObject;
  */
 public interface WithBodyResponse extends HttpResponse {
 
-    public boolean hasObject();
+    boolean hasObject();
 
-    public RiakObject getObject();
+    RiakObject getObject();
 
-    public boolean hasSiblings();
+    boolean hasSiblings();
 
-    public Collection<RiakObject> getSiblings();
+    Collection<RiakObject> getSiblings();
 
-    public String getVclock();
+    String getVclock();
 }

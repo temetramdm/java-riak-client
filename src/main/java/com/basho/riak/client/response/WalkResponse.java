@@ -39,7 +39,7 @@ import com.basho.riak.client.util.Multipart;
 @Deprecated
 public class WalkResponse extends HttpResponseDecorator implements HttpResponse {
 
-    private List<? extends List<RiakObject>> steps = new ArrayList<List<RiakObject>>();
+    private List<? extends List<RiakObject>> steps = new ArrayList<>();
 
     /**
      * On a 2xx response, parses the HTTP body into a list of steps. Each step
@@ -89,7 +89,7 @@ public class WalkResponse extends HttpResponseDecorator implements HttpResponse 
             throws RiakResponseRuntimeException {
         String bucket = r.getBucket();
         String key = r.getKey();
-        List<List<RiakObject>> parsedSteps = new ArrayList<List<RiakObject>>();
+        List<List<RiakObject>> parsedSteps = new ArrayList<>();
         List<Multipart.Part> parts = Multipart.parse(r.getHttpHeaders(), r.getBody());
 
         if (parts != null) {

@@ -52,7 +52,7 @@ public final class ExpectedValues {
      * @return List of RpbLinks
      */
     public static List<RpbLink> rpbLinks(int numLinks) {
-        final List<RpbLink> rpbLinks = new ArrayList<RpbLink>(numLinks);
+        final List<RpbLink> rpbLinks = new ArrayList<>(numLinks);
         
         for(int i=0; i < numLinks; i++) {
             RpbLink.Builder builder = RpbLink.newBuilder()
@@ -82,7 +82,7 @@ public final class ExpectedValues {
             throw new IllegalArgumentException("keys and values must be same length"); 
         }
         
-        final List<RpbPair> pairs = new ArrayList<RpbPair>();
+        final List<RpbPair> pairs = new ArrayList<>();
         
         for(int i=0; i < keys.length; i++ ) {
             RpbPair.Builder builder = RpbPair.newBuilder();

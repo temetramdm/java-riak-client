@@ -127,7 +127,7 @@ public abstract class ITestBucket {
         b.store("k", "v").execute();
 
         final int numThreads = 2;
-        final Collection<Callable<Boolean>> storers = new ArrayList<Callable<Boolean>>(numThreads);
+        final Collection<Callable<Boolean>> storers = new ArrayList<>(numThreads);
 
         final ExecutorService es = Executors.newFixedThreadPool(numThreads);
 
@@ -136,18 +136,16 @@ public abstract class ITestBucket {
             c.generateAndSetClientId();
             final Bucket bucket = c.fetchBucket(bucketName).execute();
 
-            storers.add(new Callable<Boolean>() {
-                public Boolean call() throws RiakException {
-                    try {
-                        for (int i = 0; i < 5; i++) {
-                            bucket.store("k", Thread.currentThread().getName() + "v" + i).execute();
-                            Thread.sleep(50);
-                        }
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
+            storers.add(() -> {
+                try {
+                    for (int i1 = 0; i1 < 5; i1++) {
+                        bucket.store("k", Thread.currentThread().getName() + "v" + i1).execute();
+                        Thread.sleep(50);
                     }
-                    return true;
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
                 }
+                return true;
             });
         }
 
@@ -167,7 +165,7 @@ public abstract class ITestBucket {
 
     // List Keys
     @Test public void listKeys() throws Exception {
-        final Set<String> keys = new LinkedHashSet<String>();
+        final Set<String> keys = new LinkedHashSet<>();
 
         Bucket b = client.fetchBucket(bucketName + "_kl").execute();
 
@@ -404,55 +402,47 @@ public abstract class ITestBucket {
 
         final CountDownLatch endLatch = new CountDownLatch(1);
 
-        final Runnable putter = new Runnable() {
-
-            public void run() {
-                int cnt = 0;
-                while (!Thread.currentThread().isInterrupted()) {
-                    try {
-                        b.store(key, String.valueOf(cnt)).execute();
-                    } catch (RiakException e) {
-                        // no-op, keep going
-                    }
+        final Runnable putter = () -> {
+            int cnt = 0;
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    b.store(key, String.valueOf(cnt)).execute();
+                } catch (RiakException e) {
+                    // no-op, keep going
                 }
             }
         };
 
         final Thread putterThread = new Thread(putter);
 
-        final Runnable deleter = new Runnable() {
-
-            public void run() {
-                while (!Thread.currentThread().isInterrupted()) {
-                    try {
-                        b.delete(key).execute();
-                    } catch (RiakException e) {
-                        // no-op, keep going
-                    }
+        final Runnable deleter = () -> {
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    b.delete(key).execute();
+                } catch (RiakException e) {
+                    // no-op, keep going
                 }
             }
         };
 
         final Thread deleterThread = new Thread(deleter);
 
-        final Runnable getter = new Runnable() {
-            public void run() {
-                while (!Thread.currentThread().isInterrupted()) {
-                    try {
-                        FetchObject<IRiakObject> fo = b.fetch(key).returnDeletedVClock(true);
-                        IRiakObject o = fo.execute();
+        final Runnable getter = () -> {
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    FetchObject<IRiakObject> fo = b.fetch(key).returnDeletedVClock(true);
+                    IRiakObject o = fo.execute();
 
-                        if (o != null && o.isDeleted()) {
-                            endLatch.countDown();
-                            Thread.currentThread().interrupt();
-                            putterThread.interrupt();
-                            deleterThread.interrupt();
-                            assertArrayEquals(new byte[0], o.getValue());
+                    if (o != null && o.isDeleted()) {
+                        endLatch.countDown();
+                        Thread.currentThread().interrupt();
+                        putterThread.interrupt();
+                        deleterThread.interrupt();
+                        assertArrayEquals(new byte[0], o.getValue());
 
-                        }
-                    } catch (RiakException e) {
-                        // no-op, keep going
                     }
+                } catch (RiakException e) {
+                    // no-op, keep going
                 }
             }
         };
@@ -534,58 +524,51 @@ public abstract class ITestBucket {
         final String v1 = "v1";
         final String v2 = "v2";
         final String v3 = "v3";
-        final SynchronousQueue<Integer> sync = new SynchronousQueue<Integer>(true);
+        final SynchronousQueue<Integer> sync = new SynchronousQueue<>(true);
         final CountDownLatch endLatch = new CountDownLatch(1);
 
         final IRiakClient client = getClient();
         final Bucket b = client.fetchBucket(bucketName).execute();
         b.store(k, v1).execute();
 
-        final Runnable helper = new Runnable() {
-            public void run() {
-                try {
-                    while (!Thread.currentThread().isInterrupted()) {
-                        sync.take(); // block until the other thread has fetched
-                        Thread.sleep(1000); // throw in a sleep for the HTTP API
-                        b.store(k, v3).execute();
-                        sync.put(1); // tell the other thread that we've updated
-                                     // the value
-                    }
-                } catch (RiakException e) {
-                    // fatal
-                    fail("exception in helper, storing value");
-                    throw new RuntimeException(e);
-                } catch (InterruptedException e) {
-                    // used to cause thread to exit
-                    Thread.currentThread().interrupt();
+        final Runnable helper = () -> {
+            try {
+                while (!Thread.currentThread().isInterrupted()) {
+                    sync.take(); // block until the other thread has fetched
+                    Thread.sleep(1000); // throw in a sleep for the HTTP API
+                    b.store(k, v3).execute();
+                    sync.put(1); // tell the other thread that we've updated
+                                 // the value
                 }
+            } catch (RiakException e) {
+                // fatal
+                fail("exception in helper, storing value");
+                throw new RuntimeException(e);
+            } catch (InterruptedException e) {
+                // used to cause thread to exit
+                Thread.currentThread().interrupt();
             }
         };
 
         final Thread helperThread = new Thread(helper);
         helperThread.start();
-        final Runnable failer = new Runnable() {
-            public void run() {
-                try {
-                    b.store(k, v2).ifNotModified(true).withMutator(new Mutation<IRiakObject>() {
-
-                        public IRiakObject apply(IRiakObject original) {
-                            try {
-                                sync.put(1); // tell the other thread to store
-                                sync.take(); // block until it has stored
-                            } catch (InterruptedException e) {
-                                Thread.currentThread().interrupt();
-                                throw new RuntimeException(e);
-                            }
-                            return original;
-                        }
-                    }).execute();
-                    fail("Expected an exception");
-                } catch (RiakRetryFailedException e) {
-                    assertTrue((e.getCause() instanceof ModifiedException));
-                    helperThread.interrupt();
-                    endLatch.countDown();
-                }
+        final Runnable failer = () -> {
+            try {
+                b.store(k, v2).ifNotModified(true).withMutator(original -> {
+                    try {
+                        sync.put(1); // tell the other thread to store
+                        sync.take(); // block until it has stored
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        throw new RuntimeException(e);
+                    }
+                    return original;
+                }).execute();
+                fail("Expected an exception");
+            } catch (RiakRetryFailedException e) {
+                assertTrue((e.getCause() instanceof ModifiedException));
+                helperThread.interrupt();
+                endLatch.countDown();
             }
         };
 

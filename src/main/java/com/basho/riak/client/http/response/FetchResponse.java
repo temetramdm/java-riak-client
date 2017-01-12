@@ -35,7 +35,7 @@ import com.basho.riak.client.http.util.StreamedMultipart;
 public class FetchResponse extends HttpResponseDecorator implements WithBodyResponse {
 
     private RiakObject object = null;
-    private Collection<RiakObject> siblings = new ArrayList<RiakObject>();
+    private Collection<RiakObject> siblings = new ArrayList<>();
     private String vclock;
 
     /**

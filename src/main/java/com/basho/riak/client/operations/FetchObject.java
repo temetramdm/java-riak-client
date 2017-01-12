@@ -26,7 +26,6 @@ import com.basho.riak.client.cap.*;
 import com.basho.riak.client.convert.ConversionException;
 import com.basho.riak.client.convert.Converter;
 import com.basho.riak.client.raw.FetchMeta;
-import com.basho.riak.client.raw.FetchMeta.Builder;
 import com.basho.riak.client.raw.RawClient;
 import com.basho.riak.client.raw.RiakResponse;
 
@@ -126,14 +125,10 @@ public class FetchObject<T> implements RiakOperation<T> {
     public T execute() throws UnresolvedConflictException, RiakRetryFailedException, ConversionException {
         // fetch, resolve
         final FetchMeta fetchMeta = builder.build();
-        Callable<RiakResponse> command = new Callable<RiakResponse>() {
-            public RiakResponse call() throws Exception {
-                return client.fetch(bucket, key, fetchMeta);
-            }
-        };
+        Callable<RiakResponse> command = () -> client.fetch(bucket, key, fetchMeta);
 
         rawResponse = retrier.attempt(command);
-        final Collection<T> siblings = new ArrayList<T>(rawResponse.numberOfValues());
+        final Collection<T> siblings = new ArrayList<>(rawResponse.numberOfValues());
         
         // When talking about tombstones, our two protocols have 
         // different behaviors. 

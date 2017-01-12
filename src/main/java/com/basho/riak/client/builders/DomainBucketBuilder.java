@@ -50,7 +50,7 @@ public class DomainBucketBuilder<T> {
     private final Class<T> clazz;
 
     // The default resolver, it doesn't resolve
-    private ConflictResolver<T> resolver = new DefaultResolver<T>();
+    private ConflictResolver<T> resolver = new DefaultResolver<>();
     private Converter<T> converter;
     private Mutation<T> mutation;
     private MutationProducer<T> mutationProducer;
@@ -71,7 +71,7 @@ public class DomainBucketBuilder<T> {
         this.bucket = bucket;
         this.clazz = clazz;
         // create a default converter (the JSONConverter)
-        converter = new JSONConverter<T>(clazz, bucket.getName());
+        converter = new JSONConverter<>(clazz, bucket.getName());
     }
 
     /**
@@ -81,23 +81,14 @@ public class DomainBucketBuilder<T> {
     public DomainBucket<T> build() {
         // if there is no Mutation or MutationProducer create a default one.
         if (mutation != null && mutationProducer == null) {
-            mutationProducer = new MutationProducer<T>() {
-                public Mutation<T> produce(T o) {
-                    return mutation;
-                }
-            };
+            mutationProducer = o -> mutation;
         } else if (mutation == null && mutationProducer == null) {
-            mutationProducer = new MutationProducer<T>() {
-
-                public Mutation<T> produce(T o) {
-                    return new ClobberMutation<T>(o);
-                }
-            };
+            mutationProducer = ClobberMutation::new;
         }
 
-        return new DomainBucket<T>(bucket, resolver, converter, mutationProducer,
-                    storeMetaBuilder.returnBody(returnBody).build(), fetchMetaBuilder.build(), deleteMetaBuilder.build(),
-                    clazz, retrier, withoutFetch);
+        return new DomainBucket<>(bucket, resolver, converter, mutationProducer,
+           storeMetaBuilder.returnBody(returnBody).build(), fetchMetaBuilder.build(), deleteMetaBuilder.build(),
+           clazz, retrier, withoutFetch);
     }
 
     /**

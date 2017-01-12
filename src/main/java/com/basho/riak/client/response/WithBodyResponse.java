@@ -34,11 +34,11 @@ import com.basho.riak.client.RiakObject;
 @Deprecated
 public interface WithBodyResponse extends HttpResponse {
 
-    public boolean hasObject();
+    boolean hasObject();
 
-    public RiakObject getObject();
+    RiakObject getObject();
 
-    public boolean hasSiblings();
+    boolean hasSiblings();
 
-    public Collection<RiakObject> getSiblings();
+    Collection<RiakObject> getSiblings();
 }

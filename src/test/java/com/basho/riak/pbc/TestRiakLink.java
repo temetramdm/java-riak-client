@@ -81,7 +81,7 @@ public class TestRiakLink {
         
         assertEquals(rpbLinks.size(), decoded.size());
         
-        Set<Integer> counters = new HashSet<Integer>();
+        Set<Integer> counters = new HashSet<>();
         
         for(RiakLink link : decoded) {
             String[] bucketNCnt = splitByteString(link.getBucket());

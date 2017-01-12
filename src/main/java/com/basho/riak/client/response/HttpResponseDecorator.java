@@ -77,7 +77,7 @@ public class HttpResponseDecorator implements HttpResponse {
 
     public Map<String, String> getHttpHeaders() {
         if (impl == null)
-            return new HashMap<String, String>();
+            return new HashMap<>();
         return impl.getHttpHeaders();
     }
 

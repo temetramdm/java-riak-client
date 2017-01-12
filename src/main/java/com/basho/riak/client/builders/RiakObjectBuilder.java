@@ -41,9 +41,9 @@ public class RiakObjectBuilder {
     private VClock vclock;
     private String vtag;
     private Date lastModified;
-    private Collection<RiakLink> links = new ArrayList<RiakLink>();
+    private Collection<RiakLink> links = new ArrayList<>();
     private RiakIndexes indexes = new RiakIndexes();
-    private Map<String, String> userMeta = new HashMap<String, String>();
+    private Map<String, String> userMeta = new HashMap<>();
     private String contentType;
     private boolean isDeleted = false;
     /**
@@ -171,7 +171,7 @@ public class RiakObjectBuilder {
      */
     public RiakObjectBuilder withLinks(Collection<RiakLink> links) {
         if (links != null) {
-            this.links = new ArrayList<RiakLink>(links);
+            this.links = new ArrayList<>(links);
         }
         return this;
     }
@@ -242,7 +242,7 @@ public class RiakObjectBuilder {
      */
     public RiakObjectBuilder withUsermeta(Map<String, String> usermeta) {
         if(usermeta != null) {
-            this.userMeta = new HashMap<String, String>(usermeta);
+            this.userMeta = new HashMap<>(usermeta);
         }
         return this;
     }

@@ -71,7 +71,7 @@ public class LinkHeader {
      *         parameter name to value.
      */
     public static Map<String, Map<String, String>> parse(String header) {
-        Map<String, Map<String, String>> out = new LinkedHashMap<String, Map<String, String>>();
+        Map<String, Map<String, String>> out = new LinkedHashMap<>();
 
         if (header == null || header.length() == 0)
             return out;
@@ -81,7 +81,7 @@ public class LinkHeader {
             String link = m.group().trim();
             String[] urlandparams = link.split(">", 2);
             String url = urlandparams[0].substring(1);
-            Map<String, String> parsedLink = new HashMap<String, String>();
+            Map<String, String> parsedLink = new HashMap<>();
 
             if (urlandparams.length > 1) {
                 String params = urlandparams[1];
@@ -102,7 +102,7 @@ public class LinkHeader {
 
     private static List<String> splitParams(String s) {
 
-        List<String> items = new ArrayList<String>();
+        List<String> items = new ArrayList<>();
         if (s == null || s.length() == 0)
             return items;
 

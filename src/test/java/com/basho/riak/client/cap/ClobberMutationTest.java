@@ -35,14 +35,14 @@ public class ClobberMutationTest {
     @Test public void apply() {
         final Object oldValue = new Object();
 
-        ClobberMutation<Object> mutation = new ClobberMutation<Object>(null);
+        ClobberMutation<Object> mutation = new ClobberMutation<>(null);
 
         assertNull(mutation.apply(oldValue));
 
         Object newValue = new Object();
 
         assertNotSame(oldValue, newValue);
-        mutation = new ClobberMutation<Object>(newValue);
+        mutation = new ClobberMutation<>(newValue);
 
         assertSame(newValue, mutation.apply(new Object()));
     }

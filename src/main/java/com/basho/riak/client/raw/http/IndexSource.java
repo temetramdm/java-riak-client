@@ -35,7 +35,7 @@ public class IndexSource implements StreamingOperation<IndexEntry>
     
     public IndexSource(IndexResponseV2 indexResponse)
     {
-        entryList = new ArrayList<IndexEntry>();
+        entryList = new ArrayList<>();
         for (com.basho.riak.client.http.response.IndexEntry entry : indexResponse.getEntries())
         {
             entryList.add(new IndexEntry(entry.getIndexValue(), entry.getObjectKey()));

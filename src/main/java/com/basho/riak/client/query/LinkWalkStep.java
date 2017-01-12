@@ -38,7 +38,7 @@ public class LinkWalkStep {
 
         private final String asString;
 
-        private Accumulate(String asString) {
+        Accumulate(String asString) {
             this.asString = asString;
         }
 
@@ -53,9 +53,9 @@ public class LinkWalkStep {
                 return Accumulate.NO;
             }
         }
-    };
+    }
 
-    private final String bucket;
+  private final String bucket;
     private final String tag;
     private final Accumulate keep;
 

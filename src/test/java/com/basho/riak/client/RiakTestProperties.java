@@ -29,9 +29,9 @@ public final class RiakTestProperties {
     public static final boolean _2I_ENABLED = Boolean.parseBoolean(System.getProperty(Hosts.PREFIX + _2I_PROPERTY,
                                                                                          "false"));
 
-    private RiakTestProperties() {};
+    private RiakTestProperties() {}
 
-    public static boolean isSearchEnabled() {
+  public static boolean isSearchEnabled() {
         return SEARCH_ENABLED;
     }
 

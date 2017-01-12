@@ -89,7 +89,7 @@ public abstract class ITestMapReduce {
             builder.withContentType("text/plain").withValue(Integer.toString(i));
             if (i < TEST_ITEMS - 1) {
                 RiakLink link = new RiakLink(BUCKET_NAME, "java_" + Integer.toString(i + 1), "test");
-                List<RiakLink> links = new ArrayList<RiakLink>(1);
+                List<RiakLink> links = new ArrayList<>(1);
                 links.add(link);
                 builder.withLinks(links);
             }
@@ -127,7 +127,7 @@ public abstract class ITestMapReduce {
         .execute();
 
         assertNotNull(result);
-        List<Integer> items = new LinkedList<Integer>(result.getResult(Integer.class));
+        List<Integer> items = new LinkedList<>(result.getResult(Integer.class));
         assertEquals(TEST_ITEMS, items.size());
         assertEquals(new Integer(0), items.get(0));
         assertEquals(new Integer(73), items.get(73));
@@ -141,7 +141,7 @@ public abstract class ITestMapReduce {
             .execute();
 
         assertNotNull(result);
-        List<Integer> items = new LinkedList<Integer>(result.getResult(Integer.class));
+        List<Integer> items = new LinkedList<>(result.getResult(Integer.class));
         assertEquals(TEST_ITEMS, items.size());
         assertEquals(new Integer(0), items.get(0));
         assertEquals(new Integer(73), items.get(73));
@@ -156,8 +156,8 @@ public abstract class ITestMapReduce {
 						false).execute();
 
 		assertNotNull(result);
-		List<Integer> items = new LinkedList<Integer>(
-				result.getResult(Integer.class));
+		List<Integer> items = new LinkedList<>(
+       result.getResult(Integer.class));
 		assertEquals(0, items.size());
 	}
 
@@ -171,7 +171,7 @@ public abstract class ITestMapReduce {
         .execute();
         
         assertNotNull(result);
-        List<Integer> items = new LinkedList<Integer>(result.getResult(Integer.class));
+        List<Integer> items = new LinkedList<>(result.getResult(Integer.class));
         assertEquals(50, items.size());
         assertEquals(new Integer(0), items.get(0));
         assertEquals(new Integer(23), items.get(23));
@@ -198,7 +198,7 @@ public abstract class ITestMapReduce {
             .execute();
             
         assertNotNull(result);
-        items = new LinkedList<Integer>(result.getResult(Integer.class));
+        items = new LinkedList<>(result.getResult(Integer.class));
         assertEquals(2, items.size());
         assertEquals(new Integer(2), items.get(0));
         assertEquals(new Integer(3), items.get(1));
@@ -213,7 +213,7 @@ public abstract class ITestMapReduce {
             .execute();
         
         assertNotNull(result);
-        items = new LinkedList<Integer>(result.getResult(Integer.class));
+        items = new LinkedList<>(result.getResult(Integer.class));
         assertEquals(40, items.size());
         assertEquals(new Integer(12), items.get(3));
         
@@ -248,7 +248,7 @@ public abstract class ITestMapReduce {
         .addMapPhase(new NamedJSFunction("Riak.mapValuesJson"))
         .execute();
         
-        LinkedList<GoogleStockDataItem> actual = new LinkedList<GoogleStockDataItem>( result.getResult(GoogleStockDataItem.class) );
+        LinkedList<GoogleStockDataItem> actual = new LinkedList<>(result.getResult(GoogleStockDataItem.class));
         assertNotNull(actual);
         assertEquals(expected.size(), actual.size());
         
@@ -267,7 +267,7 @@ public abstract class ITestMapReduce {
         .addMapPhase(new NamedJSFunction("Riak.mapValuesJson"), true)
         .execute();
 
-        LinkedList<Map> actual = new LinkedList<Map>( result.getResult(Map.class) );
+        LinkedList<Map> actual = new LinkedList<>(result.getResult(Map.class));
         assertNotNull(actual);
         assertEquals(0, actual.size());
     }
@@ -282,13 +282,13 @@ public abstract class ITestMapReduce {
         .execute();
 
         assertNotNull(result);
-        List<Integer> items = new LinkedList<Integer>(result.getResult(Integer.class));
+        List<Integer> items = new LinkedList<>(result.getResult(Integer.class));
         assertEquals(50, items.size());
         assertEquals(new Integer(0), items.get(0));
         assertEquals(new Integer(23), items.get(23));
         assertEquals(new Integer(49), items.get(49));
 
-        List<Integer> items2 = new LinkedList<Integer>(result.getResult(Integer.class));
+        List<Integer> items2 = new LinkedList<>(result.getResult(Integer.class));
         assertEquals(50, items.size());
         assertEquals(new Integer(0), items2.get(0));
         assertEquals(new Integer(23), items2.get(23));
@@ -337,7 +337,7 @@ public abstract class ITestMapReduce {
         .execute();
 
         assertNotNull(result);
-        List<Integer> items = new LinkedList<Integer>(result.getResult(Integer.class));
+        List<Integer> items = new LinkedList<>(result.getResult(Integer.class));
         assertEquals(1, items.size());
         assertEquals(new Integer(1), items.get(0));
     }

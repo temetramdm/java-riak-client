@@ -236,7 +236,7 @@ public class TestClientUtils {
         assertNotNull(usermeta);
         assertTrue(usermeta.isEmpty());
 
-        usermeta = ClientUtils.parseUsermeta(new HashMap<String, String>());
+        usermeta = ClientUtils.parseUsermeta(new HashMap<>());
         assertNotNull(usermeta);
         assertTrue(usermeta.isEmpty());
     }
@@ -275,7 +275,7 @@ public class TestClientUtils {
     }
 
     @Test public void parse_multipart_returns_correct_riak_and_bucket_and_key() {
-        Map<String, String> headers = new HashMap<String, String>();
+        Map<String, String> headers = new HashMap<>();
         headers.put("content-type", "multipart/mixed; boundary=boundary");
         headers.put("x-riak-vclock", "vclock");
         String body = "\r\n--boundary\r\n" + "\r\n" + "--boundary--";
@@ -288,7 +288,7 @@ public class TestClientUtils {
     }
 
     @Test public void parse_multipart_returns_all_header_metadata_for_object() {
-        Map<String, String> headers = new HashMap<String, String>();
+        Map<String, String> headers = new HashMap<>();
         headers.put("content-type", "multipart/mixed; boundary=boundary");
         headers.put("x-riak-vclock", "vclock");
         String body = "\r\n--boundary\r\n" + "Content-Type: text/plain\r\n" + "Last-Modified: lastmod\r\n"
@@ -310,7 +310,7 @@ public class TestClientUtils {
     }
 
     @Test public void parse_multipart_returns_value() {
-        Map<String, String> headers = new HashMap<String, String>();
+        Map<String, String> headers = new HashMap<>();
         headers.put("content-type", "multipart/mixed; boundary=boundary");
         headers.put("x-riak-vclock", "vclock");
         String body = "\r\n--boundary\r\n" + "\r\n" + "foo\r\n" + "--boundary--";

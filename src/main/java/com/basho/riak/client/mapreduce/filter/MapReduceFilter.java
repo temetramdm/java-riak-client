@@ -30,11 +30,11 @@ import org.json.JSONArray;
 @Deprecated
 public interface MapReduceFilter {
 
-    public static enum Types {
+    enum Types {
         LOGICAL,
         TRANSFORM,
         FILTER
     }
     
-    public JSONArray toJson();
+    JSONArray toJson();
 }

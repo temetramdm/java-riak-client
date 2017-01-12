@@ -316,7 +316,7 @@ public class HTTPClientAdapter implements RawClient {
         if (!lbr.isSuccess()) {
             throw new IOException("List Buckets failed with status code: " + lbr.getStatusCode());
         }
-        return new HashSet<String>(lbr.getBuckets());
+        return new HashSet<>(lbr.getBuckets());
     }
 
     public StreamingOperation<String> listBucketsStreaming() throws IOException {
@@ -458,7 +458,7 @@ public class HTTPClientAdapter implements RawClient {
      * raw.query.IndexQuery)
      */
     public List<String> fetchIndex(IndexQuery indexQuery) throws IOException {
-        final ResultCapture<IndexResponse> res = new ResultCapture<IndexResponse>();
+        final ResultCapture<IndexResponse> res = new ResultCapture<>();
 
         IndexWriter executor = new IndexWriter() {
             public void write(String bucket, String index, String from, String to) throws IOException {

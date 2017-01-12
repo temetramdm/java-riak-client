@@ -40,7 +40,7 @@ public abstract class ClusterConfig<T extends Configuration> implements Configur
     public static final int UNLIMITED_CONNECTIONS = 0;
 
     private final int totalMaximumConnections;
-    private final List<T> nodes = new ArrayList<T>();
+    private final List<T> nodes = new ArrayList<>();
 
     /**
      * @param totalMaximumConnections

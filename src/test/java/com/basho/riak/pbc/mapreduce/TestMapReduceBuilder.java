@@ -78,8 +78,8 @@ public class TestMapReduceBuilder {
 
    @Test public void extractsRiakObjectInfo() {
        MapReduceBuilder builder = new MapReduceBuilder();
-       List<RiakObject> riakObjects = Arrays.asList(new RiakObject[] { new RiakObject("foo", "bar", "v"),
-                                                                   new RiakObject("foo", "baz", "v")});
+       List<RiakObject> riakObjects = Arrays.asList(new RiakObject("foo", "bar", "v"),
+          new RiakObject("foo", "baz", "v"));
        builder.setRiakObjects(riakObjects);
 
        Map<String, Set<String>> objects = builder.getRiakObjects();
@@ -106,8 +106,8 @@ public class TestMapReduceBuilder {
    public void canUseOnlyBucket_collection() {
       MapReduceBuilder builder = new MapReduceBuilder();
       builder.setBucket("wubba");
-      List<RiakObject> riakObjects = Arrays.asList(new RiakObject[] { new RiakObject("foo", "bar", "v"),
-                                                                      new RiakObject("foo", "baz", "v")});
+      List<RiakObject> riakObjects = Arrays.asList(new RiakObject("foo", "bar", "v"),
+         new RiakObject("foo", "baz", "v"));
       builder.setRiakObjects(riakObjects);
    }
 
@@ -335,7 +335,7 @@ public class TestMapReduceBuilder {
 
       builder = new MapReduceBuilder();
       builder.setBucket("wubba");
-      List<Object> args = new ArrayList<Object>(2);
+      List<Object> args = new ArrayList<>(2);
       args.add(123);
       args.add("testing");
       builder.map(JavascriptFunction.named("Riak.mapValuesJson"), args, true);
@@ -378,7 +378,7 @@ public class TestMapReduceBuilder {
       assertTrue("Generated JSON not as expected", JSONEquals.equals(expected, builder.toJSON()));
 
 
-      List<Object> args = new ArrayList<Object>(2);
+      List<Object> args = new ArrayList<>(2);
       args.add(123);
       args.add("testing");
       builder = new MapReduceBuilder();

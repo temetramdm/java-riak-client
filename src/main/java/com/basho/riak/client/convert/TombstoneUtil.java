@@ -13,7 +13,6 @@
  */
 package com.basho.riak.client.convert;
 
-import com.basho.riak.client.cap.VClock;
 import com.basho.riak.client.convert.reflect.AnnotationHelper;
 
 /**

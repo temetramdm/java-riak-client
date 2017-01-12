@@ -178,24 +178,21 @@ public class TestRiakObject {
         Thread[] threads = new Thread[cnt];
 
         for (int i = 0; i < cnt; i++) {
-            threads[i] = new Thread(new Runnable() {
-
-                public void run() {
-                    String bucket = UUID.randomUUID().toString();
-                    String key = UUID.randomUUID().toString();
-                    String tag = UUID.randomUUID().toString();
-                    int cnt = 0;
-                    while (true) {
-                        riakObject.addLink(bucket + cnt, key + cnt, tag + cnt);
-                        cnt++;
-                        try {
-                            Thread.sleep(10);
-                        } catch (InterruptedException e) {
-                            Thread.currentThread().interrupt();
-                        }
+            threads[i] = new Thread(() -> {
+                String bucket = UUID.randomUUID().toString();
+                String key = UUID.randomUUID().toString();
+                String tag = UUID.randomUUID().toString();
+                int cnt1 = 0;
+                while (true) {
+                    riakObject.addLink(bucket + cnt1, key + cnt1, tag + cnt1);
+                    cnt1++;
+                    try {
+                        Thread.sleep(10);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
                     }
-
                 }
+
             });
             threads[i].setDaemon(true);
             threads[i].start();
@@ -213,23 +210,20 @@ public class TestRiakObject {
         Thread[] threads = new Thread[cnt];
 
         for (int i = 0; i < cnt; i++) {
-            threads[i] = new Thread(new Runnable() {
-
-                public void run() {
-                    String key = UUID.randomUUID().toString();
-                    String value = UUID.randomUUID().toString();
-                    int cnt = 0;
-                    while (true) {
-                        riakObject.addUsermetaItem(key + cnt, value + cnt);
-                        cnt++;
-                        try {
-                            Thread.sleep(10);
-                        } catch (InterruptedException e) {
-                            Thread.currentThread().interrupt();
-                        }
+            threads[i] = new Thread(() -> {
+                String key = UUID.randomUUID().toString();
+                String value = UUID.randomUUID().toString();
+                int cnt1 = 0;
+                while (true) {
+                    riakObject.addUsermetaItem(key + cnt1, value + cnt1);
+                    cnt1++;
+                    try {
+                        Thread.sleep(10);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
                     }
-
                 }
+
             });
             threads[i].setDaemon(true);
             threads[i].start();

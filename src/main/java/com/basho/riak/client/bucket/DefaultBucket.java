@@ -370,16 +370,14 @@ public class DefaultBucket implements Bucket {
      */
     public StoreObject<IRiakObject> store(final String key, final byte[] value) {
 
-        return new StoreObject<IRiakObject>(client, name, null, key, retrier).withMutator(new Mutation<IRiakObject>() {
-            public IRiakObject apply(IRiakObject original) {
-                if (original == null) {
-                    return RiakObjectBuilder.newBuilder(name, key).withValue(value).withContentType(Constants.CTYPE_OCTET_STREAM).build();
-                } else {
-                    original.setValue(value);
-                    return original;
-                }
+        return new StoreObject<IRiakObject>(client, name, null, key, retrier).withMutator(original -> {
+            if (original == null) {
+                return RiakObjectBuilder.newBuilder(name, key).withValue(value).withContentType(Constants.CTYPE_OCTET_STREAM).build();
+            } else {
+                original.setValue(value);
+                return original;
             }
-        }).withResolver(new DefaultResolver<IRiakObject>()).withConverter(new PassThroughConverter());
+        }).withResolver(new DefaultResolver<>()).withConverter(new PassThroughConverter());
     }
 
     /**
@@ -420,15 +418,13 @@ public class DefaultBucket implements Bucket {
      * @see StoreObject
      */
     public StoreObject<IRiakObject> store(final String key, final String value) {
-        final Mutation<IRiakObject> m = new Mutation<IRiakObject>() {
-            public IRiakObject apply(IRiakObject original) {
-                if (original == null) {
-                    return RiakObjectBuilder.newBuilder(name, key).withValue(value).withContentType(Constants.CTYPE_TEXT_UTF8).build();
-                } else {
-                    original.setValue(CharsetUtils.utf8StringToBytes(value));
-                    original.setContentType(Constants.CTYPE_TEXT_UTF8);
-                    return original;
-                }
+        final Mutation<IRiakObject> m = original -> {
+            if (original == null) {
+                return RiakObjectBuilder.newBuilder(name, key).withValue(value).withContentType(Constants.CTYPE_TEXT_UTF8).build();
+            } else {
+                original.setValue(CharsetUtils.utf8StringToBytes(value));
+                original.setContentType(Constants.CTYPE_TEXT_UTF8);
+                return original;
             }
         };
 
@@ -466,10 +462,10 @@ public class DefaultBucket implements Bucket {
         
         Converter<T> converter = getDefaultConverter(clazz);
 
-        return new StoreObject<T>(client, name, o, key, retrier)
+        return new StoreObject<>(client, name, o, key, retrier)
             .withConverter(converter)
-                .withMutator(new ClobberMutation<T>(o))
-                  .withResolver(new DefaultResolver<T>());
+                .withMutator(new ClobberMutation<>(o))
+                  .withResolver(new DefaultResolver<>());
     }
 
     private <T> Converter<T> getDefaultConverter(Class<T> clazz) {
@@ -482,9 +478,9 @@ public class DefaultBucket implements Bucket {
             converter = (Converter<T>) new PassThroughConverter();
         } else {
             if (key != null) {
-                converter = new JSONConverter<T>(clazz, name, key);
+                converter = new JSONConverter<>(clazz, name, key);
             } else {
-                converter = new JSONConverter<T>(clazz, name);
+                converter = new JSONConverter<>(clazz, name);
             }
         }
         return converter;
@@ -514,9 +510,9 @@ public class DefaultBucket implements Bucket {
     public <T> StoreObject<T> store(final String key, final T o) {
         @SuppressWarnings("unchecked") final Class<T> clazz = (Class<T>) o.getClass();
         Converter<T> converter = getDefaultConverter(clazz, key);
-        return new StoreObject<T>(client, name, o, key, retrier).
+        return new StoreObject<>(client, name, o, key, retrier).
         withConverter(converter)
-            .withMutator(new ClobberMutation<T>(o)).withResolver(new DefaultResolver<T>());
+            .withMutator(new ClobberMutation<>(o)).withResolver(new DefaultResolver<>());
     }
 
     /**
@@ -546,7 +542,7 @@ public class DefaultBucket implements Bucket {
         Converter<T> converter = getDefaultConverter(clazz);
         return new FetchObject<T>(client, name, key, retrier)
             .withConverter(converter)
-            .withResolver(new DefaultResolver<T>());
+            .withResolver(new DefaultResolver<>());
     }
 
     /**
@@ -573,7 +569,7 @@ public class DefaultBucket implements Bucket {
         Converter<T> converter = getDefaultConverter(type, key);
         return new FetchObject<T>(client, name, key, retrier)
             .withConverter(converter)
-            .withResolver(new DefaultResolver<T>());
+            .withResolver(new DefaultResolver<>());
     }
 
     /**
@@ -591,7 +587,7 @@ public class DefaultBucket implements Bucket {
      */
     public FetchObject<IRiakObject> fetch(String key) {
         return new FetchObject<IRiakObject>(client, name, key, retrier)
-        .withResolver(new DefaultResolver<IRiakObject>())
+        .withResolver(new DefaultResolver<>())
         .withConverter(new PassThroughConverter());
     }
 
@@ -621,7 +617,7 @@ public class DefaultBucket implements Bucket {
      * @see com.basho.riak.client.bucket.Bucket#fetchIndex(com.basho.riak.client.query.indexes.RiakIndex)
      */
     public <T> FetchIndex<T> fetchIndex(RiakIndex<T> index) {
-        return new FetchIndex<T>(client, name, index, retrier);
+        return new FetchIndex<>(client, name, index, retrier);
     }
 
     /**
@@ -631,7 +627,7 @@ public class DefaultBucket implements Bucket {
     public MultiFetchObject<IRiakObject> multiFetch(String[] keys)
     {
         return new MultiFetchObject<IRiakObject>(client, name, Arrays.asList(keys), retrier)
-        .withResolver(new DefaultResolver<IRiakObject>())
+        .withResolver(new DefaultResolver<>())
         .withConverter(new PassThroughConverter());
     }
 
@@ -644,7 +640,7 @@ public class DefaultBucket implements Bucket {
         Converter<T> converter = getDefaultConverter(type, keys.get(0));
         return new MultiFetchObject<T>(client, name, keys, retrier)
             .withConverter(converter)
-            .withResolver(new DefaultResolver<T>());
+            .withResolver(new DefaultResolver<>());
     }
 
     /**
@@ -655,7 +651,7 @@ public class DefaultBucket implements Bucket {
     {
         T o = objs.get(0);
         @SuppressWarnings("unchecked") final Class<T> clazz = (Class<T>) o.getClass();
-        List<String> keyList = new ArrayList<String>(objs.size());
+        List<String> keyList = new ArrayList<>(objs.size());
         for (T obj : objs)
         {
             String key = getKey(obj);
@@ -668,7 +664,7 @@ public class DefaultBucket implements Bucket {
         Converter<T> converter = getDefaultConverter(clazz);
         return new MultiFetchObject<T>(client, name, keyList, retrier)
             .withConverter(converter)
-            .withResolver(new DefaultResolver<T>());
+            .withResolver(new DefaultResolver<>());
     }
     
     public CounterObject counter(String counter) {

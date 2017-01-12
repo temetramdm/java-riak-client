@@ -104,7 +104,7 @@ public abstract class ITestLinkWalk {
         assertNotNull(result);
 
         int stepsCnt = 0;
-        List<String> keys = new ArrayList<String>();
+        List<String> keys = new ArrayList<>();
         for (Collection<IRiakObject> s : result) {
 
             for (IRiakObject object : s) {
@@ -154,7 +154,7 @@ public abstract class ITestLinkWalk {
         assertNotNull(result);
 
         int stepsCnt = 0;
-        List<String> keys = new ArrayList<String>();
+        List<String> keys = new ArrayList<>();
         for (Collection<IRiakObject> s : result) {
 
             for (IRiakObject object : s) {
@@ -205,7 +205,7 @@ public abstract class ITestLinkWalk {
         assertNotNull(result);
 
         int stepsCnt = 0;
-        List<String> keys = new ArrayList<String>();
+        List<String> keys = new ArrayList<>();
         for (Collection<IRiakObject> s : result) {
 
             for (IRiakObject object : s) {

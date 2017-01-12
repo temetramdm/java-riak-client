@@ -39,7 +39,7 @@ public class ShoppingCart implements Iterable<String> {
      */
     @JsonCreator public ShoppingCart(@JsonProperty("userId") String userId) {
         this.userId = userId;
-        items = new CopyOnWriteArraySet<String>();
+        items = new CopyOnWriteArraySet<>();
     }
 
     public ShoppingCart addItem(String item) {

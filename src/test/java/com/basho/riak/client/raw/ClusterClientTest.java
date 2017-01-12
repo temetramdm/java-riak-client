@@ -216,7 +216,7 @@ public class ClusterClientTest {
      * {@link com.basho.riak.client.raw.ClusterClient#listBuckets()}.
      */
     @Test public void listBuckets() throws IOException {
-        final Set<String> expectedBuckets = new HashSet<String>();
+        final Set<String> expectedBuckets = new HashSet<>();
         for (RawClient rc : cluster) {
             when(rc.listBuckets()).thenReturn(expectedBuckets);
         }
@@ -277,7 +277,7 @@ public class ClusterClientTest {
      */
     @Test public void listKeys() throws IOException {
         StreamingOperation so = mock(StreamingOperation.class);
-        List<String> expectedKeys = new ArrayList<String>(Arrays.asList("key1", "key2", "key3"));
+        List<String> expectedKeys = new ArrayList<>(Arrays.asList("key1", "key2", "key3"));
         when(so.getAll()).thenReturn(expectedKeys);
         
         for (RawClient rc : cluster) {

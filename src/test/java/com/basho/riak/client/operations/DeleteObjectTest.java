@@ -13,7 +13,6 @@
  */
 package com.basho.riak.client.operations;
 
-import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 import static org.junit.Assert.*;
 

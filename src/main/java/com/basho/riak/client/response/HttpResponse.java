@@ -35,39 +35,39 @@ public interface HttpResponse {
     /**
      * The target object's bucket
      */
-    public String getBucket();
+    String getBucket();
 
     /**
      * The target object's key or null if bucket is target
      */
-    public String getKey();
+    String getKey();
 
     /**
      * Resulting status code from the HTTP request.
      */
-    public int getStatusCode();
+    int getStatusCode();
 
     /**
      * The HTTP response headers.
      */
-    public Map<String, String> getHttpHeaders();
+    Map<String, String> getHttpHeaders();
 
     /**
      * The HTTP response body or null if isStreamed()
      */
-    public byte[] getBody();
+    byte[] getBody();
     
-    public String getBodyAsString();
+    String getBodyAsString();
 
     /**
      * The HTTP response body as an input stream if isStreamed(); null otherwise
      */
-    public InputStream getStream();
+    InputStream getStream();
 
     /**
      * Whether the response body is available as an input stream
      */
-    public boolean isStreamed();
+    boolean isStreamed();
 
     /**
      * The actual {@link HttpMethod} used to make the HTTP request. Most of the
@@ -75,27 +75,27 @@ public interface HttpResponse {
      * note that the connection will already be closed, so calling
      * getHttpMethod().getResponseBodyAsStream() will return null.
      */
-    public HttpRequestBase getHttpMethod();
+    HttpRequestBase getHttpMethod();
 
     /**
      * Whether the HTTP response is considered a success. Generally this
      * translates to a 2xx for any request, a 304 for GET and HEAD requests, or
      * 404 for DELETE requests.
      */
-    public boolean isSuccess();
+    boolean isSuccess();
 
     /**
      * Whether the HTTP request returned a 4xx or 5xx response
      */
-    public boolean isError();
+    boolean isError();
 
     /**
      * Releases the underlying the HTTP connection when the response is streamed
      */
-    public void close();
+    void close();
 
     /**
      * @return
      */
-    public org.apache.http.HttpResponse getHttpResponse();
+    org.apache.http.HttpResponse getHttpResponse();
 }

@@ -13,7 +13,8 @@
  */
 package com.basho.riak.client.convert.reflect;
 
-import java.util.concurrent.ConcurrentHashMap;
+import com.basho.riak.client.util.SimpleCache;
+
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
@@ -25,7 +26,12 @@ import java.util.concurrent.FutureTask;
  * 
  */
 public class AnnotationCache {
-    @SuppressWarnings("rawtypes") private final ConcurrentHashMap<Class, Future<AnnotationInfo>> cache = new ConcurrentHashMap<Class, Future<AnnotationInfo>>();
+    @SuppressWarnings("rawtypes")
+    private final SimpleCache<Class, Future<AnnotationInfo>> cache = new SimpleCache<>(clazz -> {
+        final FutureTask<AnnotationInfo> scanner = new FutureTask<>(new AnnotationScanner(clazz));
+        scanner.run();
+        return scanner;
+    });
 
     /**
      * @param <T>
@@ -33,21 +39,8 @@ public class AnnotationCache {
      * @return
      */
     public <T> AnnotationInfo get(Class<T> clazz) {
-
-        Future<AnnotationInfo> scanner = cache.get(clazz);
-
-        if (scanner == null) {
-            FutureTask<AnnotationInfo> scannerTask = new FutureTask<AnnotationInfo>(new AnnotationScanner(clazz));
-
-            scanner = cache.putIfAbsent(clazz, scannerTask);
-            if (scanner == null) {
-                scanner = scannerTask;
-                scannerTask.run();
-            }
-        }
-
         try {
-            return scanner.get();
+            return cache.computeIfAbsent(clazz).get();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException(e);

@@ -13,14 +13,10 @@
  */
 package com.basho.riak.client.query.indexes;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-
 import com.basho.riak.client.IRiakObject;
+import com.basho.riak.client.util.SimpleCache;
+
+import java.util.*;
 
 /**
  * Container for the set of index/values for a {@link IRiakObject}
@@ -30,21 +26,21 @@ import com.basho.riak.client.IRiakObject;
  */
 public class RiakIndexes {
 
-    private final ConcurrentMap<BinIndex, Set<String>> binIndexes = new ConcurrentHashMap<BinIndex, Set<String>>();
-    private final ConcurrentMap<IntIndex, Set<Long>> intIndexes = new ConcurrentHashMap<IntIndex, Set<Long>>();
+    private final SimpleCache<BinIndex, Set<String>> binIndexes = new SimpleCache<>(key -> new HashSet<>());
+    private final SimpleCache<IntIndex, Set<Long>> intIndexes = new SimpleCache<>(key -> new HashSet<>());
 
     public RiakIndexes(final Map<BinIndex, Set<String>> binIndexes, final Map<IntIndex, Set<Long>> intIndexes) {
         for (Map.Entry<BinIndex, Set<String>> bi : binIndexes.entrySet()) {
             Set<String> v = bi.getValue();
             if (v != null) {
-                this.binIndexes.put(bi.getKey(), new HashSet<String>(bi.getValue()));
+                this.binIndexes.put(bi.getKey(), new HashSet<>(bi.getValue()));
             }
         }
 
         for (Map.Entry<IntIndex, Set<Long>> ii : intIndexes.entrySet()) {
             Set<Long> v = ii.getValue();
             if (v != null) {
-                this.intIndexes.put(ii.getKey(), new HashSet<Long>(ii.getValue()));
+                this.intIndexes.put(ii.getKey(), new HashSet<>(ii.getValue()));
             }
         }
     }
@@ -58,14 +54,14 @@ public class RiakIndexes {
      * @return a *shallow copy* of the {@link BinIndex}s
      */
     public Map<BinIndex, Set<String>> getBinIndexes() {
-        return new HashMap<BinIndex, Set<String>>(binIndexes);
+        return new HashMap<>(binIndexes);
     }
 
     /**
      * @return a *shallow copy* of the {@link IntIndex}s
      */
     public Map<IntIndex, Set<Long>> getIntIndexes() {
-        return new HashMap<IntIndex, Set<Long>>(intIndexes);
+        return new HashMap<>(intIndexes);
     }
 
     /**
@@ -84,10 +80,7 @@ public class RiakIndexes {
         if (null == value) {
             throw new IllegalArgumentException("Index value can not be null");
         }
-        final BinIndex key = BinIndex.named(index);
-        Set<String> newSet = new HashSet<String>();
-        Set<String> prevSet = binIndexes.putIfAbsent(key, newSet);
-        Set<String> values = prevSet == null ? newSet : prevSet;
+        final Set<String> values = binIndexes.computeIfAbsent(BinIndex.named(index));
         synchronized (values) { 
             values.add(value);
         }
@@ -112,10 +105,7 @@ public class RiakIndexes {
                 throw new IllegalArgumentException("null value not allowed in index set");
             }
         }
-        final BinIndex key = BinIndex.named(index);
-        Set<String> newSet = new HashSet<String>();
-        Set<String> prevSet = binIndexes.putIfAbsent(key, newSet);
-        Set<String> values = prevSet == null ? newSet : prevSet;
+        final Set<String> values = binIndexes.computeIfAbsent(BinIndex.named(index));
         synchronized (values) { 
             values.addAll(newValues);
         }
@@ -136,10 +126,7 @@ public class RiakIndexes {
         if (null == index) {
             throw new IllegalArgumentException("Index name can not be null");
         }
-        final IntIndex key = IntIndex.named(index);
-        Set<Long> newSet = new HashSet<Long>();
-        Set<Long> prevSet = intIndexes.putIfAbsent(key, newSet);
-        Set<Long> values = prevSet == null ? newSet : prevSet;
+        final Set<Long> values = intIndexes.computeIfAbsent(IntIndex.named(index));
         synchronized (values) { 
             values.add(value);
         }
@@ -159,10 +146,7 @@ public class RiakIndexes {
         if (null == index) {
             throw new IllegalArgumentException("Index name can not be null");
         }
-        final IntIndex key = IntIndex.named(index);
-        Set<Long> newSet = new HashSet<Long>();
-        Set<Long> prevSet = intIndexes.putIfAbsent(key, newSet);
-        Set<Long> values = prevSet == null ? newSet : prevSet;
+        final Set<Long> values = intIndexes.computeIfAbsent(IntIndex.named(index));
         synchronized (values) { 
             // This was done when changing internals from Integer to Long to preserve
             // external usage
@@ -218,9 +202,9 @@ public class RiakIndexes {
     public Set<String> getBinIndex(String name) {
         Set<String> values = binIndexes.get(BinIndex.named(name));
         if (values == null) {
-            return new HashSet<String>();
+            return new HashSet<>();
         }
-        return new HashSet<String>(values);
+        return new HashSet<>(values);
     }
 
     /**
@@ -233,8 +217,8 @@ public class RiakIndexes {
     public Set<Long> getIntIndex(String name) {
         Set<Long> values = intIndexes.get(IntIndex.named(name));
         if (values == null) {
-            return new HashSet<Long>();
+            return new HashSet<>();
         }
-        return new HashSet<Long>(values);
+        return new HashSet<>(values);
     }
 }

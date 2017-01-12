@@ -52,7 +52,7 @@ public class CharsetUtilsTest {
      * .
      */
     @Test public void getCharsetFromHeaders() {
-        final Map<String, String> headers = new HashMap<String, String>();
+        final Map<String, String> headers = new HashMap<>();
         headers.put(Constants.HDR_CONTENT_TYPE, Constants.CTYPE_JSON_UTF8);
         assertEquals(Charset.forName("UTF-8"), CharsetUtils.getCharset(headers));
 
@@ -91,7 +91,7 @@ public class CharsetUtilsTest {
         assertEquals("NotACharSet", CharsetUtils.getDeclaredCharset("text/plain;charset=NotACharSet"));
         assertEquals("UTF-16", CharsetUtils.getDeclaredCharset("text/plain;charset=UTF-16"));
         assertNull(CharsetUtils.getDeclaredCharset("gibberish"));
-        assertNull(CharsetUtils.getDeclaredCharset((String) null));
+        assertNull(CharsetUtils.getDeclaredCharset(null));
     }
 
     /**
@@ -104,7 +104,7 @@ public class CharsetUtilsTest {
         assertTrue(CharsetUtils.hasCharset("text/plain;charset=NotACharSet"));
         assertFalse(CharsetUtils.hasCharset(Constants.CTYPE_JSON));
         assertFalse(CharsetUtils.hasCharset("gibberish"));
-        assertFalse(CharsetUtils.hasCharset((String) null));
+        assertFalse(CharsetUtils.hasCharset(null));
     }
 
     /**

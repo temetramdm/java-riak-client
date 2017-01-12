@@ -42,7 +42,7 @@ public enum Quora {
     private final int value;
     private final String name;
 
-    private Quora(int value, String name) {
+    Quora(int value, String name) {
         this.value = value;
         this.name = name;
     }

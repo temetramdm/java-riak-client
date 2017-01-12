@@ -15,10 +15,8 @@ package com.basho.riak.client.raw.pbc;
 
 import static com.basho.riak.client.raw.pbc.ConversionUtil.convert;
 import static com.basho.riak.client.raw.pbc.ConversionUtil.linkAccumulateToLinkPhaseKeep;
-import static com.basho.riak.client.raw.pbc.ConversionUtil.nullSafeToStringUtf8;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -32,19 +30,16 @@ import com.basho.riak.client.bucket.BucketProperties;
 import com.basho.riak.client.convert.ConversionException;
 import com.basho.riak.client.http.util.Constants;
 import com.basho.riak.client.query.*;
-import com.basho.riak.client.query.functions.Args;
 import com.basho.riak.client.query.functions.JSSourceFunction;
 import com.basho.riak.client.query.functions.NamedErlangFunction;
 import com.basho.riak.client.raw.DeleteMeta;
 import com.basho.riak.client.raw.FetchMeta;
-import com.basho.riak.client.IndexEntry;
 import com.basho.riak.client.raw.JSONErrorParser;
 import com.basho.riak.client.raw.MatchFoundException;
 import com.basho.riak.client.raw.ModifiedException;
 import com.basho.riak.client.raw.RawClient;
 import com.basho.riak.client.raw.RiakResponse;
 import com.basho.riak.client.raw.StoreMeta;
-import com.basho.riak.client.query.StreamingOperation;
 import com.basho.riak.client.raw.Transport;
 import com.basho.riak.client.raw.http.ResultCapture;
 import com.basho.riak.client.raw.query.IndexSpec;
@@ -65,8 +60,6 @@ import com.basho.riak.pbc.RequestMeta;
 import com.basho.riak.pbc.RiakClient;
 import com.basho.riak.pbc.RiakError;
 import com.google.protobuf.ByteString;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Wraps the pbc.{@link RiakClient} and adapts it to the {@link RawClient}
@@ -236,7 +229,7 @@ public class PBClientAdapter implements RawClient {
      * @see com.basho.riak.client.raw.RawClient#listBuckets()
      */
     public Set<String> listBuckets() throws IOException {
-        final Set<String> response = new HashSet<String>();
+        final Set<String> response = new HashSet<>();
         final ByteString[] buckets = client.listBuckets();
 
         for (ByteString b : buckets) {
@@ -443,7 +436,7 @@ public class PBClientAdapter implements RawClient {
      * raw.query.IndexQuery)
      */
     public List<String> fetchIndex(IndexQuery indexQuery) throws IOException {
-        final ResultCapture<List<String>> res = new ResultCapture<List<String>>();
+        final ResultCapture<List<String>> res = new ResultCapture<>();
 	IndexWriter executor = new IndexWriter() {
             public void write(String bucket, String index, String from, String to) throws IOException {
                 res.capture(client.index(bucket, index, from, to));

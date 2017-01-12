@@ -38,7 +38,6 @@ import com.basho.riak.client.http.request.RequestMeta;
 import com.basho.riak.client.http.response.*;
 import com.basho.riak.client.http.util.Constants;
 import com.basho.riak.client.raw.http.HTTPClientAdapter;
-import org.json.JSONObject;
 
 /**
  * Basic exercises such as store, fetch, and modify objects for the Riak client.

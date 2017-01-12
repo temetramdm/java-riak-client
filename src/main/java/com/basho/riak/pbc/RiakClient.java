@@ -210,7 +210,7 @@ public class RiakClient implements RiakMessageCodes {
 			if (res.hasServerVersion()) {
 				this.serverVersion = res.getServerVersion().toStringUtf8();
 			}
-			Map<String, String> result = new HashMap<String, String>();
+			Map<String, String> result = new HashMap<>();
 			result.put("node", node);
 			result.put("server_version", serverVersion);
 			return result;
@@ -453,7 +453,7 @@ public class RiakClient implements RiakMessageCodes {
 
 		RiakKvPB.RpbIndexResp resp = RiakKvPB.RpbIndexResp.parseFrom(rep);
 
-		List<String> keys = new ArrayList<String>(resp.getKeysCount());
+		List<String> keys = new ArrayList<>(resp.getKeysCount());
 
 		for (ByteString bs : resp.getKeysList()) {
 			keys.add(bs.toStringUtf8());
@@ -563,42 +563,40 @@ public class RiakClient implements RiakMessageCodes {
 
 			DataOutputStream dout = c.getOutputStream();
 
-			for (int i = 0; i < values.length; i++) {
-				RiakObject value = values[i];
+      for (RiakObject value : values) {
+        RpbPutReq.Builder builder = RpbPutReq.newBuilder()
+           .setBucket(value.getBucketBS())
+           .setKey(value.getKeyBS()).setContent(
+              value.buildContent());
 
-				RiakKvPB.RpbPutReq.Builder builder = RiakKvPB.RpbPutReq.newBuilder()
-						.setBucket(value.getBucketBS())
-						.setKey(value.getKeyBS()).setContent(
-								value.buildContent());
+        if (value.getVclock() != null) {
+          builder.setVclock(value.getVclock());
+        }
 
-				if (value.getVclock() != null) {
-					builder.setVclock(value.getVclock());
-				}
+        builder.setReturnBody(true);
 
-				builder.setReturnBody(true);
+        if (meta != null) {
 
-				if (meta != null) {
+          if (meta.writeQuorum != null) {
+            builder.setW(meta.writeQuorum);
+          }
 
-					if (meta.writeQuorum != null) {
-						builder.setW(meta.writeQuorum.intValue());
-					}
+          if (meta.durableWriteQuorum != null) {
+            builder.setDw(meta.durableWriteQuorum);
+          }
 
-					if (meta.durableWriteQuorum != null) {
-						builder.setDw(meta.durableWriteQuorum.intValue());
-					}
-                    
-                    if (meta.asis != null) {
-                        builder.setAsis(meta.asis.booleanValue());
-                    }
-				}
+          if (meta.asis != null) {
+            builder.setAsis(meta.asis);
+          }
+        }
 
-				RpbPutReq req = builder.build();
+        RpbPutReq req = builder.build();
 
-				int len = req.getSerializedSize();
-				dout.writeInt(len + 1);
-				dout.write(MSG_PutReq);
-				req.writeTo(dout);
-			}
+        int len = req.getSerializedSize();
+        dout.writeInt(len + 1);
+        dout.write(MSG_PutReq);
+        req.writeTo(dout);
+      }
 
 			dout.flush();
 

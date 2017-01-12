@@ -59,9 +59,9 @@ public class AnnotationScanner implements Callable<AnnotationInfo> {
         Field riakTombstoneField = null;
         Field usermetaMapField = null;
         Field linksField = null;
-        List<UsermetaField> usermetaItemFields = new ArrayList<UsermetaField>();
-        List<RiakIndexField> indexFields = new ArrayList<RiakIndexField>();
-        List<RiakIndexMethod> indexMethods = new ArrayList<RiakIndexMethod>();
+        List<UsermetaField> usermetaItemFields = new ArrayList<>();
+        List<RiakIndexField> indexFields = new ArrayList<>();
+        List<RiakIndexMethod> indexMethods = new ArrayList<>();
 
         Class currentClass = classToScan;
         while(currentClass != Object.class) {
