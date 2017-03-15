@@ -17,57 +17,59 @@ import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.Module;
 
 
-
 /**
  * A <a href="">Jackson</a> {@link Module} that customises Jackson's object
  * mapper so we can handle Riak annotations like {@link RiakKey},
  * {@link RiakUsermeta}, and RiakLink correctly.
- * 
+ * <p>
  * Adds a {@link RiakBeanSerializerModifier} that removes any RiakXXX annotated
  * fields from the JSON output (since they will be persisted as object meta data
  * and not as part of the object)
- * 
+ *
  * @author russell
- * 
  */
 public class RiakJacksonModule extends Module {
 
-    private static final String NAME = "RiakJacksonModule";
-    // TODO get this from pom, or update it per release?
-    private static final Version VERSION = new Version(0, 0, 0, "snapshot");
+  private static final String NAME = "RiakJacksonModule";
+  // TODO get this from pom, or update it per release?
+  private static final Version VERSION = new Version(0, 0, 0, "snapshot", null, null);
 
-    /**
-     * 
-     */
-    public RiakJacksonModule() {}
+  /**
+   *
+   */
+  public RiakJacksonModule() {
+  }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.codehaus.jackson.map.Module#getModuleName()
-     */
-    @Override public String getModuleName() {
-        return NAME;
-    }
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.codehaus.jackson.map.Module#getModuleName()
+   */
+  @Override
+  public String getModuleName() {
+    return NAME;
+  }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.codehaus.jackson.map.Module#version()
-     */
-    @Override public Version version() {
-        return VERSION;
-    }
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.codehaus.jackson.map.Module#version()
+   */
+  @Override
+  public Version version() {
+    return VERSION;
+  }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.codehaus.jackson.map.Module#setupModule(org.codehaus.jackson.map.
-     * Module.SetupContext)
-     */
-    @Override public void setupModule(SetupContext context) {
-        context.addBeanSerializerModifier(RiakBeanSerializerModifier.getInstance());
-    }
+  /*
+   * (non-Javadoc)
+   *
+   * @see
+   * org.codehaus.jackson.map.Module#setupModule(org.codehaus.jackson.map.
+   * Module.SetupContext)
+   */
+  @Override
+  public void setupModule(SetupContext context) {
+    context.addBeanSerializerModifier(RiakBeanSerializerModifier.getInstance());
+  }
 
 }

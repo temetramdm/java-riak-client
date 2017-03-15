@@ -13,172 +13,196 @@
  */
 package com.basho.riak.client.convert;
 
-import static com.basho.riak.client.convert.KeyUtil.getKey;
-
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Map;
-
-import com.fasterxml.jackson.databind.Module;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.datatype.joda.JodaModule;
-
 import com.basho.riak.client.IRiakObject;
 import com.basho.riak.client.RiakLink;
 import com.basho.riak.client.builders.RiakObjectBuilder;
 import com.basho.riak.client.cap.VClock;
 import com.basho.riak.client.http.util.Constants;
 import com.basho.riak.client.query.indexes.RiakIndexes;
+import com.fasterxml.jackson.databind.Module;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Map;
+
+import static com.basho.riak.client.convert.KeyUtil.getKey;
 
 /**
  * Converts a RiakObject's value to an instance of T. T must have a field
  * annotated with {@link RiakKey} or you must construct the converter with a key to use. RiakObject's value *must* be a JSON string.
- * 
+ * <p>
  * <p>
  * At present user meta data and {@link RiakLink}s are not converted. This means
  * they are essentially lost in translation.
  * </p>
- * 
+ *
  * @author russell
- * 
  */
 public class JSONConverter<T> implements Converter<T> {
 
-    // Object mapper per domain class is expensive, a singleton (and ThreadSafe) will do.
-    private static final ObjectMapper OBJECT_MAPPER= new ObjectMapper();
-    static {
-        OBJECT_MAPPER.registerModule(new RiakJacksonModule());
-        OBJECT_MAPPER.registerModule(new JodaModule());
+  private static final Module RIAK_JACKSON_MODULE = new RiakJacksonModule();
+  private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper().registerModule(RIAK_JACKSON_MODULE);
+
+  private final ObjectMapper mapper;
+  private final Class<T> clazz;
+  private final String bucket;
+  private final UsermetaConverter<T> usermetaConverter;
+  private final RiakIndexConverter<T> riakIndexConverter;
+  private final RiakLinksConverter<T> riakLinksConverter;
+  private String defaultKey;
+
+  /**
+   * Create a JSONConverter for creating instances of <code>clazz</code> from
+   * JSON and instances of {@link IRiakObject} with a JSON payload from
+   * instances of <code>clazz</code>
+   *
+   * @param mapper a custom object mapper
+   * @param clazz  the type to convert to/from
+   * @param bucket the bucket
+   */
+  public JSONConverter(ObjectMapper mapper, Class<T> clazz, String bucket) {
+    this(mapper, clazz, bucket, null);
+  }
+
+  /**
+   * Create a JSONConverter for creating instances of <code>clazz</code> from
+   * JSON and instances of {@link IRiakObject} with a JSON payload from
+   * instances of <code>clazz</code>
+   *
+   * @param clazz  the type to convert to/from
+   * @param bucket the bucket
+   */
+  public JSONConverter(Class<T> clazz, String bucket) {
+    this(OBJECT_MAPPER, clazz, bucket, null);
+  }
+
+  /**
+   * Create a JSONConverter for creating instances of <code>clazz</code> from
+   * JSON and instances of {@link IRiakObject} with a JSON payload from
+   * instances of <code>clazz</code>
+   *
+   * @param clazz      the type to convert to/from
+   * @param bucket     the bucket
+   * @param defaultKey for cases where <code>clazz</code> does not have a
+   *                   {@link RiakKey} annotated field, pass the key to use in this
+   *                   conversion.
+   */
+  public JSONConverter(Class<T> clazz, String bucket, String defaultKey) {
+    this(OBJECT_MAPPER, clazz, bucket, defaultKey);
+  }
+
+  /**
+   * Create a JSONConverter for creating instances of <code>clazz</code> from
+   * JSON and instances of {@link IRiakObject} with a JSON payload from
+   * instances of <code>clazz</code>
+   *
+   * @param mapper     a custom object mapper
+   * @param clazz      the type to convert to/from
+   * @param bucket     the bucket
+   * @param defaultKey for cases where <code>clazz</code> does not have a
+   *                   {@link RiakKey} annotated field, pass the key to use in this
+   *                   conversion.
+   */
+  public JSONConverter(ObjectMapper mapper, Class<T> clazz, String bucket, String defaultKey) {
+    if (mapper != OBJECT_MAPPER) {
+      mapper.registerModule(RIAK_JACKSON_MODULE);
     }
 
-    private final Class<T> clazz;
-    private final String bucket;
-    private final UsermetaConverter<T> usermetaConverter;
-    private final RiakIndexConverter<T> riakIndexConverter;
-    private final RiakLinksConverter<T> riakLinksConverter;
-    private String defaultKey;
+    this.mapper = mapper;
+    this.clazz = clazz;
+    this.bucket = bucket;
+    this.defaultKey = defaultKey;
+    this.usermetaConverter = new UsermetaConverter<>();
+    this.riakIndexConverter = new RiakIndexConverter<>();
+    this.riakLinksConverter = new RiakLinksConverter<>();
+  }
 
-    /**
-     * Create a JSONConverter for creating instances of <code>clazz</code> from
-     * JSON and instances of {@link IRiakObject} with a JSON payload from
-     * instances of <code>clazz</code>
-     * 
-     * @param clazz the type to convert to/from
-     * @param bucket the bucket
-     */
-    public JSONConverter(Class<T> clazz, String bucket) {
-        this(clazz, bucket, null);
+  /**
+   * Converts <code>domainObject</code> to a JSON string and sets that as the
+   * payload of a {@link IRiakObject}. Also set the <code>content-type</code>
+   * to <code>application/json;charset=UTF-8</code>
+   *
+   * @param domainObject to be converted
+   * @param vclock       the vector clock from Riak
+   */
+  public IRiakObject fromDomain(T domainObject, VClock vclock) throws ConversionException {
+    try {
+      String key = getKey(domainObject, this.defaultKey);
+
+      final byte[] value = mapper.writeValueAsBytes(domainObject);
+      Map<String, String> usermetaData = usermetaConverter.getUsermetaData(domainObject);
+      RiakIndexes indexes = riakIndexConverter.getIndexes(domainObject);
+      Collection<RiakLink> links = riakLinksConverter.getLinks(domainObject);
+      return RiakObjectBuilder.newBuilder(bucket, key)
+         .withValue(value)
+         .withVClock(vclock)
+         .withUsermeta(usermetaData)
+         .withIndexes(indexes)
+         .withLinks(links)
+         .withContentType(Constants.CTYPE_JSON_UTF8)
+         .build();
+    } catch (IOException e) {
+      throw new ConversionException(e);
     }
+  }
 
-    /**
-     * Create a JSONConverter for creating instances of <code>clazz</code> from
-     * JSON and instances of {@link IRiakObject} with a JSON payload from
-     * instances of <code>clazz</code>
-     * 
-     * @param clazz the type to convert to/from
-     * @param bucket the bucket
-     * @param defaultKey
-     *            for cases where <code>clazz</code> does not have a
-     *            {@link RiakKey} annotated field, pass the key to use in this
-     *            conversion.
-     */
-    public JSONConverter(Class<T> clazz, String bucket, String defaultKey) {
-        this.clazz = clazz;
-        this.bucket = bucket;
-        this.defaultKey = defaultKey;
-        this.usermetaConverter = new UsermetaConverter<>();
-        this.riakIndexConverter = new RiakIndexConverter<>();
-        this.riakLinksConverter = new RiakLinksConverter<>();
+  /**
+   * Converts the <code>value</code> of <code>riakObject</code> to an instance
+   * of <code>T</code>.
+   *
+   * @param riakObject the {@link IRiakObject} to convert to instance of
+   *                   <code>T</code>. NOTE: <code>riakObject.getValue()</code> must be a
+   *                   JSON string. The charset from
+   *                   <code>riakObject.getContentType()</code> is used.
+   */
+  public T toDomain(final IRiakObject riakObject) throws ConversionException {
+    if (riakObject == null) {
+      return null;
+    } else if (riakObject.isDeleted()) {
+      try {
+        final T domainObject = clazz.newInstance();
+        TombstoneUtil.setTombstone(domainObject, true);
+        VClockUtil.setVClock(domainObject, riakObject.getVClock());
+        KeyUtil.setKey(domainObject, riakObject.getKey());
+        return domainObject;
+      } catch (InstantiationException ex) {
+        throw new ConversionException("POJO does not provide no-arg constructor", ex);
+      } catch (IllegalAccessException ex) {
+        throw new ConversionException(ex);
+      }
+    } else {
+      try {
+        final T domainObject = mapper.readValue(riakObject.getValue(), clazz);
+        KeyUtil.setKey(domainObject, riakObject.getKey());
+        VClockUtil.setVClock(domainObject, riakObject.getVClock());
+        usermetaConverter.populateUsermeta(riakObject.getMeta(), domainObject);
+        riakIndexConverter.populateIndexes(new RiakIndexes(riakObject.allBinIndexes(), riakObject.allIntIndexesV2()), domainObject);
+        riakLinksConverter.populateLinks(riakObject.getLinks(), domainObject);
+        return domainObject;
+      } catch (IOException e) {
+        throw new ConversionException(e);
+      }
     }
+  }
 
-    /**
-     * Converts <code>domainObject</code> to a JSON string and sets that as the
-     * payload of a {@link IRiakObject}. Also set the <code>content-type</code>
-     * to <code>application/json;charset=UTF-8</code>
-     * 
-     * @param domainObject
-     *            to be converted
-     * @param vclock
-     *            the vector clock from Riak
-     */
-    public IRiakObject fromDomain(T domainObject, VClock vclock) throws ConversionException {
-        try {
-            String key = getKey(domainObject, this.defaultKey);
-            
-            final byte[] value = OBJECT_MAPPER.writeValueAsBytes(domainObject);
-            Map<String, String> usermetaData = usermetaConverter.getUsermetaData(domainObject);
-            RiakIndexes indexes = riakIndexConverter.getIndexes(domainObject);
-            Collection<RiakLink> links = riakLinksConverter.getLinks(domainObject);
-            return RiakObjectBuilder.newBuilder(bucket, key)
-                .withValue(value)
-                .withVClock(vclock)
-                .withUsermeta(usermetaData)
-                .withIndexes(indexes)
-                .withLinks(links)
-                .withContentType(Constants.CTYPE_JSON_UTF8)
-                .build();
-        } catch (IOException e) {
-            throw new ConversionException(e);
-        }
+  /**
+   * Returns the {@link ObjectMapper} being used.
+   * This is a convenience method to allow changing its behavior.
+   *
+   * @return The Jackson ObjectMapper
+   */
+  public ObjectMapper getObjectMapper() {
+    return mapper;
+  }
 
-    }
-
-    /**
-     * Converts the <code>value</code> of <code>riakObject</code> to an instance
-     * of <code>T</code>.
-     * 
-     * @param riakObject
-     *            the {@link IRiakObject} to convert to instance of
-     *            <code>T</code>. NOTE: <code>riakObject.getValue()</code> must be a
-     *            JSON string. The charset from
-     *            <code>riakObject.getContentType()</code> is used.
-     */
-    public T toDomain(final IRiakObject riakObject) throws ConversionException {
-        if (riakObject == null) {
-            return null;
-        } else if (riakObject.isDeleted()) {
-            try {
-                final T domainObject = clazz.newInstance();
-                TombstoneUtil.setTombstone(domainObject, true);
-                VClockUtil.setVClock(domainObject, riakObject.getVClock());
-                KeyUtil.setKey(domainObject, riakObject.getKey());
-                return domainObject;
-            } catch (InstantiationException ex) {
-                throw new ConversionException("POJO does not provide no-arg constructor",ex);
-            } catch (IllegalAccessException ex) {
-                throw new ConversionException(ex);
-            }
-        } else {
-            try {
-                final T domainObject = OBJECT_MAPPER.readValue(riakObject.getValue(), clazz);
-                KeyUtil.setKey(domainObject, riakObject.getKey());
-                VClockUtil.setVClock(domainObject, riakObject.getVClock());
-                usermetaConverter.populateUsermeta(riakObject.getMeta(), domainObject);
-                riakIndexConverter.populateIndexes(new RiakIndexes(riakObject.allBinIndexes(), riakObject.allIntIndexesV2()), domainObject);
-                riakLinksConverter.populateLinks(riakObject.getLinks(), domainObject);
-                return domainObject;
-            } catch (IOException e) {
-                throw new ConversionException(e);
-            }
-        }
-    }
-
-    /**
-     * Returns the {@link ObjectMapper} being used.
-     * This is a convenience method to allow changing its behavior.
-     * @return The Jackson ObjectMapper
-     */
-    public static ObjectMapper getObjectMapper() {
-        return OBJECT_MAPPER;
-    }
-
-    /**
-     * Convenient method to register a Jackson module into the singleton Object mapper used by domain objects.
-     * @param jacksonModule Module to register.
-     */
-    public static void registerJacksonModule(final Module jacksonModule) {
-        OBJECT_MAPPER.registerModule(jacksonModule);
-    }
+  /**
+   * Convenient method to register a Jackson module into the singleton Object mapper used by domain objects.
+   *
+   * @param jacksonModule Module to register.
+   */
+  public void registerJacksonModule(final Module jacksonModule) {
+    OBJECT_MAPPER.registerModule(jacksonModule);
+  }
 
 }
