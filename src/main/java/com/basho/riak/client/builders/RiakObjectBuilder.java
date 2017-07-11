@@ -70,6 +70,28 @@ public class RiakObjectBuilder {
 
     /**
      * Creates a builder prepopulated from the give {@link IRiakObject}.
+     *
+     * @param o
+     * @param key
+     *            the {@link IRiakObject} to copy with the specified key
+     * @return a {@link RiakObjectBuilder} with all fields set from
+     *         <code>o</code> with the specified key
+     */
+    public static RiakObjectBuilder from(String key, IRiakObject o) {
+        RiakObjectBuilder rob = new RiakObjectBuilder(o.getBucket(), key);
+        rob.vclock = o.getVClock();
+        rob.contentType = o.getContentType();
+        rob.lastModified = o.getLastModified();
+        rob.value = o.getValue();
+        rob.links = o.getLinks();
+        rob.indexes = new RiakIndexes(o.allBinIndexes(), o.allIntIndexesV2());
+        rob.userMeta = o.getMeta();
+        rob.isDeleted = o.isDeleted();
+        return rob;
+    }
+
+    /**
+     * Creates a builder prepopulated from the give {@link IRiakObject}.
      * 
      * @param o
      *            the {@link IRiakObject} to copy
