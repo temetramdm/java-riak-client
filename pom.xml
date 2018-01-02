@@ -54,7 +54,7 @@
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
       <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
       <cobertura.version>2.5</cobertura.version>
-      <jackson.version>2.9.2</jackson.version>
+      <jackson.version>2.9.3</jackson.version>
    </properties>
 
    <distributionManagement>
@@ -118,7 +118,7 @@
       <dependency>
          <groupId>com.google.protobuf</groupId>
          <artifactId>protobuf-java</artifactId>
-         <version>3.5.0</version>
+         <version>3.5.1</version>
       </dependency>
       <dependency>
          <groupId>com.basho.riak.protobuf</groupId>
