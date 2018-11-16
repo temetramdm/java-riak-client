@@ -13,44 +13,25 @@
  */
 package com.basho.riak.client.bucket;
 
-import static com.basho.riak.client.convert.KeyUtil.getKey;
-
-import java.io.IOException;
-import java.util.Collection;
-
-import com.basho.riak.client.DefaultRiakClient;
-import com.basho.riak.client.DefaultRiakObject;
-import com.basho.riak.client.IRiakObject;
-import com.basho.riak.client.RiakException;
+import com.basho.riak.client.*;
 import com.basho.riak.client.builders.RiakObjectBuilder;
-import com.basho.riak.client.cap.ClobberMutation;
-import com.basho.riak.client.cap.DefaultResolver;
-import com.basho.riak.client.cap.Mutation;
-import com.basho.riak.client.cap.Quorum;
-import com.basho.riak.client.cap.Retrier;
-import com.basho.riak.client.cap.UnresolvedConflictException;
-import com.basho.riak.client.convert.Converter;
-import com.basho.riak.client.convert.JSONConverter;
-import com.basho.riak.client.convert.NoKeySpecifiedException;
-import com.basho.riak.client.convert.PassThroughConverter;
-import com.basho.riak.client.convert.RiakKey;
+import com.basho.riak.client.cap.*;
+import com.basho.riak.client.convert.*;
 import com.basho.riak.client.http.util.Constants;
-import com.basho.riak.client.operations.CounterObject;
-import com.basho.riak.client.operations.DeleteObject;
-import com.basho.riak.client.operations.FetchObject;
-import com.basho.riak.client.operations.MultiFetchObject;
-import com.basho.riak.client.operations.RiakOperation;
-import com.basho.riak.client.operations.StoreObject;
+import com.basho.riak.client.operations.*;
+import com.basho.riak.client.query.StreamingOperation;
 import com.basho.riak.client.query.functions.NamedErlangFunction;
 import com.basho.riak.client.query.functions.NamedFunction;
 import com.basho.riak.client.query.indexes.FetchIndex;
 import com.basho.riak.client.query.indexes.RiakIndex;
 import com.basho.riak.client.raw.RawClient;
-import com.basho.riak.client.query.StreamingOperation;
 import com.basho.riak.client.util.CharsetUtils;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import com.basho.riak.client.util.SimpleCache;
+
+import java.io.IOException;
+import java.util.*;
+
+import static com.basho.riak.client.convert.KeyUtil.getKey;
 
 /**
  * Default implementation of {@link Bucket} for creating {@link RiakOperation}s
@@ -377,7 +358,7 @@ public class DefaultBucket implements Bucket {
                 original.setValue(value);
                 return original;
             }
-        }).withResolver(new DefaultResolver<>()).withConverter(new PassThroughConverter());
+        }).withResolver(DefaultResolver.getInstance()).withConverter(PassThroughConverter.getInstance());
     }
 
     /**
@@ -456,34 +437,23 @@ public class DefaultBucket implements Bucket {
      * @see StoreObject
      * @see DomainBucket
      */
+    @SuppressWarnings("unchecked")
     public <T> StoreObject<T> store(final T o) {
-        @SuppressWarnings("unchecked") Class<T> clazz = (Class<T>) o.getClass();
-        final String key = getKey(o);
-        
-        Converter<T> converter = getDefaultConverter(clazz);
-
-        return new StoreObject<>(client, name, o, key, retrier)
-            .withConverter(converter)
-                .withMutator(new ClobberMutation<>(o))
-                  .withResolver(new DefaultResolver<>());
+        return new StoreObject<>(client, name, o, getKey(o), retrier)
+           .withConverter(getDefaultConverter((Class<T>) o.getClass()))
+           .withMutator(new ClobberMutation<>(o))
+           .withResolver(DefaultResolver.getInstance());
     }
 
-    private <T> Converter<T> getDefaultConverter(Class<T> clazz) {
-        return getDefaultConverter(clazz, null);
-    }
+    private static final SimpleCache<Class, JSONConverter> JSON_CONVERTERS = new SimpleCache<>(JSONConverter::new);
 
-    @SuppressWarnings("unchecked") private <T> Converter<T> getDefaultConverter(Class<T> clazz, String key) {
-        Converter<T> converter;
+    @SuppressWarnings("unchecked")
+    public static  <T> Converter<T> getDefaultConverter(Class<T> clazz) {
         if (IRiakObject.class.isAssignableFrom(clazz)) {
-            converter = (Converter<T>) new PassThroughConverter();
+            return (Converter<T>) PassThroughConverter.getInstance();
         } else {
-            if (key != null) {
-                converter = new JSONConverter<>(clazz, name, key);
-            } else {
-                converter = new JSONConverter<>(clazz, name);
-            }
+            return JSON_CONVERTERS.computeIfAbsent(clazz);
         }
-        return converter;
     }
 
     /**
@@ -507,12 +477,12 @@ public class DefaultBucket implements Bucket {
      * @see StoreObject
      * @see DomainBucket
      */
-    public <T> StoreObject<T> store(final String key, final T o) {
-        @SuppressWarnings("unchecked") final Class<T> clazz = (Class<T>) o.getClass();
-        Converter<T> converter = getDefaultConverter(clazz, key);
-        return new StoreObject<>(client, name, o, key, retrier).
-        withConverter(converter)
-            .withMutator(new ClobberMutation<>(o)).withResolver(new DefaultResolver<>());
+    @SuppressWarnings("unchecked")
+    public <T> StoreObject<T> store(final String key,final T o) {
+        return new StoreObject<>(client, name, o, key, retrier)
+           .withConverter(getDefaultConverter((Class<T>) o.getClass()))
+           .withMutator(new ClobberMutation<>(o))
+           .withResolver(DefaultResolver.getInstance());
     }
 
     /**
@@ -533,16 +503,15 @@ public class DefaultBucket implements Bucket {
      * @return a {@link FetchObject}
      * @see FetchObject
      */
+    @SuppressWarnings("unchecked")
     public <T> FetchObject<T> fetch(T o) {
-        @SuppressWarnings("unchecked") final Class<T> clazz = (Class<T>) o.getClass();
         final String key = getKey(o);
         if (key == null) {
             throw new NoKeySpecifiedException(o);
         }
-        Converter<T> converter = getDefaultConverter(clazz);
         return new FetchObject<T>(client, name, key, retrier)
-            .withConverter(converter)
-            .withResolver(new DefaultResolver<>());
+            .withConverter(getDefaultConverter((Class<T>) o.getClass()))
+            .withResolver(DefaultResolver.getInstance());
     }
 
     /**
@@ -566,10 +535,9 @@ public class DefaultBucket implements Bucket {
      * @see FetchObject
      */
     public <T> FetchObject<T> fetch(final String key, final Class<T> type) {
-        Converter<T> converter = getDefaultConverter(type, key);
         return new FetchObject<T>(client, name, key, retrier)
-            .withConverter(converter)
-            .withResolver(new DefaultResolver<>());
+            .withConverter(getDefaultConverter(type))
+            .withResolver(DefaultResolver.getInstance());
     }
 
     /**
@@ -587,8 +555,8 @@ public class DefaultBucket implements Bucket {
      */
     public FetchObject<IRiakObject> fetch(String key) {
         return new FetchObject<IRiakObject>(client, name, key, retrier)
-        .withResolver(new DefaultResolver<>())
-        .withConverter(new PassThroughConverter());
+        .withResolver(DefaultResolver.getInstance())
+        .withConverter(PassThroughConverter.getInstance());
     }
 
     /*
@@ -627,8 +595,8 @@ public class DefaultBucket implements Bucket {
     public MultiFetchObject<IRiakObject> multiFetch(String[] keys)
     {
         return new MultiFetchObject<IRiakObject>(client, name, Arrays.asList(keys), retrier)
-        .withResolver(new DefaultResolver<>())
-        .withConverter(new PassThroughConverter());
+        .withResolver(DefaultResolver.getInstance())
+        .withConverter(PassThroughConverter.getInstance());
     }
 
     /**
@@ -637,10 +605,9 @@ public class DefaultBucket implements Bucket {
      */
     public <T> MultiFetchObject<T> multiFetch(List<String> keys, Class<T> type)
     {
-        Converter<T> converter = getDefaultConverter(type, keys.get(0));
         return new MultiFetchObject<T>(client, name, keys, retrier)
-            .withConverter(converter)
-            .withResolver(new DefaultResolver<>());
+            .withConverter(getDefaultConverter(type))
+            .withResolver(DefaultResolver.getInstance());
     }
 
     /**
@@ -660,11 +627,9 @@ public class DefaultBucket implements Bucket {
             }
             keyList.add(key);
         }
-        
-        Converter<T> converter = getDefaultConverter(clazz);
         return new MultiFetchObject<T>(client, name, keyList, retrier)
-            .withConverter(converter)
-            .withResolver(new DefaultResolver<>());
+            .withConverter(getDefaultConverter(clazz))
+            .withResolver(DefaultResolver.getInstance());
     }
     
     public CounterObject counter(String counter) {

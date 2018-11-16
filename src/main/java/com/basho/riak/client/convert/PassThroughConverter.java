@@ -23,10 +23,19 @@ import com.basho.riak.client.cap.VClock;
  */
 public class PassThroughConverter implements Converter<IRiakObject> {
 
+    private static final PassThroughConverter INSTANCE = new PassThroughConverter();
+
+    private PassThroughConverter() {
+    }
+
+    public static PassThroughConverter getInstance() {
+        return INSTANCE;
+    }
+
     /* (non-Javadoc)
      * @see com.basho.riak.client.convert.Converter#fromDomain(java.lang.Object, com.basho.riak.client.cap.VClock)
      */
-    public IRiakObject fromDomain(IRiakObject domainObject, VClock vclock) throws ConversionException {
+    public IRiakObject fromDomain(String bucket, IRiakObject domainObject, VClock vclock) throws ConversionException {
         return domainObject;
     }
 

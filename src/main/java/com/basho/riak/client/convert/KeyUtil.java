@@ -42,31 +42,7 @@ public class KeyUtil {
      *             be set to the value of <code>key</code>
      */
     public static <T> T setKey(T domainObject, String key) throws ConversionException {
-        T obj = AnnotationHelper.getInstance().setRiakKey(domainObject, key);
-        return obj;
-    }
-
-    /**
-     * Attempts to get a key from <code>domainObject</code> by looking for a
-     * {@link RiakKey} annotated field. If non-present it simply returns
-     * <code>defaultKey</code>
-     * 
-     * @param <T>
-     *            the type of <code>domainObject</code>
-     * @param domainObject
-     *            the object to search for a key
-     * @param defaultKey
-     *            the pass through value that will get returned if no key found
-     *            on <code>domainObject</code>
-     * @return either the value found on <code>domainObject</code>;s
-     *         {@link RiakKey} field or <code>defaultkey</code>
-     */
-    public static <T> String getKey(T domainObject, String defaultKey) {
-        String key = getKey(domainObject);
-        if (key == null) {
-            key = defaultKey;
-        }
-        return key;
+        return AnnotationHelper.getInstance().setRiakKey(domainObject, key);
     }
 
     /**

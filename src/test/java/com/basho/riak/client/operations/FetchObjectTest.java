@@ -13,34 +13,26 @@
  */
 package com.basho.riak.client.operations;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.util.Date;
-import java.util.Iterator;
-
+import com.basho.riak.client.IRiakObject;
+import com.basho.riak.client.cap.*;
+import com.basho.riak.client.convert.Converter;
+import com.basho.riak.client.raw.FetchMeta;
+import com.basho.riak.client.raw.RawClient;
+import com.basho.riak.client.raw.RiakResponse;
+import com.basho.riak.client.util.CharsetUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import com.basho.riak.client.IRiakObject;
-import com.basho.riak.client.cap.BasicVClock;
-import com.basho.riak.client.cap.ConflictResolver;
-import com.basho.riak.client.cap.DefaultResolver;
-import com.basho.riak.client.cap.DefaultRetrier;
-import com.basho.riak.client.cap.Retrier;
-import com.basho.riak.client.cap.VClock;
-import com.basho.riak.client.convert.Converter;
-import com.basho.riak.client.raw.FetchMeta;
-import com.basho.riak.client.raw.RawClient;
-import com.basho.riak.client.raw.RiakResponse;
-import com.basho.riak.client.util.CharsetUtils;
+import java.util.Date;
+import java.util.Iterator;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.*;
 
 /**
  * @author russell
@@ -66,7 +58,7 @@ public class FetchObjectTest {
     @Before public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         retrier = new DefaultRetrier(1);
-        conflictResolver = new DefaultResolver<>();
+        conflictResolver = DefaultResolver.getInstance();
         fetch = new FetchObject<>(rawClient, BUCKET, KEY, retrier);
     }
 

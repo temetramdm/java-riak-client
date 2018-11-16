@@ -13,11 +13,6 @@
  */
 package com.basho.riak.client.operations;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.concurrent.Callable;
-
 import com.basho.riak.client.IRiakObject;
 import com.basho.riak.client.RiakRetryFailedException;
 import com.basho.riak.client.bucket.Bucket;
@@ -28,6 +23,11 @@ import com.basho.riak.client.convert.Converter;
 import com.basho.riak.client.raw.FetchMeta;
 import com.basho.riak.client.raw.RawClient;
 import com.basho.riak.client.raw.RiakResponse;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.concurrent.Callable;
 
 /**
  * An operation to get some data from Riak.
@@ -381,8 +381,11 @@ public class FetchObject<T> implements RiakOperation<T> {
         return rawResponse.getVclock();
     }
 
-    
-    
+    public String getBucket()
+    {
+        return bucket;
+    }
+
     /**
      * If the {@link RiakResponse} isn't populated then the request hasn't been
      * executed.

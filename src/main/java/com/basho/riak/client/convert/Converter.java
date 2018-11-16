@@ -25,11 +25,12 @@ import com.basho.riak.client.operations.RiakOperation;
 public interface Converter<T> {
     /**
      * Convert from domain specific type to RiakObject
-     * 
-     * @param domainObject
+     *
+     * @param bucket bucket
+     * @param domainObject domain object
      * @return a RiakObject populated from domainObject
      */
-    IRiakObject fromDomain(T domainObject, VClock vclock) throws ConversionException;
+    IRiakObject fromDomain(String bucket, T domainObject, VClock vclock) throws ConversionException;
 
     /**
      * Convert from a riakObject to a domain specific instance

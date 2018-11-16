@@ -49,7 +49,7 @@ public class RiakBucket {
                 return riakObject;
             }
 
-            public IRiakObject fromDomain(IRiakObject domainObject, VClock vclock) throws ConversionException {
+            public IRiakObject fromDomain(String bucket, IRiakObject domainObject, VClock vclock) throws ConversionException {
                 return domainObject;
             }
         });

@@ -13,35 +13,23 @@
  */
 package com.basho.riak.client.operations;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.util.Iterator;
-
+import com.basho.riak.client.IRiakObject;
+import com.basho.riak.client.cap.*;
+import com.basho.riak.client.convert.Converter;
+import com.basho.riak.client.raw.*;
+import com.basho.riak.client.util.CharsetUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import com.basho.riak.client.IRiakObject;
-import com.basho.riak.client.cap.BasicVClock;
-import com.basho.riak.client.cap.ConflictResolver;
-import com.basho.riak.client.cap.DefaultResolver;
-import com.basho.riak.client.cap.DefaultRetrier;
-import com.basho.riak.client.cap.Mutation;
-import com.basho.riak.client.cap.Retrier;
-import com.basho.riak.client.cap.VClock;
-import com.basho.riak.client.convert.Converter;
-import com.basho.riak.client.raw.FetchMeta;
-import com.basho.riak.client.raw.RawClient;
-import com.basho.riak.client.raw.RiakResponse;
-import com.basho.riak.client.raw.StoreMeta;
-import com.basho.riak.client.util.CharsetUtils;
+import java.util.Iterator;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.*;
 
 /**
  * @author russell
@@ -64,12 +52,11 @@ public class StoreObjectTest {
     private StoreObject<String> store;
 
     /**
-     * @throws java.lang.Exception
      */
-    @Before public void setUp() throws Exception {
+    @Before public void setUp() {
         MockitoAnnotations.initMocks(this);
         retrier = new DefaultRetrier(1);
-        conflictResolver = new DefaultResolver<>();
+        conflictResolver = DefaultResolver.getInstance();
         store = new StoreObject<>(rawClient, BUCKET, null, KEY, retrier);
     }
 
@@ -98,7 +85,7 @@ public class StoreObjectTest {
 
         // now the store stubbing
         when(mutation.apply(expectedFetchResult)).thenReturn(mutatedValue);
-        when(converter.fromDomain(mutatedValue, vclock)).thenReturn(rob);
+        when(converter.fromDomain(BUCKET, mutatedValue, vclock)).thenReturn(rob);
         when(rawClient.store(any(IRiakObject.class), any(StoreMeta.class))).thenReturn(response);
 
         // invoke
@@ -120,7 +107,7 @@ public class StoreObjectTest {
         // verify
         verify(rawClient, times(1)).fetch(eq(BUCKET), eq(KEY), fetchCaptor.capture());
         verify(converter, times(2)).toDomain(rob);
-        verify(converter, times(1)).fromDomain(mutatedValue, vclock);
+        verify(converter, times(1)).fromDomain(BUCKET, mutatedValue, vclock);
         verify(rawClient, times(1)).store(eq(rob), storeCaptor.capture());
 
         // check fetch meta is populated as expected

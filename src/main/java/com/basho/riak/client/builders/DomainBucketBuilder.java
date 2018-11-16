@@ -14,15 +14,9 @@
 package com.basho.riak.client.builders;
 
 import com.basho.riak.client.bucket.Bucket;
+import com.basho.riak.client.bucket.DefaultBucket;
 import com.basho.riak.client.bucket.DomainBucket;
-import com.basho.riak.client.cap.ClobberMutation;
-import com.basho.riak.client.cap.ConflictResolver;
-import com.basho.riak.client.cap.DefaultResolver;
-import com.basho.riak.client.cap.DefaultRetrier;
-import com.basho.riak.client.cap.Mutation;
-import com.basho.riak.client.cap.MutationProducer;
-import com.basho.riak.client.cap.Quora;
-import com.basho.riak.client.cap.Retrier;
+import com.basho.riak.client.cap.*;
 import com.basho.riak.client.convert.Converter;
 import com.basho.riak.client.convert.JSONConverter;
 import com.basho.riak.client.raw.DeleteMeta;
@@ -50,7 +44,7 @@ public class DomainBucketBuilder<T> {
     private final Class<T> clazz;
 
     // The default resolver, it doesn't resolve
-    private ConflictResolver<T> resolver = new DefaultResolver<>();
+    private ConflictResolver<T> resolver = DefaultResolver.getInstance();
     private Converter<T> converter;
     private Mutation<T> mutation;
     private MutationProducer<T> mutationProducer;
@@ -70,8 +64,7 @@ public class DomainBucketBuilder<T> {
     public DomainBucketBuilder(Bucket bucket, Class<T> clazz) {
         this.bucket = bucket;
         this.clazz = clazz;
-        // create a default converter (the JSONConverter)
-        converter = new JSONConverter<>(clazz, bucket.getName());
+        converter = DefaultBucket.getDefaultConverter(clazz);
     }
 
     /**

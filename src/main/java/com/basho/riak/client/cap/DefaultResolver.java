@@ -12,6 +12,16 @@ import java.util.Collection;
  */
 public final class DefaultResolver<T> implements ConflictResolver<T> {
 
+    private static final DefaultResolver INSTANCE = new DefaultResolver();
+
+    private DefaultResolver() {
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> DefaultResolver<T> getInstance() {
+        return (DefaultResolver<T>)INSTANCE;
+    }
+
     /**
      * Detects conflict but does not resolve it.
      * @return null or the single value in the collection

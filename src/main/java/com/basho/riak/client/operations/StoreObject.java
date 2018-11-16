@@ -13,10 +13,6 @@
  */
 package com.basho.riak.client.operations;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.concurrent.Callable;
-
 import com.basho.riak.client.IRiakObject;
 import com.basho.riak.client.RiakException;
 import com.basho.riak.client.RiakRetryFailedException;
@@ -29,6 +25,9 @@ import com.basho.riak.client.convert.VClockUtil;
 import com.basho.riak.client.raw.RawClient;
 import com.basho.riak.client.raw.RiakResponse;
 import com.basho.riak.client.raw.StoreMeta;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Stores a given object into riak always fetches first.
@@ -130,7 +129,7 @@ public class StoreObject<T> implements RiakOperation<T> {
         }
         
         
-        final IRiakObject o = converter.fromDomain(mutated, vclock);
+        final IRiakObject o = converter.fromDomain(fetchObject.getBucket(), mutated, vclock);
         final StoreMeta storeMeta = storeMetaBuilder.returnBody(returnBody).build();
 
         // if non match and if not modified require extra data for the HTTP API

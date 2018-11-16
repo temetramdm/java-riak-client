@@ -46,36 +46,9 @@ public class JSONConverter<T> implements Converter<T> {
 
   private final ObjectMapper mapper;
   private final Class<T> clazz;
-  private final String bucket;
   private final UsermetaConverter<T> usermetaConverter;
   private final RiakIndexConverter<T> riakIndexConverter;
   private final RiakLinksConverter<T> riakLinksConverter;
-  private String defaultKey;
-
-  /**
-   * Create a JSONConverter for creating instances of <code>clazz</code> from
-   * JSON and instances of {@link IRiakObject} with a JSON payload from
-   * instances of <code>clazz</code>
-   *
-   * @param mapper a custom object mapper
-   * @param clazz  the type to convert to/from
-   * @param bucket the bucket
-   */
-  public JSONConverter(ObjectMapper mapper, Class<T> clazz, String bucket) {
-    this(mapper, clazz, bucket, null);
-  }
-
-  /**
-   * Create a JSONConverter for creating instances of <code>clazz</code> from
-   * JSON and instances of {@link IRiakObject} with a JSON payload from
-   * instances of <code>clazz</code>
-   *
-   * @param clazz  the type to convert to/from
-   * @param bucket the bucket
-   */
-  public JSONConverter(Class<T> clazz, String bucket) {
-    this(OBJECT_MAPPER, clazz, bucket, null);
-  }
 
   /**
    * Create a JSONConverter for creating instances of <code>clazz</code> from
@@ -83,13 +56,9 @@ public class JSONConverter<T> implements Converter<T> {
    * instances of <code>clazz</code>
    *
    * @param clazz      the type to convert to/from
-   * @param bucket     the bucket
-   * @param defaultKey for cases where <code>clazz</code> does not have a
-   *                   {@link RiakKey} annotated field, pass the key to use in this
-   *                   conversion.
    */
-  public JSONConverter(Class<T> clazz, String bucket, String defaultKey) {
-    this(OBJECT_MAPPER, clazz, bucket, defaultKey);
+  public JSONConverter(Class<T> clazz) {
+    this(OBJECT_MAPPER, clazz);
   }
 
   /**
@@ -99,20 +68,14 @@ public class JSONConverter<T> implements Converter<T> {
    *
    * @param mapper     a custom object mapper
    * @param clazz      the type to convert to/from
-   * @param bucket     the bucket
-   * @param defaultKey for cases where <code>clazz</code> does not have a
-   *                   {@link RiakKey} annotated field, pass the key to use in this
-   *                   conversion.
    */
-  public JSONConverter(ObjectMapper mapper, Class<T> clazz, String bucket, String defaultKey) {
+  public JSONConverter(ObjectMapper mapper, Class<T> clazz) {
     if (mapper != OBJECT_MAPPER) {
       mapper.registerModule(RIAK_JACKSON_MODULE);
     }
 
     this.mapper = mapper;
     this.clazz = clazz;
-    this.bucket = bucket;
-    this.defaultKey = defaultKey;
     this.usermetaConverter = new UsermetaConverter<>();
     this.riakIndexConverter = new RiakIndexConverter<>();
     this.riakLinksConverter = new RiakLinksConverter<>();
@@ -123,12 +86,13 @@ public class JSONConverter<T> implements Converter<T> {
    * payload of a {@link IRiakObject}. Also set the <code>content-type</code>
    * to <code>application/json;charset=UTF-8</code>
    *
+   * @param bucket       bucket
    * @param domainObject to be converted
    * @param vclock       the vector clock from Riak
    */
-  public IRiakObject fromDomain(T domainObject, VClock vclock) throws ConversionException {
+  public IRiakObject fromDomain(String bucket, T domainObject, VClock vclock) throws ConversionException {
     try {
-      String key = getKey(domainObject, this.defaultKey);
+      String key = getKey(domainObject);
 
       final byte[] value = mapper.writeValueAsBytes(domainObject);
       Map<String, String> usermetaData = usermetaConverter.getUsermetaData(domainObject);
