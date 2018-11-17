@@ -39,8 +39,7 @@ public class VClockUtil
      *             be set to the value of <code>vclock</code>
      */
     public static <T> T setVClock(T domainObject, VClock vclock) throws ConversionException {
-        T obj = AnnotationHelper.getInstance().setRiakVClock(domainObject, vclock);
-        return obj;
+        return AnnotationHelper.getInstance().setRiakVClock(domainObject, vclock);
     }
     
     /**

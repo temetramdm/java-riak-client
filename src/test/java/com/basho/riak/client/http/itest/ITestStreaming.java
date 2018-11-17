@@ -13,20 +13,6 @@
  */
 package com.basho.riak.client.http.itest;
 
-import static com.basho.riak.client.http.Hosts.RIAK_URL;
-import static com.basho.riak.client.http.itest.Utils.*;
-import static org.junit.Assert.*;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
-
-import org.junit.Test;
-
 import com.basho.riak.client.AllTests;
 import com.basho.riak.client.http.RiakBucketInfo;
 import com.basho.riak.client.http.RiakClient;
@@ -37,6 +23,16 @@ import com.basho.riak.client.http.util.ClientUtils;
 import com.basho.riak.client.http.util.Constants;
 import com.basho.riak.client.raw.http.HTTPClientAdapter;
 import com.basho.riak.client.util.CharsetUtils;
+import org.junit.Test;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.*;
+
+import static com.basho.riak.client.http.Hosts.RIAK_URL;
+import static com.basho.riak.client.http.itest.Utils.WRITE_3_REPLICAS;
+import static com.basho.riak.client.http.itest.Utils.assertSuccess;
+import static org.junit.Assert.*;
 
 /**
  * Assumes Riak is reachable at {@link com.basho.riak.client.http.Hosts#RIAK_URL }.
@@ -59,10 +55,7 @@ public class ITestStreaming {
         BucketResponse r = c.streamBucket(BUCKET);
         assertSuccess(r);
 
-        List<String> keys = new ArrayList<>();
-        for (String key : r.getBucketInfo().getKeys()) {
-            keys.add(key);
-        }
+        List<String> keys = new ArrayList<>(r.getBucketInfo().getKeys());
         for (int i = 0; i < NUM_KEYS; i++) {
             assertTrue("Should contain key" + i + ": " + keys, keys.contains("key" + i));
         }

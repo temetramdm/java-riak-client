@@ -90,7 +90,7 @@ public interface IRiakObject extends Iterable<RiakLink> {
    */
   String getKey();
 
-  public void setKey(String key);
+  void setKey(String key);
 
   /**
    * If this object has a version tag (if it is one of a set of siblings)

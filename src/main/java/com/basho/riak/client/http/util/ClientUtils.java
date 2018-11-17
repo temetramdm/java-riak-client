@@ -13,28 +13,14 @@
  */
 package com.basho.riak.client.http.util;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Map.Entry;
-import java.util.StringTokenizer;
-
+import com.basho.riak.client.http.*;
+import com.basho.riak.client.http.response.RiakExceptionHandler;
+import com.basho.riak.client.http.response.RiakIORuntimeException;
+import com.basho.riak.client.util.CharsetUtils;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.Header;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.params.AllClientPNames;
-import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.http.impl.cookie.DateParseException;
@@ -43,16 +29,11 @@ import org.apache.http.params.HttpParams;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.basho.riak.client.http.BinIndex;
-import com.basho.riak.client.http.IntIndex;
-import com.basho.riak.client.http.RiakClient;
-import com.basho.riak.client.http.RiakConfig;
-import com.basho.riak.client.http.RiakIndex;
-import com.basho.riak.client.http.RiakLink;
-import com.basho.riak.client.http.RiakObject;
-import com.basho.riak.client.http.response.RiakExceptionHandler;
-import com.basho.riak.client.http.response.RiakIORuntimeException;
-import com.basho.riak.client.util.CharsetUtils;
+import java.io.*;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * Utility functions.
@@ -77,13 +58,13 @@ public class ClientUtils {
     public static HttpClient newHttpClient(RiakConfig config) {
 
         HttpClient http = config.getHttpClient();
-        ClientConnectionManager m;
+        PoolingClientConnectionManager m;
 
         if (http == null) {
             m = new PoolingClientConnectionManager();
             if (config.getMaxConnections() != null) {
-                ((PoolingClientConnectionManager) m).setMaxTotal(config.getMaxConnections());
-                ((PoolingClientConnectionManager) m).setDefaultMaxPerRoute(config.getMaxConnections());
+                m.setMaxTotal(config.getMaxConnections());
+                m.setDefaultMaxPerRoute(config.getMaxConnections());
             }
             http = new DefaultHttpClient(m);
 

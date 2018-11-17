@@ -452,7 +452,6 @@ public class DefaultBucket implements Bucket {
     public <T> StoreObject<T> store(final T o) {
         return new StoreObject<>(client, name, o, getKey(o), retrier)
            .withConverter(getDefaultConverter((Class<T>) o.getClass()))
-           .withMutator(new ClobberMutation<>(o))
            .withResolver(DefaultResolver.getInstance());
     }
 
@@ -486,7 +485,6 @@ public class DefaultBucket implements Bucket {
     public <T> StoreObject<T> store(final T o, Converter<T> converter) {
         return new StoreObject<>(client, name, o, getKey(o), retrier)
            .withConverter(converter)
-           .withMutator(new ClobberMutation<>(o))
            .withResolver(DefaultResolver.getInstance());
     }
 
@@ -515,7 +513,6 @@ public class DefaultBucket implements Bucket {
     public <T> StoreObject<T> store(final String key, final T o) {
         return new StoreObject<>(client, name, o, key, retrier)
            .withConverter(getDefaultConverter((Class<T>) o.getClass()))
-           .withMutator(new ClobberMutation<>(o))
            .withResolver(DefaultResolver.getInstance());
     }
 
@@ -544,7 +541,6 @@ public class DefaultBucket implements Bucket {
     public <T> StoreObject<T> store(final String key, final T o, Converter<T> converter) {
         return new StoreObject<>(client, name, o, key, retrier)
            .withConverter(converter)
-           .withMutator(new ClobberMutation<>(o))
            .withResolver(DefaultResolver.getInstance());
     }
 

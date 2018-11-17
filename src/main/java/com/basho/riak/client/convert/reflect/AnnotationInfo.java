@@ -13,29 +13,16 @@
  */
 package com.basho.riak.client.convert.reflect;
 
-import static com.basho.riak.client.convert.reflect.ClassUtil.getFieldValue;
-import static com.basho.riak.client.convert.reflect.ClassUtil.setFieldValue;
-import static com.basho.riak.client.convert.reflect.ClassUtil.getMethodValue;
-import static com.basho.riak.client.convert.reflect.ClassUtil.setMethodValue;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.basho.riak.client.RiakLink;
 import com.basho.riak.client.cap.BasicVClock;
 import com.basho.riak.client.cap.VClock;
 import com.basho.riak.client.convert.UsermetaField;
 import com.basho.riak.client.query.indexes.RiakIndexes;
-import java.lang.reflect.Method;
-import java.util.HashSet;
+
+import java.lang.reflect.*;
+import java.util.*;
+
+import static com.basho.riak.client.convert.reflect.ClassUtil.*;
 
 /**
  * Class that contains the Riak annotated fields for an annotated class
@@ -45,9 +32,6 @@ import java.util.HashSet;
  */
 public class AnnotationInfo {
 
-    private static final String NO_RIAK_KEY_FIELD_PRESENT = "no riak key field present";
-    private static final String NO_RIAK_VCLOCK_FIELD_PRESENT = "no riak vclock field present";
-    private static final String NO_RIAK_TOMBSTONE_FIELD_PRESENT = "no riak tombstone field present";
     private final Field riakKeyField;
     private final Method riakKeySetterMethod;
     private final Method riakKeyGetterMethod;
@@ -59,21 +43,11 @@ public class AnnotationInfo {
     private final Field riakVClockField;
     private final Field riakTombstoneField;
 
-    /**
-     * @param riakKeyField
-     * @param usermetaItemFields
-     * @param usermetaMapField
-     * @param riakLinksField 
-     * @param indexFields
-     * 
-     */
-
-    public AnnotationInfo(Field riakKeyField, Method riakKeyGetterMethod,
-                          Method riakKeySetterMethod, List<UsermetaField> usermetaItemFields, 
-                          Field usermetaMapField, List<RiakIndexField> indexFields, 
-                          List<RiakIndexMethod> indexMethods, Field riakLinksField, 
-                          Field riakVClockField, Field riakTombstoneField) {
-
+    AnnotationInfo(Field riakKeyField, Method riakKeyGetterMethod,
+                   Method riakKeySetterMethod, List<UsermetaField> usermetaItemFields,
+                   Field usermetaMapField, List<RiakIndexField> indexFields,
+                   List<RiakIndexMethod> indexMethods, Field riakLinksField,
+                   Field riakVClockField, Field riakTombstoneField) {
         this.riakKeyField = riakKeyField;
         this.riakKeyGetterMethod = riakKeyGetterMethod;
         this.riakKeySetterMethod = riakKeySetterMethod;
@@ -133,7 +107,6 @@ public class AnnotationInfo {
      * @return
      */
     public <T> String getRiakKey(T obj) {
-        
         Object key = null;
         if (riakKeyField != null)
         {
@@ -154,65 +127,43 @@ public class AnnotationInfo {
         }
     }
 
-    public boolean hasRiakVClock() {
-        return riakVClockField != null;
-    }
-    
     public <T> VClock getRiakVClock(T obj) {
-        if (!hasRiakVClock()) {
-            throw new IllegalStateException(NO_RIAK_VCLOCK_FIELD_PRESENT);
+        if (riakVClockField == null) {
+            return null;
         }
-        
-        VClock vclock;
-        
+
         // We allow the annotated field to be either an actual VClock, or
         // a byte array. This is enforced in the AnnotationScanner
         
         if (riakVClockField.getType().isAssignableFrom(VClock.class)) {
-            vclock = (VClock) getFieldValue(riakVClockField, obj);
+            return (VClock) getFieldValue(riakVClockField, obj);
         } else {
-            vclock = new BasicVClock((byte[]) getFieldValue(riakVClockField, obj));
+            return new BasicVClock((byte[]) getFieldValue(riakVClockField, obj));
         }
-        
-        return vclock;
-        
     }
     
     public <T> void setRiakVClock(T obj, VClock vclock) {
-        if (!hasRiakVClock()) {
-            throw new IllegalStateException(NO_RIAK_VCLOCK_FIELD_PRESENT);
-        }
-            
-        // We allow the annotated field to be either an actual VClock, or
-        // a byte array. This is enforced in the AnnotationScanner
+        if (riakVClockField != null) {
+            // We allow the annotated field to be either an actual VClock, or
+            // a byte array. This is enforced in the AnnotationScanner
         
-        if (riakVClockField.getType().isAssignableFrom(VClock.class)) {
-            setFieldValue(riakVClockField, obj, vclock);
-        } else {
-            setFieldValue(riakVClockField, obj, vclock.getBytes());
+            if (riakVClockField.getType().isAssignableFrom(VClock.class)) {
+                setFieldValue(riakVClockField, obj, vclock);
+            } else {
+                setFieldValue(riakVClockField, obj, vclock.getBytes());
+            }
         }
     }
-    
-    public boolean hasRiakTombstone() {
-        return riakTombstoneField != null;
-    }
-    
-    public <T> boolean getRiakTombstone(T obj)
+
+    public <T> Boolean getRiakTombstone(T obj)
     {
-        if (!hasRiakTombstone()) {
-            throw new IllegalStateException(NO_RIAK_TOMBSTONE_FIELD_PRESENT);
-        }
-        
-        boolean tombstone = (Boolean)getFieldValue(riakTombstoneField, obj);
-        return tombstone;
+        return riakTombstoneField == null ? null : (Boolean)getFieldValue(riakTombstoneField, obj);
     }
     
     public <T> void setRiakTombstone(T obj, Boolean isDeleted) {
-        if (!hasRiakTombstone()) {
-            throw new IllegalStateException(NO_RIAK_TOMBSTONE_FIELD_PRESENT);
+        if (riakTombstoneField != null) {
+            setFieldValue(riakTombstoneField, obj, isDeleted);
         }
-        
-        setFieldValue(riakTombstoneField, obj, isDeleted);
     }
     
     @SuppressWarnings({ "unchecked", "rawtypes" }) public <T> Map<String, String> getUsermetaData(T obj) {
@@ -272,16 +223,8 @@ public class AnnotationInfo {
                     Class genericType = (Class)((ParameterizedType)t).getActualTypeArguments()[0];
                     if (String.class.equals(genericType)) {
                         riakIndexes.addBinSet(f.getIndexName(), (Set<String>)getFieldValue(f.getField(), obj)); 
-                    } else if (Long.class.equals(genericType) ||Integer.class.equals(genericType)) {                        
+                    } else if (Long.class.equals(genericType) || Integer.class.equals(genericType)) {
                         riakIndexes.addIntSet(f.getIndexName(), (Set<Long>)getFieldValue(f.getField(), obj));
-                    } else if (Integer.class.equals(genericType)) {
-                        // Supporting Integer as legacy. All new code should use Long
-                        Set<Integer> iSet = (Set<Integer>) getFieldValue(f.getField(), obj);
-                        Set<Long> lSet = new HashSet<>();
-                        for (Integer i : iSet) {
-                            lSet.add(i.longValue());
-                        }
-                        riakIndexes.addIntSet(f.getIndexName(), lSet);
                     }
                 }
             } else {

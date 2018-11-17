@@ -13,44 +13,14 @@
  */
 package com.basho.riak.client.itest;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import com.basho.riak.client.IRiakClient;
-import com.basho.riak.client.RiakException;
-import com.basho.riak.client.RiakFactory;
-import com.basho.riak.client.RiakLink;
+import com.basho.riak.client.*;
 import com.basho.riak.client.bucket.Bucket;
 import com.basho.riak.client.bucket.DomainBucket;
 import com.basho.riak.client.bucket.RiakBucket;
 import com.basho.riak.client.builders.RiakObjectBuilder;
 import com.basho.riak.client.http.Hosts;
 import com.basho.riak.client.query.MapReduceResult;
-import com.basho.riak.client.query.filter.BetweenFilter;
-import com.basho.riak.client.query.filter.EndsWithFilter;
-import com.basho.riak.client.query.filter.KeyFilter;
-import com.basho.riak.client.query.filter.LessThanFilter;
-import com.basho.riak.client.query.filter.LogicalAndFilter;
-import com.basho.riak.client.query.filter.LogicalFilterGroup;
-import com.basho.riak.client.query.filter.LogicalOrFilter;
-import com.basho.riak.client.query.filter.StartsWithFilter;
-import com.basho.riak.client.query.filter.StringToIntFilter;
-import com.basho.riak.client.query.filter.TokenizeFilter;
+import com.basho.riak.client.query.filter.*;
 import com.basho.riak.client.query.functions.JSSourceFunction;
 import com.basho.riak.client.query.functions.NamedErlangFunction;
 import com.basho.riak.client.query.functions.NamedJSFunction;
@@ -58,6 +28,12 @@ import com.basho.riak.client.raw.query.MapReduceTimeoutException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.megacorp.commerce.GoogleStockDataItem;
+import org.junit.*;
+
+import java.io.IOException;
+import java.util.*;
+
+import static org.junit.Assert.*;
 
 /**
  * @author russell
@@ -346,7 +322,7 @@ public abstract class ITestMapReduce {
      * A JS function that will cause a m/r timeout
      * @return String of js sleep function
      */
-    private static final String sleepJs() {
+    private static String sleepJs() {
         return "function(v) { " + "var millis=12000; var d=new Date();  var c=null; do { "
                + "c = new Date();  }  while(c-d < millis); }";
     }

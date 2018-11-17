@@ -18,20 +18,15 @@
 
 package com.basho.riak.pbc;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.basho.riak.client.http.BinIndex;
 import com.basho.riak.client.http.IntIndex;
 import com.basho.riak.client.http.RiakIndex;
 import com.basho.riak.protobuf.RiakKvPB.RpbContent;
-import com.basho.riak.protobuf.RiakPB.RpbPair;
 import com.basho.riak.protobuf.RiakKvPB.RpbContent.Builder;
+import com.basho.riak.protobuf.RiakPB.RpbPair;
 import com.google.protobuf.ByteString;
+
+import java.util.*;
 
 /**
  * PBC model of the data/meta data for a bucket/key entry in Riak
@@ -216,10 +211,10 @@ public class RiakObject {
 		final Map<String, String> tmpUserMetaData = new LinkedHashMap<>();
 
 		synchronized (userMetaDataLock) {
-		    tmpUserMetaData.putAll(userMetaData);
-        }
+				tmpUserMetaData.putAll(userMetaData);
+		}
 
-		if (tmpUserMetaData != null && !tmpUserMetaData.isEmpty()) {
+		if (!tmpUserMetaData.isEmpty()) {
 			for (Map.Entry<String, String> ent : tmpUserMetaData.entrySet()) {
 				ByteString key = ByteString.copyFromUtf8(ent.getKey());
 				com.basho.riak.protobuf.RiakPB.RpbPair.Builder pb = 

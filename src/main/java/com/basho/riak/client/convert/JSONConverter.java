@@ -17,6 +17,8 @@ import com.basho.riak.client.IRiakObject;
 import com.basho.riak.client.RiakLink;
 import com.basho.riak.client.builders.RiakObjectBuilder;
 import com.basho.riak.client.cap.VClock;
+import com.basho.riak.client.convert.reflect.AnnotationHelper;
+import com.basho.riak.client.convert.reflect.AnnotationInfo;
 import com.basho.riak.client.http.util.Constants;
 import com.basho.riak.client.query.indexes.RiakIndexes;
 import com.fasterxml.jackson.databind.Module;
@@ -46,9 +48,7 @@ public class JSONConverter<T> implements Converter<T> {
 
   private final ObjectMapper mapper;
   private final Class<T> clazz;
-  private final UsermetaConverter<T> usermetaConverter;
-  private final RiakIndexConverter<T> riakIndexConverter;
-  private final RiakLinksConverter<T> riakLinksConverter;
+  private final AnnotationInfo annotationInfo;
 
   /**
    * Create a JSONConverter for creating instances of <code>clazz</code> from
@@ -76,9 +76,7 @@ public class JSONConverter<T> implements Converter<T> {
 
     this.mapper = mapper;
     this.clazz = clazz;
-    this.usermetaConverter = new UsermetaConverter<>();
-    this.riakIndexConverter = new RiakIndexConverter<>();
-    this.riakLinksConverter = new RiakLinksConverter<>();
+    annotationInfo = AnnotationHelper.getInstance().get(clazz);
   }
 
   /**
@@ -95,9 +93,9 @@ public class JSONConverter<T> implements Converter<T> {
       String key = getKey(domainObject);
 
       final byte[] value = mapper.writeValueAsBytes(domainObject);
-      Map<String, String> usermetaData = usermetaConverter.getUsermetaData(domainObject);
-      RiakIndexes indexes = riakIndexConverter.getIndexes(domainObject);
-      Collection<RiakLink> links = riakLinksConverter.getLinks(domainObject);
+      Map<String, String> usermetaData = annotationInfo.getUsermetaData(domainObject);
+      RiakIndexes indexes = annotationInfo.getIndexes(domainObject);
+      Collection<RiakLink> links = annotationInfo.getLinks(domainObject);
       return RiakObjectBuilder.newBuilder(bucket, key)
          .withValue(value)
          .withVClock(vclock)
@@ -126,9 +124,9 @@ public class JSONConverter<T> implements Converter<T> {
     } else if (riakObject.isDeleted()) {
       try {
         final T domainObject = clazz.newInstance();
-        TombstoneUtil.setTombstone(domainObject, true);
-        VClockUtil.setVClock(domainObject, riakObject.getVClock());
-        KeyUtil.setKey(domainObject, riakObject.getKey());
+        annotationInfo.setRiakTombstone(domainObject, true);
+        annotationInfo.setRiakVClock(domainObject, riakObject.getVClock());
+        annotationInfo.setRiakKey(domainObject, riakObject.getKey());
         return domainObject;
       } catch (InstantiationException ex) {
         throw new ConversionException("POJO does not provide no-arg constructor", ex);
@@ -138,11 +136,11 @@ public class JSONConverter<T> implements Converter<T> {
     } else {
       try {
         final T domainObject = mapper.readValue(riakObject.getValue(), clazz);
-        KeyUtil.setKey(domainObject, riakObject.getKey());
-        VClockUtil.setVClock(domainObject, riakObject.getVClock());
-        usermetaConverter.populateUsermeta(riakObject.getMeta(), domainObject);
-        riakIndexConverter.populateIndexes(new RiakIndexes(riakObject.allBinIndexes(), riakObject.allIntIndexesV2()), domainObject);
-        riakLinksConverter.populateLinks(riakObject.getLinks(), domainObject);
+        annotationInfo.setRiakKey(domainObject, riakObject.getKey());
+        annotationInfo.setRiakVClock(domainObject, riakObject.getVClock());
+        annotationInfo.setUsermetaData(riakObject.getMeta(), domainObject);
+        annotationInfo.setIndexes(new RiakIndexes(riakObject.allBinIndexes(), riakObject.allIntIndexesV2()), domainObject);
+        annotationInfo.setLinks(riakObject.getLinks(), domainObject);
         return domainObject;
       } catch (IOException e) {
         throw new ConversionException(e);

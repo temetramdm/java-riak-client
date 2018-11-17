@@ -33,7 +33,6 @@ import com.basho.riak.client.cap.QuoraTest;
 import com.basho.riak.client.convert.ConversionUtilTest;
 import com.basho.riak.client.convert.RiakBeanSerializerModifierTest;
 import com.basho.riak.client.convert.RiakJacksonModuleTest;
-import com.basho.riak.client.convert.UsermetaConverterTest;
 import com.basho.riak.client.http.TestRiakBucketInfo;
 import com.basho.riak.client.http.TestRiakClient;
 import com.basho.riak.client.http.TestRiakConfig;
@@ -196,7 +195,6 @@ import com.basho.riak.pbc.itest.ITestRiakConnectionPool;
     TestStreamedSiblingsCollection.class,
     TestWalkResponse.class,
     UnmodifiableIteratorTest.class,
-    UsermetaConverterTest.class,
     WriteBucketTest.class,
     LazyBucketPropertiesTest.class,
     com.basho.riak.client.itest.ITestMapReduceHTTP.class,

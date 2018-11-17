@@ -55,7 +55,7 @@ public class StoreObject<T> implements RiakOperation<T> {
     
     private boolean returnBody = false;
     private boolean doNotFetch = false;
-    private boolean deletedVClockWithReturnbody = false;
+    private boolean deletedVClockWithReturnBody = false;
 
     private final T object;
     private Mutation<T> mutation;
@@ -122,7 +122,7 @@ public class StoreObject<T> implements RiakOperation<T> {
             resolved = object;
         }
         
-        final T mutated = mutation.apply(resolved);
+        final T mutated = mutation != null ? mutation.apply(resolved) : object;
         
         if (doNotFetch) {
             vclock = VClockUtil.getVClock(mutated);
@@ -154,7 +154,7 @@ public class StoreObject<T> implements RiakOperation<T> {
             // with a fetch operation. See: returnDeletedVClock() below
 
             for (IRiakObject s : stored) {
-                if (s.isDeleted() && !deletedVClockWithReturnbody) {
+                if (s.isDeleted() && !deletedVClockWithReturnBody) {
                     continue;
                 }
                 storedSiblings.add(converter.toDomain(s));
@@ -286,7 +286,7 @@ public class StoreObject<T> implements RiakOperation<T> {
      */
     public StoreObject<T> returnDeletedVClock(boolean returnDeletedVClock) {
         this.fetchObject.returnDeletedVClock(returnDeletedVClock);
-        deletedVClockWithReturnbody = true;
+        deletedVClockWithReturnBody = true;
         return this;
     }
 
@@ -517,18 +517,6 @@ public class StoreObject<T> implements RiakOperation<T> {
         return this;
     }
 
-    /**
-     * Creates a {@link ClobberMutation} that applies <code>value</code>
-     * 
-     * @param value
-     *            new value
-     * @return this StoreObject
-     */
-    public StoreObject<T> withValue(final T value) {
-        this.mutation = new ClobberMutation<>(value);
-        return this;
-    }
-    
     /**
      * Eliminates fetching the existing value before storing the current one.
      * 

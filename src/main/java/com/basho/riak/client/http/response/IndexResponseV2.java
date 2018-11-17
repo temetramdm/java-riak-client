@@ -17,11 +17,12 @@ package com.basho.riak.client.http.response;
 
 import com.basho.riak.client.http.request.IndexRequest;
 import com.basho.riak.client.http.util.Multipart;
-import java.util.ArrayList;
-import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -66,7 +67,7 @@ public class IndexResponseV2
                     for (int i = 0; i < jArray.length(); i++)
                     {
                         JSONObject rObj = jArray.getJSONObject(i);
-                        String indexValue = rObj.keys().next().toString();
+                        String indexValue = rObj.keys().next();
                         entries.add(new IndexEntry(indexValue, rObj.getString(indexValue)));
                     }
                 }

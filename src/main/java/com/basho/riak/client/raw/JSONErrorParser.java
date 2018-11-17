@@ -13,14 +13,13 @@
  */
 package com.basho.riak.client.raw;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-
 import com.basho.riak.client.RiakException;
 import com.basho.riak.client.raw.query.MapReduceTimeoutException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Exceptions come back from Riak as JSON, parses exceptions, and throws the
@@ -97,7 +96,7 @@ public class JSONErrorParser {
      * @return the Map representation of the JSON
      * @throws IOException
      */
-    private static final Map<String, String> parseError(final String json) throws IOException {
+    private static Map<String, String> parseError(final String json) throws IOException {
         return objectMapper.readValue(json, objectMapper.getTypeFactory().constructMapType(HashMap.class, String.class, String.class));
     }
 

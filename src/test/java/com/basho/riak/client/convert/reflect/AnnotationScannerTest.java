@@ -7,14 +7,13 @@ import org.junit.Test;
 
 import java.util.*;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class AnnotationScannerTest {
 
     @Test
-    public void testBasicClass() throws Exception {
-        AnnotationScanner scanner = new AnnotationScanner(BasicClass.class);
-        AnnotationInfo info = scanner.call();
+    public void testBasicClass() {
+        AnnotationInfo info = AnnotationHelper.getInstance().get(BasicClass.class);
         BasicClass instance = new BasicClass();
         assertEquals("keyValue", info.getRiakKey(instance));
         assertEquals("clock", info.getRiakVClock(instance).asString());
@@ -22,18 +21,16 @@ public class AnnotationScannerTest {
         assertEquals(1, info.getIndexes(instance).getBinIndex("myBinIndex").size());
         assertEquals(1, info.getIndexes(instance).getIntIndex("myIntIndex").size());
         assertEquals(1, info.getLinks(instance).size());
-        
-        scanner = new AnnotationScanner(MethodClass.class);
-        info = scanner.call();
+
+        info = AnnotationHelper.getInstance().get(MethodClass.class);
         MethodClass mInstance = new MethodClass();
         info.setRiakKey(mInstance, "keyValue");
         assertEquals("keyValue", info.getRiakKey(mInstance));
     }
 
     @Test
-    public void testMethodClass() throws Exception {
-        AnnotationScanner scanner = new AnnotationScanner(MethodClass.class);
-        AnnotationInfo info = scanner.call();
+    public void testMethodClass() {
+        AnnotationInfo info = AnnotationHelper.getInstance().get(MethodClass.class);
         MethodClass mInstance = new MethodClass();
         info.setRiakKey(mInstance, "keyValue");
         assertEquals("keyValue", info.getRiakKey(mInstance));
@@ -77,9 +74,8 @@ public class AnnotationScannerTest {
     }
     
     @Test
-    public void testSimpleInheritance() throws Exception {
-        AnnotationScanner scanner = new AnnotationScanner(ChildClass.class);
-        AnnotationInfo info = scanner.call();
+    public void testSimpleInheritance() {
+        AnnotationInfo info = AnnotationHelper.getInstance().get(ChildClass.class);
         ChildClass instance = new ChildClass();
         assertEquals("keyValue", info.getRiakKey(instance));
         assertEquals("clock", info.getRiakVClock(instance).asString());
