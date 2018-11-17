@@ -313,6 +313,17 @@ public class DefaultBucket implements Bucket {
         }
     }
 
+    private static final SimpleCache<Class, JSONConverter> JSON_CONVERTERS = new SimpleCache<>(JSONConverter::new);
+
+    @SuppressWarnings("unchecked")
+    public static  <T> Converter<T> getDefaultConverter(Class<T> clazz) {
+        if (IRiakObject.class.isAssignableFrom(clazz)) {
+            return (Converter<T>) PassThroughConverter.getInstance();
+        } else {
+            return JSON_CONVERTERS.computeIfAbsent(clazz);
+        }
+    }
+
     /**
      * Convenience method to create a RiakObject with a payload of
      * application/octect-stream
@@ -445,15 +456,38 @@ public class DefaultBucket implements Bucket {
            .withResolver(DefaultResolver.getInstance());
     }
 
-    private static final SimpleCache<Class, JSONConverter> JSON_CONVERTERS = new SimpleCache<>(JSONConverter::new);
-
-    @SuppressWarnings("unchecked")
-    public static  <T> Converter<T> getDefaultConverter(Class<T> clazz) {
-        if (IRiakObject.class.isAssignableFrom(clazz)) {
-            return (Converter<T>) PassThroughConverter.getInstance();
-        } else {
-            return JSON_CONVERTERS.computeIfAbsent(clazz);
-        }
+    /**
+     * Store an instance of <code>T</code> in Riak. Depends on the
+     * {@link Converter} provided to {@link StoreObject} to convert
+     * <code>o</code> from <code>T</code> to {@link IRiakObject}.
+     * <p>
+     * <code>T</code> must have a field annotated with {@link RiakKey} as the
+     * Key to store this data under.
+     * </p>
+     *
+     * <p>
+     * Creates a {@link StoreObject} operation configured with the
+     * {@link JSONConverter} the {@link ClobberMutation} and
+     * {@link DefaultResolver}.
+     * </p>
+     *
+     * @param <T>
+     *            the Type of <code>o</code>
+     * @param o
+     *            the data to store
+     * @param converter
+     *            the converter to use for this object
+     * @return a {@link StoreObject} configured to store <code>o</code> at the
+     *         {@link RiakKey} annotated <code>key</code> on
+     *         <code>execute()</code>.
+     * @see StoreObject
+     * @see DomainBucket
+     */
+    public <T> StoreObject<T> store(final T o, Converter<T> converter) {
+        return new StoreObject<>(client, name, o, getKey(o), retrier)
+           .withConverter(converter)
+           .withMutator(new ClobberMutation<>(o))
+           .withResolver(DefaultResolver.getInstance());
     }
 
     /**
@@ -478,9 +512,38 @@ public class DefaultBucket implements Bucket {
      * @see DomainBucket
      */
     @SuppressWarnings("unchecked")
-    public <T> StoreObject<T> store(final String key,final T o) {
+    public <T> StoreObject<T> store(final String key, final T o) {
         return new StoreObject<>(client, name, o, key, retrier)
            .withConverter(getDefaultConverter((Class<T>) o.getClass()))
+           .withMutator(new ClobberMutation<>(o))
+           .withResolver(DefaultResolver.getInstance());
+    }
+
+    /**
+     * Store an instance of <code>T</code> in Riak. Depends on the
+     * {@link Converter} provided to {@link StoreObject} to convert
+     * <code>o</code> from <code>T</code> to {@link IRiakObject}.
+     *
+     * <p>
+     * Creates a {@link StoreObject} operation configured with the
+     * {@link JSONConverter} the {@link ClobberMutation} and
+     * {@link DefaultResolver}.
+     * </p>
+     *
+     * @param <T>
+     *            the Type of <code>o</code>
+     * @param o
+     *            the data to store
+     * @return a {@link StoreObject} configured to store <code>o</code> at the
+     *         {@link RiakKey} annotated <code>key</code> on
+     *         <code>execute()</code>.
+     * @see StoreObject
+     * @see DomainBucket
+     */
+    @SuppressWarnings("unchecked")
+    public <T> StoreObject<T> store(final String key, final T o, Converter<T> converter) {
+        return new StoreObject<>(client, name, o, key, retrier)
+           .withConverter(converter)
            .withMutator(new ClobberMutation<>(o))
            .withResolver(DefaultResolver.getInstance());
     }
@@ -538,6 +601,32 @@ public class DefaultBucket implements Bucket {
         return new FetchObject<T>(client, name, key, retrier)
             .withConverter(getDefaultConverter(type))
             .withResolver(DefaultResolver.getInstance());
+    }
+
+    /**
+     * Creates a {@link FetchObject} operation that returns the data at
+     * <code>key</code> as an instance of type <code>T</code> on
+     * <code>execute()</code>.
+     *
+     * <p>
+     * Creates a {@link FetchObject} operation configured with the
+     * {@link JSONConverter} and
+     * {@link DefaultResolver}.
+     * </p>
+     *
+     * @param <T>
+     *            the Type to return
+     * @param key
+     *            the key under which the data is stored
+     * @param converter
+     *            the converter to use for this object
+     * @return a {@link FetchObject}
+     * @see FetchObject
+     */
+    public <T> FetchObject<T> fetch(final String key, final Converter<T> converter) {
+        return new FetchObject<T>(client, name, key, retrier)
+           .withConverter(converter)
+           .withResolver(DefaultResolver.getInstance());
     }
 
     /**

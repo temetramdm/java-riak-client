@@ -5,7 +5,7 @@
    <groupId>com.github.temetramdm</groupId>
    <artifactId>riak-client</artifactId>
    <packaging>bundle</packaging>
-   <version>1.4.7</version>
+   <version>1.4.8</version>
    <name>Riak Client for Java</name>
    <description>HttpClient-based client for Riak</description>
    <url>https://github.com/basho/riak-java-client</url>

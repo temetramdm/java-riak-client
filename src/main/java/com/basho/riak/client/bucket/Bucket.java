@@ -15,6 +15,7 @@ package com.basho.riak.client.bucket;
 
 import com.basho.riak.client.IRiakObject;
 import com.basho.riak.client.RiakException;
+import com.basho.riak.client.convert.Converter;
 import com.basho.riak.client.convert.RiakKey;
 import com.basho.riak.client.operations.CounterObject;
 import com.basho.riak.client.operations.DeleteObject;
@@ -95,12 +96,39 @@ public interface Bucket extends BucketProperties {
      * <code>T</code> at <code>key</code> on <code>execute()</code>.
      * 
      * @param <T> the Type of <code>o</code>
-     * @param o the data to store
      * @param key the key
+     * @param o the data to store
      * @return a {@link StoreObject}
      * @see StoreObject
      */
     <T> StoreObject<T> store(String key, T o);
+
+    /**
+     * Creates a {@link StoreObject} for storing <code>o</code> of type
+     * <code>T</code> on <code>execute()</code>. <code>T</code> must have
+     * a field annotated with {@link RiakKey}.
+     *
+     * @param <T> the Type of <code>o</code>
+     * @param o the data to store
+     * @param converter the converter to use for this type
+     * @return a {@link StoreObject}
+     * @see StoreObject
+     */
+    <T> StoreObject<T> store(T o, Converter<T> converter);
+
+    /**
+     * Creates a {@link StoreObject} for storing <code>o</code> of type
+     * <code>T</code> on <code>execute()</code>. <code>T</code> must have
+     * a field annotated with {@link RiakKey}.
+     *
+     * @param <T> the Type of <code>o</code>
+     * @param key the key
+     * @param o the data to store
+     * @param converter the converter to use for this type
+     * @return a {@link StoreObject}
+     * @see StoreObject
+     */
+    <T> StoreObject<T> store(String key, T o, Converter<T> converter);
 
     /**
      * Creates a {@link FetchObject} that returns the data at <code>key</code>
@@ -127,6 +155,22 @@ public interface Bucket extends BucketProperties {
      * @see FetchObject
      */
     <T> FetchObject<T> fetch(String key, Class<T> type);
+
+    /**
+     * Creates a {@link FetchObject} operation that returns the data at
+     * <code>key</code> as an instance of type <code>T</code> on
+     * <code>execute()</code>.
+     *
+     * @param <T>
+     *            the Type to return
+     * @param key
+     *            the key under which the data is stored
+     * @param converter
+     *            the converter to use for this object
+     * @return a {@link FetchObject}
+     * @see FetchObject
+     */
+    <T> FetchObject<T> fetch(String key, Converter<T> converter);
 
     /**
      * Creates a {@link FetchObject} operation that returns the data at
@@ -210,12 +254,9 @@ public interface Bucket extends BucketProperties {
     /**
      * Creates a {@link DeleteObject} operation that will delete the data at
      * <code>key</code> on <code>execute()</code>.
-     * 
-     * @param <T>
-     *            the Type of <code>o</code>
-     * @param o
-     *            an instance of <code>T</code> with a value for the key in the
-     *            field annotated by {@link RiakKey}
+     *
+     * @param key
+     *            the key under which the data is stored
      * @return a {@link DeleteObject}
      * @see DeleteObject
      */
@@ -224,7 +265,7 @@ public interface Bucket extends BucketProperties {
     /**
      * An {@link Iterable} view of the keys stored in this bucket.
      * @return an {@link Iterable} of Strings.
-     * @throws RiakException
+     * @throws RiakException when a Riak exception occurs.
      */
     StreamingOperation<String> keys() throws RiakException;
 
