@@ -2,9 +2,9 @@
  * This file is provided to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -19,9 +19,7 @@ import com.basho.riak.client.builders.RiakObjectBuilder;
 import com.basho.riak.client.cap.VClock;
 import com.basho.riak.client.convert.reflect.AnnotationHelper;
 import com.basho.riak.client.convert.reflect.AnnotationInfo;
-import com.basho.riak.client.http.util.Constants;
 import com.basho.riak.client.query.indexes.RiakIndexes;
-import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
@@ -29,6 +27,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import static com.basho.riak.client.convert.KeyUtil.getKey;
+import static com.basho.riak.client.convert.ObjectMapperSelector.DEFAULT_SELECTOR;
 
 /**
  * Converts a RiakObject's value to an instance of T. T must have a field
@@ -41,12 +40,9 @@ import static com.basho.riak.client.convert.KeyUtil.getKey;
  *
  * @author russell
  */
-public class JSONConverter<T> implements Converter<T> {
-
-  private static final Module RIAK_JACKSON_MODULE = new RiakJacksonModule();
-  private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper().registerModule(RIAK_JACKSON_MODULE);
-
-  private final ObjectMapper mapper;
+public class JSONConverter<T> implements Converter<T>
+{
+  private final ObjectMapperSelector selector;
   private final Class<T> clazz;
   private final AnnotationInfo annotationInfo;
 
@@ -55,10 +51,11 @@ public class JSONConverter<T> implements Converter<T> {
    * JSON and instances of {@link IRiakObject} with a JSON payload from
    * instances of <code>clazz</code>
    *
-   * @param clazz      the type to convert to/from
+   * @param clazz the type to convert to/from
    */
-  public JSONConverter(Class<T> clazz) {
-    this(OBJECT_MAPPER, clazz);
+  public JSONConverter(Class<T> clazz)
+  {
+    this(DEFAULT_SELECTOR, clazz);
   }
 
   /**
@@ -66,15 +63,12 @@ public class JSONConverter<T> implements Converter<T> {
    * JSON and instances of {@link IRiakObject} with a JSON payload from
    * instances of <code>clazz</code>
    *
-   * @param mapper     a custom object mapper
-   * @param clazz      the type to convert to/from
+   * @param selector a custom object mapper
+   * @param clazz    the type to convert to/from
    */
-  public JSONConverter(ObjectMapper mapper, Class<T> clazz) {
-    if (mapper != OBJECT_MAPPER) {
-      mapper.registerModule(RIAK_JACKSON_MODULE);
-    }
-
-    this.mapper = mapper;
+  public JSONConverter(ObjectMapperSelector selector, Class<T> clazz)
+  {
+    this.selector = selector;
     this.clazz = clazz;
     annotationInfo = AnnotationHelper.getInstance().get(clazz);
   }
@@ -88,22 +82,23 @@ public class JSONConverter<T> implements Converter<T> {
    * @param domainObject to be converted
    * @param vclock       the vector clock from Riak
    */
-  public IRiakObject fromDomain(String bucket, T domainObject, VClock vclock) throws ConversionException {
+  public IRiakObject fromDomain(String bucket, T domainObject, VClock vclock) throws ConversionException
+  {
     try {
       String key = getKey(domainObject);
 
-      final byte[] value = mapper.writeValueAsBytes(domainObject);
+      final byte[] value = selector.writingMapper().writeValueAsBytes(domainObject);
       Map<String, String> usermetaData = annotationInfo.getUsermetaData(domainObject);
       RiakIndexes indexes = annotationInfo.getIndexes(domainObject);
       Collection<RiakLink> links = annotationInfo.getLinks(domainObject);
       return RiakObjectBuilder.newBuilder(bucket, key)
-         .withValue(value)
-         .withVClock(vclock)
-         .withUsermeta(usermetaData)
-         .withIndexes(indexes)
-         .withLinks(links)
-         .withContentType(Constants.CTYPE_JSON_UTF8)
-         .build();
+        .withValue(value)
+        .withVClock(vclock)
+        .withUsermeta(usermetaData)
+        .withIndexes(indexes)
+        .withLinks(links)
+        .withContentType(selector.contentType())
+        .build();
     } catch (IOException e) {
       throw new ConversionException(e);
     }
@@ -118,7 +113,8 @@ public class JSONConverter<T> implements Converter<T> {
    *                   JSON string. The charset from
    *                   <code>riakObject.getContentType()</code> is used.
    */
-  public T toDomain(final IRiakObject riakObject) throws ConversionException {
+  public T toDomain(final IRiakObject riakObject) throws ConversionException
+  {
     if (riakObject == null) {
       return null;
     } else if (riakObject.isDeleted()) {
@@ -135,7 +131,9 @@ public class JSONConverter<T> implements Converter<T> {
       }
     } else {
       try {
-        final T domainObject = mapper.readValue(riakObject.getValue(), clazz);
+        final T domainObject = selector
+          .readingMapper(riakObject.getContentType())
+          .readValue(riakObject.getValue(), clazz);
         annotationInfo.setRiakKey(domainObject, riakObject.getKey());
         annotationInfo.setRiakVClock(domainObject, riakObject.getVClock());
         annotationInfo.setUsermetaData(riakObject.getMeta(), domainObject);
@@ -152,19 +150,10 @@ public class JSONConverter<T> implements Converter<T> {
    * Returns the {@link ObjectMapper} being used.
    * This is a convenience method to allow changing its behavior.
    *
-   * @return The Jackson ObjectMapper
+   * @return The Object Mapper selector
    */
-  public ObjectMapper getObjectMapper() {
-    return mapper;
+  public ObjectMapperSelector getObjectMapperSelector()
+  {
+    return selector;
   }
-
-  /**
-   * Convenient method to register a Jackson module into the singleton Object mapper used by domain objects.
-   *
-   * @param jacksonModule Module to register.
-   */
-  public void registerJacksonModule(final Module jacksonModule) {
-    OBJECT_MAPPER.registerModule(jacksonModule);
-  }
-
 }
