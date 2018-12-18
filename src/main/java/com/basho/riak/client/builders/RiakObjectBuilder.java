@@ -13,14 +13,6 @@
  */
 package com.basho.riak.client.builders;
 
-import static com.basho.riak.client.util.CharsetUtils.utf8StringToBytes;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.basho.riak.client.DefaultRiakObject;
 import com.basho.riak.client.IRiakObject;
 import com.basho.riak.client.RiakLink;
@@ -29,6 +21,10 @@ import com.basho.riak.client.cap.VClock;
 import com.basho.riak.client.query.indexes.RiakIndex;
 import com.basho.riak.client.query.indexes.RiakIndexes;
 import com.basho.riak.client.util.CharsetUtils;
+
+import java.util.*;
+
+import static com.basho.riak.client.util.CharsetUtils.utf8StringToBytes;
 
 /**
  * Creates instances of {@link DefaultRiakObject}
@@ -128,7 +124,7 @@ public class RiakObjectBuilder {
      * @return this
      */
     public RiakObjectBuilder withValue(byte[] value) {
-        this.value =  value==null? null : value.clone();
+        this.value = value;
         return this;
     }
 

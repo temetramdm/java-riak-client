@@ -15,6 +15,7 @@ package com.basho.riak.client.raw;
 
 import com.basho.riak.client.cap.Quora;
 import com.basho.riak.client.cap.Quorum;
+
 import java.util.Date;
 
 /**
@@ -312,9 +313,7 @@ public class StoreMeta {
      * @return this.
      */
     public synchronized StoreMeta etags(String[] etags) {
-        if (etags != null) {
-            this.etags = etags.clone();
-        }
+        this.etags = etags;
         return this;
     }
 
@@ -322,10 +321,7 @@ public class StoreMeta {
      * @return the etags
      */
     public synchronized String[] getEtags() {
-        if (etags != null) {
-            return etags.clone();
-        }
-        return null;
+        return etags;
     }
 
     /**

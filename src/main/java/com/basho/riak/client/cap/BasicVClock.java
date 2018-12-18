@@ -33,14 +33,14 @@ public class BasicVClock implements VClock {
         if (value == null) {
             throw new IllegalArgumentException("VClock value cannot be null");
         }
-        this.value = value.clone();
+        this.value = value;
     }
 
     /**
      * @return a copy of this vector clocks bytes
      */
     public byte[] getBytes() {
-        return value.clone();
+        return value;
     }
 
     /**

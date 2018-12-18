@@ -14,14 +14,10 @@
 package com.basho.riak.client.http.util;
 
 import com.basho.riak.client.util.CharsetUtils;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
-
 import org.apache.http.util.EncodingUtils;
+
+import java.io.*;
+import java.util.*;
 
 /**
  * Represents a multipart entity as described here:
@@ -204,9 +200,7 @@ public class Multipart {
 
         public Part(Map<String, String> headers, byte[] body) {
             this.headers = headers;
-            if(body != null) {
-                this.body = body.clone();
-            }
+            this.body = body;
         }
 
         public Part(Map<String, String> headers, InputStream body) {

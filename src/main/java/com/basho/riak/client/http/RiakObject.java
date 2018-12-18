@@ -13,34 +13,23 @@
  */
 package com.basho.riak.client.http;
 
-import static com.basho.riak.client.util.CharsetUtils.*;
-
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
-
+import com.basho.riak.client.http.request.RequestMeta;
+import com.basho.riak.client.http.request.RiakWalkSpec;
+import com.basho.riak.client.http.response.*;
+import com.basho.riak.client.http.util.ClientUtils;
+import com.basho.riak.client.http.util.Constants;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.InputStreamEntity;
 
-import com.basho.riak.client.http.request.RequestMeta;
-import com.basho.riak.client.http.request.RiakWalkSpec;
-import com.basho.riak.client.http.response.FetchResponse;
-import com.basho.riak.client.http.response.HttpResponse;
-import com.basho.riak.client.http.response.RiakIORuntimeException;
-import com.basho.riak.client.http.response.RiakResponseRuntimeException;
-import com.basho.riak.client.http.response.StoreResponse;
-import com.basho.riak.client.http.response.WalkResponse;
-import com.basho.riak.client.http.util.ClientUtils;
-import com.basho.riak.client.http.util.Constants;
+import java.io.InputStream;
+import java.util.*;
+
+import static com.basho.riak.client.util.CharsetUtils.asBytes;
+import static com.basho.riak.client.util.CharsetUtils.asString;
+import static com.basho.riak.client.util.CharsetUtils.getCharset;
 
 /**
  * A Riak object.
@@ -103,12 +92,11 @@ public class RiakObject {
         this.lastmod = lastmod;
         this.vtag = vtag;
         this.isDeleted = isDeleted;
-
-        safeSetValue(value);
+        this.value = value;
         this.contentType = contentType == null ? Constants.CTYPE_OCTET_STREAM : contentType;
-        safeSetLinks(links);
-        safeSetUsermetaData(userMetaData);
-        safeSetIndexes(indexes);
+        this.links = links;
+        this.userMetaData = userMetaData;
+        this.indexes = indexes;
     }
 
     /**
@@ -213,12 +201,7 @@ public class RiakObject {
         if (object == null)
             return;
 
-        if (object.value != null) {
-            value = object.value.clone();
-        } else {
-            value = null;
-        }
-
+        value = object.value;
         valueStream = object.valueStream;
         valueStreamLength = object.valueStreamLength;
 
@@ -240,7 +223,7 @@ public class RiakObject {
      */
     void shallowCopy(RiakObject object) {
         value = object.value;
-        this.links = object.links;
+        links = object.links;
         userMetaData = object.userMetaData;
         contentType = object.contentType;
         vclock = object.vclock;
@@ -310,7 +293,7 @@ public class RiakObject {
      * @see com.basho.riak.client.HttpRiakObject#getValueAsBytes()
      */
     public byte[] getValueAsBytes() {
-        return value == null ? value : value.clone();
+        return value;
     }
 
     /* (non-Javadoc)
@@ -328,19 +311,7 @@ public class RiakObject {
      * @see com.basho.riak.client.HttpRiakObject#setValue(byte[])
      */
     public void setValue(byte[] value) {
-       safeSetValue(value);
-    }
-
-    /**
-     *
-     * @param value
-     */
-    private void safeSetValue(final byte[] value) {
-        if(value != null) {
-            this.value = value.clone();
-        } else {
-            this.value = null;
-        }
+        this.value = value;
     }
 
     /* (non-Javadoc)
@@ -391,39 +362,7 @@ public class RiakObject {
      * @see com.basho.riak.client.HttpRiakObject#setLinks(java.util.List)
      */
     public void setLinks(List<RiakLink> links) {
-       safeSetLinks(links);
-    }
-
-    private void safeSetLinks(final List<RiakLink> links) {
-        if (links == null) {
-            this.links = new CopyOnWriteArrayList<>();
-        } else {
-            this.links = new CopyOnWriteArrayList<>(deepCopy(links));
-        }
-    }
-
-    @SuppressWarnings("rawtypes") private void safeSetIndexes(final List<RiakIndex> indexes) {
-        if (indexes == null) {
-            this.indexes = new ArrayList<>();
-        } else {
-            this.indexes = new ArrayList<>(indexes);
-        }
-    }
-
-    /**
-     * Creates a new RiakLink for each RiakLink in links and adds it to a new List.
-     *
-     * @param links a List of {@link RiakLink}s
-     * @return a deep copy of List.
-     */
-    private List<RiakLink> deepCopy(List<RiakLink> links) {
-        final ArrayList<RiakLink> copyLinks = new ArrayList<>();
-
-        for(RiakLink link : links) {
-            copyLinks.add(new RiakLink(link));
-        }
-
-        return copyLinks;
+       this.links = links;
     }
 
     /* (non-Javadoc)
@@ -477,15 +416,7 @@ public class RiakObject {
      * @see com.basho.riak.client.HttpRiakObject#setUsermeta(java.util.Map)
      */
     public void setUsermeta(final Map<String, String> userMetaData) {
-       safeSetUsermetaData(userMetaData);
-    }
-
-    private void safeSetUsermetaData(final Map<String, String> userMetaData) {
-        if (userMetaData == null) {
-            this.userMetaData = new ConcurrentHashMap<>();
-        } else {
-            this.userMetaData = new ConcurrentHashMap<>(userMetaData);
-        }
+        this.userMetaData = userMetaData;
     }
 
     /* (non-Javadoc)

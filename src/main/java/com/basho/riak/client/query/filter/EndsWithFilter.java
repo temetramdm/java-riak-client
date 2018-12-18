@@ -36,6 +36,6 @@ public class EndsWithFilter implements KeyFilter {
      * @see com.basho.riak.client.query.filter.KeyFilter#asArray()
      */
     public String[] asArray() {
-        return filter.clone();
+        return filter;
     }
 }

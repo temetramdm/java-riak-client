@@ -33,6 +33,6 @@ public class TokenizeFilter implements KeyTransformFilter {
     }
     
     public Object[] asArray() {
-        return filter.clone();
+        return filter;
     }
 }

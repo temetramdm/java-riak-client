@@ -48,6 +48,6 @@ public class NotEqualToFilter implements KeyFilter {
      * @see com.basho.riak.client.query.filter.KeyFilter#asArray()
      */
     public Object[] asArray() {
-        return filter.clone();
+        return filter;
     }
 }

@@ -17,18 +17,11 @@
  **/
 package com.basho.riak.pbc;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.net.SocketAddress;
-
 import com.basho.riak.protobuf.RiakPB.RpbErrorResp;
 import com.google.protobuf.MessageLite;
+
+import java.io.*;
+import java.net.*;
 
 /**
  * Wraps the {@link Socket} used to send/receive data to Riak's protocol buffers interface.
@@ -201,14 +194,14 @@ class RiakConnection implements Comparable<RiakConnection>
 	 * @return the clientId
 	 */
 	public synchronized byte[] getClientId() {
-		return clientId == null ? null : clientId.clone();
+		return clientId;
 	}
 
 	/**
 	 * @param clientId the clientId to set
 	 */
 	public synchronized void setClientId(byte[] clientId) {
-		this.clientId = clientId == null ? null : clientId.clone();
+		this.clientId = clientId;
 	}
 
 	/**

@@ -13,9 +13,9 @@
  */
 package com.basho.riak.client.query.filter;
 
-import java.util.Set;
-
 import org.json.JSONException;
+
+import java.util.Set;
 
 /**
  * Filter in keys that are a member of the provided set
@@ -88,6 +88,6 @@ public class SetMemberFilter implements KeyFilter {
      * @see com.basho.riak.client.query.filter.KeyFilter#asArray()
      */
     public Object[] asArray() {
-        return filter.clone();
+        return filter;
     }
 }

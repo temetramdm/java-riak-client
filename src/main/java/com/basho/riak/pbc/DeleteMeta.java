@@ -54,7 +54,7 @@ public class DeleteMeta {
         this.dw = dw;
         this.pw = pw;
         this.rw = rw;
-        this.vclock = vclock == null ? null : vclock.clone();
+        this.vclock = vclock;
         this.timeout = timeout;
     }
 

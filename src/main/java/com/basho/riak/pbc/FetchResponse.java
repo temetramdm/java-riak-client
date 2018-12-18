@@ -36,11 +36,7 @@ public class FetchResponse {
     protected FetchResponse(RiakObject[] objects, boolean unchanged, byte[] vclock) {
         this.objects = objects;
         this.unchanged = unchanged;
-        if(vclock != null) {
-            this.vclock = vclock.clone();
-        } else {
-            this.vclock = null;
-        }
+        this.vclock = vclock;
     }
 
     /**
@@ -62,10 +58,7 @@ public class FetchResponse {
      * @return the vclock (if one is present) from the response.
      */
     public byte[] getVClock() {
-        if (this.vclock != null) {
-            return this.vclock.clone();
-        }
-        return this.vclock;
+        return vclock;
     }
 
     /**

@@ -1,27 +1,21 @@
 package com.basho.riak.client;
 
-import java.io.IOException;
-import java.util.Set;
-import java.util.concurrent.Callable;
-
 import com.basho.riak.client.bucket.Bucket;
 import com.basho.riak.client.bucket.FetchBucket;
 import com.basho.riak.client.bucket.WriteBucket;
 import com.basho.riak.client.cap.DefaultRetrier;
 import com.basho.riak.client.cap.Retrier;
 import com.basho.riak.client.operations.RiakOperation;
-import com.basho.riak.client.query.BucketKeyMapReduce;
-import com.basho.riak.client.query.BucketMapReduce;
-import com.basho.riak.client.query.IndexMapReduce;
-import com.basho.riak.client.query.SearchMapReduce;
-import com.basho.riak.client.query.LinkWalk;
-import com.basho.riak.client.query.NodeStats;
+import com.basho.riak.client.query.*;
 import com.basho.riak.client.raw.RawClient;
-import com.basho.riak.client.query.StreamingOperation;
 import com.basho.riak.client.raw.Transport;
 import com.basho.riak.client.raw.http.HTTPClientAdapter;
 import com.basho.riak.client.raw.pbc.PBClientAdapter;
 import com.basho.riak.client.raw.query.indexes.IndexQuery;
+
+import java.io.IOException;
+import java.util.Set;
+import java.util.concurrent.Callable;
 
 /**
  * The default implementation of IRiakClient.
@@ -141,9 +135,8 @@ public final class DefaultRiakClient implements IRiakClient {
         if (clientId == null || clientId.length != 4) {
             throw new IllegalArgumentException("Client Id must be 4 bytes long");
         }
-        final byte[] cloned = clientId.clone();
         retrier.attempt((Callable<Void>) () -> {
-            rawClient.setClientId(cloned);
+            rawClient.setClientId(clientId);
             return null;
         });
 

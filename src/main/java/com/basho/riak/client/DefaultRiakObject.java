@@ -91,59 +91,10 @@ public class DefaultRiakObject implements IRiakObject {
     this.vtag = vtag;
     this.lastModified = lastModified == null ? 0 : lastModified.getTime();
     safeSetContentType(contentType);
-    this.value = copy(value);
-    this.links = copy(links);
-    this.userMeta = copy(userMeta);
-    this.indexes = RiakIndexes.from(indexes);
-  }
-
-  /**
-   * Copy the value array.
-   *
-   * @param value
-   * @return a clone of value or null (if value was null)
-   */
-  private byte[] copy(byte[] value) {
-    if (value == null) {
-      return null;
-    } else {
-      return value.clone();
-    }
-  }
-
-  /**
-   * Copy the user meta data
-   *
-   * @param userMeta
-   * @return a copy of user meta data or any empty map
-   */
-  private Map<String, String> copy(Map<String, String> userMeta) {
-    Map<String, String> copy;
-
-    if (userMeta == null) {
-      copy = new HashMap<>();
-    } else {
-      copy = new HashMap<>(userMeta);
-    }
-
-    return copy;
-  }
-
-  /**
-   * Copy the Collection
-   *
-   * @param <T> the type
-   * @param l   the collection to copy
-   * @return a copy of the collection (or an empty collection if <code>l</code> is null)
-   */
-  private <T> Collection<T> copy(Collection<T> l) {
-    Collection<T> copy;
-    if (l == null) {
-      copy = new ArrayList<>();
-    } else {
-      copy = new ArrayList<>(l);
-    }
-    return copy;
+    this.value = value;
+    this.links = links;
+    this.userMeta = userMeta;
+    this.indexes = indexes;
   }
 
   /**
@@ -226,7 +177,7 @@ public class DefaultRiakObject implements IRiakObject {
    * @see com.basho.riak.client.IRiakObject#getValue()
    */
   public byte[] getValue() {
-    return copy(value);
+    return value;
   }
 
   // mutate
@@ -237,7 +188,7 @@ public class DefaultRiakObject implements IRiakObject {
    * @param value byte[] to store in Riak.
    */
   public void setValue(byte[] value) {
-    this.value = copy(value);
+    this.value = value;
   }
 
   /* (non-Javadoc)

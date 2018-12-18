@@ -5,7 +5,7 @@
    <groupId>com.github.temetramdm</groupId>
    <artifactId>riak-client</artifactId>
    <packaging>bundle</packaging>
-   <version>1.5.0</version>
+   <version>1.5.1</version>
    <name>Riak Client for Java</name>
    <description>HttpClient-based client for Riak</description>
    <url>https://github.com/basho/riak-java-client</url>
@@ -54,7 +54,7 @@
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
       <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
       <cobertura.version>2.5</cobertura.version>
-      <jackson.version>2.9.7</jackson.version>
+      <jackson.version>2.9.8</jackson.version>
    </properties>
 
    <distributionManagement>

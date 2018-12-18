@@ -13,21 +13,6 @@
  */
 package com.basho.riak.client.itest;
 
-import static com.basho.riak.client.AllTests.emptyBucket;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.util.Set;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-
-import org.junit.Before;
-import org.junit.Test;
-
 import com.basho.riak.client.IRiakClient;
 import com.basho.riak.client.IRiakObject;
 import com.basho.riak.client.RiakException;
@@ -37,7 +22,16 @@ import com.basho.riak.client.cap.UnresolvedConflictException;
 import com.basho.riak.client.operations.FetchObject;
 import com.basho.riak.client.query.StreamingOperation;
 import com.basho.riak.client.util.CharsetUtils;
+import org.junit.Before;
+import org.junit.Test;
+
 import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
+import static com.basho.riak.client.AllTests.emptyBucket;
+import static org.junit.Assert.*;
 
 /**
  * @author russell
@@ -125,7 +119,7 @@ public abstract class ITestClientBasic {
     @Test public void clientIds() throws Exception {
         final byte[] clientId = CharsetUtils.utf8StringToBytes("abcd");
 
-        client.setClientId(clientId.clone());
+        client.setClientId(clientId);
         assertArrayEquals(clientId, client.getClientId());
 
         byte[] newId = client.generateAndSetClientId();

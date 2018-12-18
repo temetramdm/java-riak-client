@@ -26,6 +26,6 @@ public class UrlDecodeFilter implements KeyTransformFilter {
      * @see com.basho.riak.newapi.query.filter.KeyFilter#asArray()
      */
     public String[] asArray() {
-        return filter.clone();
+        return filter;
     }
 }

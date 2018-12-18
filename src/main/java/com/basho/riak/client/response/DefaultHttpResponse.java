@@ -13,20 +13,17 @@
  */
 package com.basho.riak.client.response;
 
-import static com.basho.riak.client.util.CharsetUtils.asString;
-import static com.basho.riak.client.util.CharsetUtils.getCharset;
+import com.basho.riak.client.util.Constants;
+import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.util.EntityUtils;
-
-import com.basho.riak.client.response.HttpResponse;
-import com.basho.riak.client.response.RiakIORuntimeException;
-import com.basho.riak.client.util.Constants;
+import static com.basho.riak.client.util.CharsetUtils.asString;
+import static com.basho.riak.client.util.CharsetUtils.getCharset;
 
 /**
  * Simple implementation of HttpResponse interface. Simply stores and returns
@@ -62,9 +59,7 @@ public class DefaultHttpResponse implements HttpResponse {
         this.key = key;
         this.status = status;
         this.headers = headers;
-        if(body != null) {
-            this.body = body.clone();
-        }
+        this.body = body;
         this.stream = stream;
         this.httpResponse = httpResponse;
         this.httpMethod = httpMethod;
@@ -87,10 +82,7 @@ public class DefaultHttpResponse implements HttpResponse {
     }
 
     public byte[] getBody() {
-        if (body != null) {
-            return body.clone();
-        }
-        return null;
+        return body;
     }
     
     public String getBodyAsString() {

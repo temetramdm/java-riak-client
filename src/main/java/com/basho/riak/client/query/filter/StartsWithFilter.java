@@ -32,6 +32,6 @@ public class StartsWithFilter implements KeyFilter {
     }
 
     public String[] asArray() {
-        return filter.clone();
+        return filter;
     }
 }

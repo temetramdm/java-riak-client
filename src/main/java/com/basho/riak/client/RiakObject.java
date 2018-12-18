@@ -13,33 +13,25 @@
  */
 package com.basho.riak.client;
 
-import static com.basho.riak.client.util.CharsetUtils.*;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
-
+import com.basho.riak.client.http.util.ClientUtils;
+import com.basho.riak.client.request.RequestMeta;
+import com.basho.riak.client.request.RiakWalkSpec;
+import com.basho.riak.client.response.*;
+import com.basho.riak.client.util.Constants;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.InputStreamEntity;
 
-import com.basho.riak.client.http.util.ClientUtils;
-import com.basho.riak.client.request.RequestMeta;
-import com.basho.riak.client.request.RiakWalkSpec;
-import com.basho.riak.client.response.FetchResponse;
-import com.basho.riak.client.response.HttpResponse;
-import com.basho.riak.client.response.RiakIORuntimeException;
-import com.basho.riak.client.response.RiakResponseRuntimeException;
-import com.basho.riak.client.response.StoreResponse;
-import com.basho.riak.client.response.WalkResponse;
-import com.basho.riak.client.util.Constants;
+import java.io.InputStream;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import static com.basho.riak.client.util.CharsetUtils.asBytes;
+import static com.basho.riak.client.util.CharsetUtils.asString;
+import static com.basho.riak.client.util.CharsetUtils.getCharset;
 
 /**
  * A (legacy REST) Riak object.
@@ -108,11 +100,10 @@ public class RiakObject {
         this.vclock = vclock;
         this.lastmod = lastmod;
         this.vtag = vtag;
-
-        safeSetValue(value);
+        this.value = value;
         this.contentType = contentType == null ? Constants.CTYPE_OCTET_STREAM : contentType;
-        safeSetLinks(links);
-        safeSetUsermetaData(userMetaData);
+        this.links = links;
+        this.userMetaData = userMetaData;
     }
 
     public RiakObject(RiakClient riak, String bucket, String key) {
@@ -174,38 +165,6 @@ public class RiakObject {
     public RiakObject setRiakClient(RiakClient client) {
         riak = client;
         return this;
-    }
-
-    /**
-     * Copy the metadata and value from <code>object</code>. The bucket and key
-     * are not copied.
-     * 
-     * @param object
-     *            The source object to copy from
-     */
-    public void copyData(RiakObject object) {
-        if (object == null)
-            return;
-
-        if (object.value != null) {
-            value = object.value.clone();
-        } else {
-            value = null;
-        }
-
-        valueStream = object.valueStream;
-        valueStreamLength = object.valueStreamLength;
-
-        setLinks(object.links);
-
-        userMetaData = new HashMap<>();
-        if (object.userMetaData != null) {
-            userMetaData.putAll(object.userMetaData);
-        }
-        contentType = object.contentType;
-        vclock = object.vclock;
-        lastmod = object.lastmod;
-        vtag = object.vtag;
     }
 
     /**
@@ -284,7 +243,7 @@ public class RiakObject {
     }
 
     public byte[] getValueAsBytes() {
-        return value == null ? value : value.clone();
+        return value;
     }
 
     public void setValue(String value) {
@@ -296,19 +255,7 @@ public class RiakObject {
     }
 
     public void setValue(byte[] value) {
-       safeSetValue(value);
-    }
-
-    /**
-     *
-     * @param value
-     */
-    private void safeSetValue(final byte[] value) {
-        if(value != null) {
-            this.value = value.clone();
-        } else {
-            this.value = null;
-        }
+       this.value = value;
     }
 
     /**
@@ -375,31 +322,7 @@ public class RiakObject {
      * @param links a List of {@link RiakLink}
      */
     public void setLinks(List<RiakLink> links) {
-       safeSetLinks(links);
-    }
-
-    private void safeSetLinks(final List<RiakLink> links) {
-        if (links == null) {
-            this.links = new CopyOnWriteArrayList<>();
-        } else {
-            this.links = new CopyOnWriteArrayList<>(deepCopy(links));
-        }
-    }
-
-    /**
-     * Creates a new RiakLink for each RiakLink in links and adds it to a new List.
-     *
-     * @param links a List of {@link RiakLink}s
-     * @return a deep copy of List.
-     */
-    private List<RiakLink> deepCopy(List<RiakLink> links) {
-        final ArrayList<RiakLink> copyLinks = new ArrayList<>();
-
-        for(RiakLink link : links) {
-            copyLinks.add(new RiakLink(link));
-        }
-
-        return copyLinks;
+       this.links = links;
     }
 
     /**
@@ -473,15 +396,7 @@ public class RiakObject {
      * @param userMetaData
      */
     public void setUsermeta(final Map<String, String> userMetaData) {
-       safeSetUsermetaData(userMetaData);
-    }
-
-    private void safeSetUsermetaData(final Map<String, String> userMetaData) {
-        if (userMetaData == null) {
-            this.userMetaData = new ConcurrentHashMap<>();
-        } else {
-            this.userMetaData = new ConcurrentHashMap<>(userMetaData);
-        }
+       this.userMetaData = userMetaData;
     }
 
     /**
